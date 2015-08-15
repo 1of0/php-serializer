@@ -13,9 +13,9 @@ use Doctrine\Common\Annotations\Annotation;
 class JsonConverter extends Annotation
 {
 	/**
-	 * @var string $converterClass
+	 * @var string $value
 	 */
-	public $converterClass;
+	public $value;
 
 	/**
 	 * @var bool $serialize

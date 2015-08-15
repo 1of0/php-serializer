@@ -12,9 +12,9 @@ class PropertyDependentCustomConverter implements JsonConverterInterface
 	 * @param string $class
 	 * @return bool
 	 */
-	public function isSupported($class)
+	public function canConvert($class)
 	{
-
+		return true;
 	}
 
 	/**
@@ -25,17 +25,37 @@ class PropertyDependentCustomConverter implements JsonConverterInterface
 	 */
 	public function serialize($object, $propertyName, $propertyClass)
 	{
+		if ($propertyName === 'foo')
+		{
+			return 1000 - $object;
+		}
 
+		if ($propertyName === 'bar')
+		{
+			return 1000 + $object;
+		}
+
+		return 0;
 	}
 
 	/**
-	 * @param string $json
+	 * @param mixed $data
 	 * @param string $propertyName
 	 * @param string $propertyClass
 	 * @return mixed
 	 */
-	public function deserialize($json, $propertyName, $propertyClass)
+	public function deserialize($data, $propertyName, $propertyClass)
 	{
+		if ($propertyName === 'foo')
+		{
+			return 1000 - $data;
+		}
 
+		if ($propertyName === 'bar')
+		{
+			return $data - 1000;
+		}
+
+		return 0;
 	}
 }

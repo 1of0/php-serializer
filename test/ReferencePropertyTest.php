@@ -32,7 +32,7 @@ class ReferencePropertyTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals($expectedJson, $json);
 
 		/** @var ClassReferencingReferableClass $deserialized */
-		$deserialized = Serializer::get()->deserializeObject($json);
+		$deserialized = Serializer::get()->deserialize($json);
 		$this->assertNotNull($deserialized);
 		$this->assertEquals($object->foo, $deserialized->foo);
 		$this->assertEquals($object->bar, $deserialized->bar);

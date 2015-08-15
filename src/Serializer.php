@@ -7,7 +7,6 @@ namespace OneOfZero\Json;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use OneOfZero\Json\Internals\MemberWalker;
-use ReflectionClass;
 
 class Serializer
 {
@@ -66,42 +65,34 @@ class Serializer
 	 */
 	public function serialize($data)
 	{
+		if (is_object($data))
+		{
+			return $this->jsonEncode($this->walker->serializeMembers($data));
+		}
+
 		if (is_array($data))
 		{
 			return $this->jsonEncode($this->walker->serializeArray($data));
 		}
 
-		if (is_object($data))
-		{
-			$serializedData = $this->walker->serializeMembers($data);
-
-			// TODO: Use type index and type hash?
-			$serializedData['@class'] = get_class($data);
-
-			return $this->jsonEncode($serializedData);
-		}
-
 		return $this->jsonEncode($data);
 	}
 
-	/**
-	 * @param string $json
-	 * @return object
-	 */
-	public function deserializeObject($json)
+	public function deserialize($json)
 	{
-		$serializedData = $this->jsonDecode($json);
+		$deserializedData = $this->jsonDecode($json);
 
-		return $this->walker->deserializeMembers($serializedData);
-	}
+		if (is_object($deserializedData))
+		{
+			return $this->walker->deserializeMembers($deserializedData);
+		}
 
-	/**
-	 * @param string $json
-	 * @return array
-	 */
-	public function deserializeArray($json)
-	{
-		$serializedData = $this->jsonDecode($json);
+		if (is_array($deserializedData))
+		{
+			return $this->walker->deserializeArray($deserializedData);
+		}
+
+		return $deserializedData;
 	}
 
 	private function jsonEncode($data)
@@ -114,7 +105,7 @@ class Serializer
 		return json_encode($data, $options, $this->configuration->maxDepth);
 	}
 
-	private function jsonDecode($json, $assoc = true)
+	private function jsonDecode($json, $assoc = false)
 	{
 		return json_decode($json, $assoc, $this->configuration->maxDepth);
 	}

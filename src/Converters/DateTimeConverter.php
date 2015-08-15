@@ -13,16 +13,16 @@ class DateTimeConverter implements JsonConverterInterface
 	 * @param string $class
 	 * @return bool
 	 */
-	public function isSupported($class)
+	public function canConvert($class)
 	{
-		return $class === DateTime::class || in_array(DateTime::class, class_parents($class));
+		return !is_null($class) && ($class === DateTime::class || in_array(DateTime::class, class_parents($class)));
 	}
 
 	/**
 	 * @param mixed $object
 	 * @param string $propertyName
 	 * @param string $propertyClass
-	 * @return string
+	 * @return mixed
 	 */
 	public function serialize($object, $propertyName, $propertyClass)
 	{
@@ -31,15 +31,15 @@ class DateTimeConverter implements JsonConverterInterface
 	}
 
 	/**
-	 * @param string $json
+	 * @param string $data
 	 * @param string $propertyName
 	 * @param string $propertyClass
 	 * @return mixed
 	 */
-	public function deserialize($json, $propertyName, $propertyClass)
+	public function deserialize($data, $propertyName, $propertyClass)
 	{
 		$date = new DateTime();
-		$date->setTimestamp($json);
+		$date->setTimestamp($data);
 		return $date;
 	}
 }

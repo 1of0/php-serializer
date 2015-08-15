@@ -10,7 +10,7 @@ interface JsonConverterInterface
 	 * @param string $class
 	 * @return bool
 	 */
-	public function isSupported($class);
+	public function canConvert($class);
 
 	/**
 	 * @param mixed $object
@@ -21,10 +21,10 @@ interface JsonConverterInterface
 	public function serialize($object, $propertyName, $propertyClass);
 
 	/**
-	 * @param string $json
+	 * @param mixed $data
 	 * @param string $propertyName
 	 * @param string $propertyClass
 	 * @return mixed
 	 */
-	public function deserialize($json, $propertyName, $propertyClass);
+	public function deserialize($data, $propertyName, $propertyClass);
 }

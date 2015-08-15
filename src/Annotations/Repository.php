@@ -13,7 +13,7 @@ use Doctrine\Common\Annotations\Annotation;
 class Repository extends Annotation
 {
 	/**
-	 * @var string $class
+	 * @var string $value
 	 */
-	public $class;
+	public $value;
 }

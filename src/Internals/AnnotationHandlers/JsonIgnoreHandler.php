@@ -9,13 +9,14 @@ use OneOfZero\Json\Annotations\InclusionStrategy;
 use OneOfZero\Json\Annotations\JsonIgnore;
 use OneOfZero\Json\Internals\Member;
 use ReflectionClass;
+use stdClass;
 
 class JsonIgnoreHandler extends AbstractHandler
 {
 	/**
 	 * @return string
 	 */
-	public function handlesAnnotation()
+	public function targetAnnotation()
 	{
 		return JsonIgnore::class;
 	}
@@ -26,7 +27,7 @@ class JsonIgnoreHandler extends AbstractHandler
 	 * @param Member $member
 	 * @return bool
 	 */
-	public function handleSerialization(ReflectionClass $class, Annotation $annotation, Member $member)
+	public function handleSerialization(ReflectionClass $class, $annotation, Member $member)
 	{
 		if ($this->getInclusionStrategy($class) == InclusionStrategy::IMPLICIT && $annotation->ignoreOnSerialize)
 		{
@@ -37,13 +38,12 @@ class JsonIgnoreHandler extends AbstractHandler
 
 	/**
 	 * @param ReflectionClass $class
-	 * @param array $serializedData
+	 * @param array|stdClass $deserializedData
 	 * @param Annotation|JsonIgnore $annotation
 	 * @param Member $member
 	 * @return bool
 	 */
-	public function handleDeserialization(ReflectionClass $class, array $serializedData, Annotation $annotation,
-	                                      Member $member)
+	public function handleDeserialization(ReflectionClass $class, $deserializedData, $annotation, Member $member)
 	{
 		if ($this->getInclusionStrategy($class) == InclusionStrategy::IMPLICIT && $annotation->ignoreOnDeserialize)
 		{
@@ -62,7 +62,7 @@ class JsonIgnoreHandler extends AbstractHandler
 		$strategyAnnotation = $this->getClassAnnotation($class, InclusionStrategy::class);
 		if ($strategyAnnotation)
 		{
-			return $strategyAnnotation->strategy;
+			return $strategyAnnotation->value;
 		}
 
 		return $this->configuration->defaultInclusionStrategy;

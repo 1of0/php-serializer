@@ -33,6 +33,8 @@ class Configuration
 	 */
 	public $maxDepth = 32;
 
+
+
 	/**
 	 * @param JsonConverterInterface $converter
 	 */

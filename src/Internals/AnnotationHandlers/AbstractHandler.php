@@ -9,6 +9,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use OneOfZero\Json\Configuration;
 use OneOfZero\Json\Internals\Member;
 use ReflectionClass;
+use stdClass;
 
 abstract class AbstractHandler
 {
@@ -35,7 +36,18 @@ abstract class AbstractHandler
 	/**
 	 * @return string
 	 */
-	public abstract function handlesAnnotation();
+	public function targetAnnotation()
+	{
+		return null;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function dependsOn()
+	{
+		return [];
+	}
 
 	/**
 	 * @param ReflectionClass $class
@@ -43,17 +55,17 @@ abstract class AbstractHandler
 	 * @param Member $member
 	 * @return bool
 	 */
-	public abstract function handleSerialization(ReflectionClass $class, Annotation $annotation, Member $member);
+	public abstract function handleSerialization(ReflectionClass $class, $annotation, Member $member);
 
 	/**
 	 * @param ReflectionClass $class
-	 * @param array $serializedData
+	 * @param array|stdClass $deserializedData
 	 * @param Annotation $annotation
 	 * @param Member $member
 	 * @return bool
 	 */
-	public abstract function handleDeserialization(ReflectionClass $class, array $serializedData,
-	                                               Annotation $annotation, Member $member);
+	public abstract function handleDeserialization(ReflectionClass $class, $deserializedData, $annotation,
+	                                               Member $member);
 
 	/**
 	 * @param ReflectionClass $class

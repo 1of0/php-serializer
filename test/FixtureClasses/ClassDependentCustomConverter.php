@@ -12,9 +12,9 @@ class ClassDependentCustomConverter implements JsonConverterInterface
 	 * @param string $class
 	 * @return bool
 	 */
-	public function isSupported($class)
+	public function canConvert($class)
 	{
-
+		return $class === SimpleObject::class || $class === ReferableClass::class;
 	}
 
 	/**
@@ -25,17 +25,39 @@ class ClassDependentCustomConverter implements JsonConverterInterface
 	 */
 	public function serialize($object, $propertyName, $propertyClass)
 	{
+		if ($propertyClass === SimpleObject::class)
+		{
+			/** @var SimpleObject $object */
+			return $object->foo;
+		}
 
+		if ($propertyClass === ReferableClass::class)
+		{
+			/** @var ReferableClass $object */
+			return $object->getId();
+		}
+
+		return null;
 	}
 
 	/**
-	 * @param string $json
+	 * @param mixed $data
 	 * @param string $propertyName
 	 * @param string $propertyClass
 	 * @return mixed
 	 */
-	public function deserialize($json, $propertyName, $propertyClass)
+	public function deserialize($data, $propertyName, $propertyClass)
 	{
+		if ($propertyClass === SimpleObject::class)
+		{
+			return new SimpleObject($data);
+		}
 
+		if ($propertyClass === ReferableClass::class)
+		{
+			return new ReferableClass($data);
+		}
+
+		return null;
 	}
 }

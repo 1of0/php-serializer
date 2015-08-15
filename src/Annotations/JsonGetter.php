@@ -16,4 +16,19 @@ class JsonGetter extends Annotation
 	 * @var string $propertyName
 	 */
 	public $propertyName;
+
+	/**
+	 * @var string $class
+	 */
+	public $class;
+
+	/**
+	 * @var bool $isArray
+	 */
+	public $isArray = false;
+
+	/**
+	 * @var bool $isReference
+	 */
+	public $isReference = false;
 }

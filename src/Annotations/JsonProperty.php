@@ -13,9 +13,19 @@ use Doctrine\Common\Annotations\Annotation;
 class JsonProperty extends Annotation
 {
 	/**
-	 * @var string $name
+	 * @var string $value
 	 */
-	public $name;
+	public $value;
+
+	/**
+	 * @var string $class
+	 */
+	public $class;
+
+	/**
+	 * @var bool $isArray
+	 */
+	public $isArray = false;
 
 	/**
 	 * @var bool $isReference

@@ -5,6 +5,9 @@ namespace OneOfZero\Json\Internals;
 
 
 use Doctrine\Common\Annotations\Annotation;
+use OneOfZero\Json\Annotations\JsonGetter;
+use OneOfZero\Json\Annotations\JsonProperty;
+use OneOfZero\Json\Annotations\JsonSetter;
 
 class Member
 {
@@ -41,7 +44,7 @@ class Member
 	/**
 	 * @var string $propertyName
 	 */
-	public $propertyName;
+	public $propertyName2;
 
 	/**
 	 * @var mixed $value
@@ -111,7 +114,28 @@ class Member
 	 */
 	public function getPropertyName()
 	{
-		return is_null($this->propertyName) ? $this->name : $this->propertyName;
+		if ($this->type == Member::TYPE_PROPERTY)
+		{
+			/** @var JsonProperty $property */
+			$property = $this->getAnnotation(JsonProperty::class);
+			return $property && $property->value ? $property->value : $this->name;
+		}
+
+		/** @var JsonGetter $getter */
+		$getter = $this->getAnnotation(JsonGetter::class);
+		if ($getter && $getter->propertyName)
+		{
+			return $getter->propertyName;
+		}
+
+		/** @var JsonGetter $setter */
+		$setter = $this->getAnnotation(JsonSetter::class);
+		if ($setter && $setter->propertyName)
+		{
+			return $setter->propertyName;
+		}
+
+		return $this->name;
 	}
 
 	/**
@@ -180,7 +204,7 @@ class Member
 		{
 			return self::VALUE_IS_DESERIALIZED;
 		}
-		elseif (is_array($this->serializationData) && array_key_exists('@class', $this->serializationData))
+		elseif (is_object($this->serializationData))
 		{
 			return self::VALUE_IS_OBJECT;
 		}
