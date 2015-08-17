@@ -1,148 +1,69 @@
-# Annotations
+# API
 
-## @InclusionStrategy
+## Classes
 
-```
-@InclusionStrategy(int value)
-```
+### JsonConvert
 
-##### Description
+The `JsonConvert` class provides a static interface to a `Serializer` instance with default configuration. The method
+`JsonConvert::toJson()` performs serialization and `JsonConvert::fromJson()` performs deserialization.
 
-By default the serializer will serialize from and deserialize to all public properties defined in a class. To change
-this behaviour, the `@InclusionStrategy` annotation can be defined on a class to specify whether the inclusion
-behaviour should be **implicit** or **explicit**.
+### Serializer
 
-If the strategy is set to **explicit**, only members marked with a `@JsonProperty`, `@JsonGetter`, or `@JsonSetter`
-attribute will be serialized.
+The `Serializer` class is a non-static class that provides configurable functionality. The configuration is provided
+through a `Configuration` instance as a constructor argument. Methods `serialize()` and `deserialize()` will provide
+serialization and deserialization.
 
-When the strategy is **implicit**, all public properties are serialized unless they are marked with a `@JsonIgnore`
-attribute. Getter or setter methods always need to be explicitly marked with a `@JsonGetter` or `@JsonSetter` attribute.
+### Configuration
 
-##### Example usage
+The `Configuration` class allows controlling behaviour such as *pretty printing*, including or excluding null values
+during serialization, and maximum depth for serialization and deserialization.
 
-```php
-/**
- * @InclusionStrategy(InclusionStrategy::EXPLICIT)
- */
-class Foo
-```
+## Interfaces
 
-## @JsonConverter
+### JsonConverterInterface
 
-```
-@JsonConverter(string value[, bool serialize = true, bool deserialize = true])
-```
+Implementing the `JsonConverterInterface` allows customization to the serialization process on a per-property basis. By
+annotating properties/methods that need custom serialization with a `@CustomConverter` annotation, and providing it
+with the implementation's class name, the serializer will use the implementation to serialize the property.
 
-##### Description
+### ReferableInterface
 
-The `@JsonConverter` attribute allows the configuration of a custom conversion during serialization or deserialization.
-The `class` parameter of the attribute should be the fully qualified class name of a converter class that implements the
-`JsonConverterInterface` interface.
+The `ReferableInterface` should be implemented by any class that may represent a reference. This way properties may
+specifically declare whether a sub-object will be fully serialized, or whether only its reference will be serialized.
+Note, a referable class must also declare a `@Repository` annotation with a repository class as value to indicate a
+source that returns full instances from only a reference.
 
-Additionally the boolean properties `serialize` and `deserialize` allow to specify whether the converter should be
-applied during serialization, deserialization, or both.
+### RepositoryInterface
 
-##### Example usage
+The `RepositoryInterface` should be implemented for any `ReferableInterface` implementation, as it is needed to resolve
+object instances from references. An implementation may for example connect to an ORM, or may provide a lazy instance.
 
-```php
-/**
- * @JsonConverter(\OneOfZero\Json\Converters\DateTimeConverter::class)
- */
-public $timestamp;
-```
+## Built-in converters
 
-## @JsonProperty
+### DateTimeConverter
 
-```
-@JsonProperty([string value, string class, bool isArray = false, bool isReference = false, bool serialize = true, bool deserialize = true])
-```
+The `DateTimeConverter` class is an implementation of the `JsonConverterInterface`, that converts DateTime objects into
+unix timestamps. It may be applied on properties that are `DateTime` objects or `DateTime` derivatives (such as
+`Carbon`).
 
-##### Description
+## Annotations
 
-##### Example usage
+### @NoMetadata
 
-```php
-/**
- *
- */
-```
+### @ExplicitInclusion
 
-## @JsonGetter
+### @Ignore
 
-```
-@JsonGetter([string propertyName, string class, bool isArray = false, bool isReference = false])
-```
+### @Property
 
-##### Description
+### @Getter
 
-##### Example usage
+### @Setter
 
-```php
-/**
- *
- */
-```
+### @Type
 
-## @JsonSetter
+### @IsReference
 
-```
-@JsonSetter([string propertyName, string class, bool isArray = false, bool isReference = false])
-```
+### @IsArray
 
-##### Description
-
-##### Example usage
-
-```php
-/**
- *
- */
-```
-
-## @JsonIgnore
-
-```
-@JsonIgnore([ignoreOnSerialize=true, ignoreOnSerialize=true])
-```
-
-##### Description
-
-##### Example usage
-
-```php
-/**
- *
- */
-```
-
-## @Repository
-
-```
-@Repository(string value)
-```
-
-##### Description
-
-##### Example usage
-
-```php
-/**
- *
- */
-```
-
-## @NoMetaData
-
-```
-@NoMetaData
-```
-
-##### Description
-
-##### Example usage
-
-```php
-/**
- *
- */
-```
+### @CustomConverter

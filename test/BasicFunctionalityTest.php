@@ -5,7 +5,7 @@ namespace OneOfZero\Json\Test;
 
 
 use OneOfZero\Json\Serializer;
-use OneOfZero\Json\Test\FixtureClasses\SimpleObject;
+use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
 use OneOfZero\Json\Test\Traits\AssertObjectEqualsTrait;
 use OneOfZero\Json\Test\Traits\AssertSequenceEqualsTrait;
 use PHPUnit_Framework_TestCase;
@@ -27,12 +27,12 @@ class BasicFunctionalityTest extends AbstractTest
 	public function testSimpleObject()
 	{
 		$expectedJson = json_encode([
-			'@class' => 'OneOfZero\\Json\\Test\\FixtureClasses\\SimpleObject',
+			'@class' => 'OneOfZero\\Json\\Test\\FixtureClasses\\SimpleClass',
 			'foo' => '1234',
 			'bar' => 'abcd'
 		]);
 
-		$object = new SimpleObject('1234', 'abcd');
+		$object = new SimpleClass('1234', 'abcd');
 
 		$json = Serializer::get()->serialize($object);
 		$this->assertEquals($expectedJson, $json);
@@ -47,13 +47,13 @@ class BasicFunctionalityTest extends AbstractTest
 	public function testObjectArray()
 	{
 		$expectedObject = [
-			'@class' => 'OneOfZero\\Json\\Test\\FixtureClasses\\SimpleObject',
+			'@class' => 'OneOfZero\\Json\\Test\\FixtureClasses\\SimpleClass',
 			'foo' => '1234',
 			'bar' => 'abcd'
 		];
 		$expectedJson = json_encode([ $expectedObject, $expectedObject ]);
 
-		$object = new SimpleObject('1234', 'abcd');
+		$object = new SimpleClass('1234', 'abcd');
 		$array = [ $object, $object ];
 
 		$json = Serializer::get()->serialize($array);

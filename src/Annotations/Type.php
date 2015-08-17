@@ -8,8 +8,12 @@ use Doctrine\Common\Annotations\Annotation;
 
 /**
  * @Annotation
- * @Target({"CLASS"})
+ * @Target({"PROPERTY","METHOD"})
  */
-class NoMetaData extends Annotation
+class Type extends Annotation
 {
+	/**
+	 * @var string $value
+	 */
+	public $value;
 }

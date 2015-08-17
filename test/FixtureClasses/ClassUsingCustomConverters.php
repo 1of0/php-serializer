@@ -3,29 +3,38 @@
 
 namespace OneOfZero\Json\Test\FixtureClasses;
 
-
+use DateTime;
+use OneOfZero\Json\Annotations\Type;
 use OneOfZero\Json\Converters\DateTimeConverter;
-use OneOfZero\Json\Annotations\JsonConverter;
+use OneOfZero\Json\Annotations\CustomConverter;
 
 class ClassUsingCustomConverters
 {
 	/**
-	 * @JsonConverter(DateTimeConverter::class)
+	 * @Type(DateTime::class)
+	 * @CustomConverter(DateTimeConverter::class)
 	 */
 	public $dateObject;
 
 	/**
-	 * @JsonConverter(ClassDependentCustomConverter::class)
+	 * @Type(SimpleClass::class)
+	 * @CustomConverter(ClassDependentCustomConverter::class)
 	 */
-	public $variableObject;
+	public $simpleClass;
 
 	/**
-	 * @JsonConverter(PropertyDependentCustomConverter::class)
+	 * @Type(ReferableClass::class)
+	 * @CustomConverter(ClassDependentCustomConverter::class)
+	 */
+	public $referableClass;
+
+	/**
+	 * @CustomConverter(PropertyDependentCustomConverter::class)
 	 */
 	public $foo;
 
 	/**
-	 * @JsonConverter(PropertyDependentCustomConverter::class)
+	 * @CustomConverter(PropertyDependentCustomConverter::class)
 	 */
 	public $bar;
 }

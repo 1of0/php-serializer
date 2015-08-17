@@ -7,6 +7,7 @@ namespace OneOfZero\Json\Test;
 use Exception;
 use OneOfZero\Json\Test\FixtureClasses\EqualityInterface;
 use PHPUnit_Framework_TestCase;
+use stdClass;
 
 abstract class AbstractTest extends PHPUnit_Framework_TestCase
 {
@@ -55,17 +56,17 @@ abstract class AbstractTest extends PHPUnit_Framework_TestCase
 
 		$this->assertNotNull($actual);
 
-		if (!in_array(EqualityInterface::class, class_implements($expected)))
+		if ($expected instanceof EqualityInterface)
 		{
-			$expectedClass = get_class($expected);
-			throw new Exception(
-				"Can not assert equality for $expectedClass because it does not implement the EqualityInterface " .
-				"interface"
-			);
+			$this->assertTrue($expected->__equals($actual));
+			return;
 		}
 
-		/** @var EqualityInterface $expected */
+		$this->assertInstanceOf(get_class($expected), $actual);
 
-		$this->assertTrue($expected->__equals($actual));
+		foreach ($expected as $property => $value)
+		{
+			$this->assertEquals($value, $actual->{$property});
+		}
 	}
 }

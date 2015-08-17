@@ -5,12 +5,11 @@ namespace OneOfZero\Json\Test;
 
 
 use OneOfZero\Json\Serializer;
-use OneOfZero\Json\Test\FixtureClasses\NoMetaDataSpecifyingClass;
-use PHPUnit_Framework_TestCase;
+use OneOfZero\Json\Test\FixtureClasses\NoMetadataSpecifyingClass;
 
-class NoMetaDataTest extends PHPUnit_Framework_TestCase
+class NoMetadataTest extends AbstractTest
 {
-	public function testNoMetaData()
+	public function testNoMetadata()
 	{
 		$arrayObject = [
 			'foo' => '1234',
@@ -18,12 +17,12 @@ class NoMetaDataTest extends PHPUnit_Framework_TestCase
 		];
 		$expectedJson = json_encode($arrayObject);
 
-		$object = new NoMetaDataSpecifyingClass('1234', 'abcd');
+		$object = new NoMetadataSpecifyingClass('1234', 'abcd');
 
 		$json = Serializer::get()->serialize($object);
 		$this->assertEquals($expectedJson, $json);
 
 		$deserialized = Serializer::get()->deserialize($json);
-		$this->assertSame($arrayObject, $deserialized);
+		$this->assertObjectEquals((object)$arrayObject, $deserialized);
 	}
 }

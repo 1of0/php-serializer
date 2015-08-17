@@ -14,7 +14,7 @@ class ClassDependentCustomConverter implements JsonConverterInterface
 	 */
 	public function canConvert($class)
 	{
-		return $class === SimpleObject::class || $class === ReferableClass::class;
+		return $class === SimpleClass::class || $class === ReferableClass::class;
 	}
 
 	/**
@@ -25,10 +25,10 @@ class ClassDependentCustomConverter implements JsonConverterInterface
 	 */
 	public function serialize($object, $propertyName, $propertyClass)
 	{
-		if ($propertyClass === SimpleObject::class)
+		if ($propertyClass === SimpleClass::class)
 		{
-			/** @var SimpleObject $object */
-			return $object->foo;
+			/** @var SimpleClass $object */
+			return implode('|', [ $object->foo, $object->bar ]);
 		}
 
 		if ($propertyClass === ReferableClass::class)
@@ -48,9 +48,10 @@ class ClassDependentCustomConverter implements JsonConverterInterface
 	 */
 	public function deserialize($data, $propertyName, $propertyClass)
 	{
-		if ($propertyClass === SimpleObject::class)
+		if ($propertyClass === SimpleClass::class)
 		{
-			return new SimpleObject($data);
+			$pieces = explode('|', $data);
+			return new SimpleClass($pieces[0], $pieces[1]);
 		}
 
 		if ($propertyClass === ReferableClass::class)

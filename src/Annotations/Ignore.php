@@ -10,7 +10,7 @@ use Doctrine\Common\Annotations\Annotation;
  * @Annotation
  * @Target({"PROPERTY"})
  */
-class JsonIgnore extends Annotation
+class Ignore extends Annotation
 {
 	/**
 	 * @var bool $ignoreOnSerialize

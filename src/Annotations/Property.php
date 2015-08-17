@@ -8,15 +8,10 @@ use Doctrine\Common\Annotations\Annotation;
 
 /**
  * @Annotation
- * @Target({"PROPERTY", "METHOD"})
+ * @Target({"PROPERTY"})
  */
-class JsonConverter extends Annotation
+class Property extends AbstractName
 {
-	/**
-	 * @var string $value
-	 */
-	public $value;
-
 	/**
 	 * @var bool $serialize
 	 */

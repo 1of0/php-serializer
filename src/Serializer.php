@@ -7,6 +7,7 @@ namespace OneOfZero\Json;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use OneOfZero\Json\Internals\MemberWalker;
+use OneOfZero\Json\Internals\SerializationContext;
 
 class Serializer
 {
@@ -31,32 +32,24 @@ class Serializer
 	}
 
 	/**
-	 * @var AnnotationReader $annotationReader
+	 * @var SerializationContext $context
 	 */
-	private $annotationReader;
-
-	/**
-	 * @var Configuration $configuration
-	 */
-	private $configuration;
-
-	/**
-	 * @var MemberWalker $walker
-	 */
-	private $walker;
+	private $context;
 
 	/**
 	 * @param Configuration|null $configuration
 	 */
 	public function __construct(Configuration $configuration = null)
 	{
-		$this->configuration = $configuration ? $configuration : new Configuration();
+		$this->context = new SerializationContext();
+
+		$this->context->serializer = $this;
+		$this->context->configuration = $configuration ? $configuration : new Configuration();
 
 		// TODO: Use cached reader
 		AnnotationRegistry::registerLoader(array(require __DIR__ . '/../vendor/autoload.php', 'loadClass'));
-		$this->annotationReader = new AnnotationReader();
-
-		$this->walker = new MemberWalker($this->configuration, $this->annotationReader);
+		$this->context->annotationReader = new AnnotationReader();
+		$this->context->memberWalker = new MemberWalker($this->context);
 	}
 
 	/**
@@ -65,31 +58,21 @@ class Serializer
 	 */
 	public function serialize($data)
 	{
-		if (is_object($data))
-		{
-			return $this->jsonEncode($this->walker->serializeMembers($data));
-		}
-
-		if (is_array($data))
-		{
-			return $this->jsonEncode($this->walker->serializeArray($data));
-		}
-
-		return $this->jsonEncode($data);
+		return $this->jsonEncode($this->context->memberWalker->serialize($data));
 	}
 
-	public function deserialize($json)
+	/**
+	 * @param string $json
+	 * @param string|null $typeHint
+	 * @return mixed
+	 */
+	public function deserialize($json, $typeHint = null)
 	{
 		$deserializedData = $this->jsonDecode($json);
 
-		if (is_object($deserializedData))
+		if (is_object($deserializedData) || is_array($deserializedData))
 		{
-			return $this->walker->deserializeMembers($deserializedData);
-		}
-
-		if (is_array($deserializedData))
-		{
-			return $this->walker->deserializeArray($deserializedData);
+			return $this->context->memberWalker->deserialize($deserializedData, $typeHint);
 		}
 
 		return $deserializedData;
@@ -98,15 +81,15 @@ class Serializer
 	private function jsonEncode($data)
 	{
 		$options = 0;
-		if ($this->configuration->prettyPrint)
+		if ($this->context->configuration->prettyPrint)
 		{
 			$options |= JSON_PRETTY_PRINT;
 		}
-		return json_encode($data, $options, $this->configuration->maxDepth);
+		return json_encode($data, $options, $this->context->configuration->maxDepth);
 	}
 
-	private function jsonDecode($json, $assoc = false)
+	private function jsonDecode($json)
 	{
-		return json_decode($json, $assoc, $this->configuration->maxDepth);
+		return json_decode($json, false, $this->context->configuration->maxDepth);
 	}
 }

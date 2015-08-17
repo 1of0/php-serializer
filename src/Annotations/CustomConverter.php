@@ -8,29 +8,14 @@ use Doctrine\Common\Annotations\Annotation;
 
 /**
  * @Annotation
- * @Target({"PROPERTY"})
+ * @Target({"PROPERTY", "METHOD"})
  */
-class JsonProperty extends Annotation
+class CustomConverter extends Annotation
 {
 	/**
 	 * @var string $value
 	 */
 	public $value;
-
-	/**
-	 * @var string $class
-	 */
-	public $class;
-
-	/**
-	 * @var bool $isArray
-	 */
-	public $isArray = false;
-
-	/**
-	 * @var bool $isReference
-	 */
-	public $isReference = false;
 
 	/**
 	 * @var bool $serialize

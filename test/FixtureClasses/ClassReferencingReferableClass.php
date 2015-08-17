@@ -4,7 +4,7 @@
 namespace OneOfZero\Json\Test\FixtureClasses;
 
 
-use OneOfZero\Json\Annotations\JsonProperty;
+use OneOfZero\Json\Annotations\IsReference;
 
 class ClassReferencingReferableClass
 {
@@ -13,7 +13,7 @@ class ClassReferencingReferableClass
 	public $bar;
 
 	/**
-	 * @JsonProperty(isReference=true)
+	 * @IsReference
 	 * @var ReferableClass $reference
 	 */
 	public $reference;

@@ -4,12 +4,7 @@
 namespace OneOfZero\Json\Test\FixtureClasses;
 
 
-use OneOfZero\Json\Annotations\NoMetaData;
-
-/**
- * @NoMetaData
- */
-class NoMetaDataSpecifyingClass
+class SimpleClass
 {
 	public $foo;
 

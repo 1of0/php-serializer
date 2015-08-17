@@ -7,10 +7,10 @@ namespace OneOfZero\Json\Test;
 use DateTime;
 use OneOfZero\Json\JsonConvert;
 use OneOfZero\Json\Test\FixtureClasses\ClassUsingCustomConverters;
-use OneOfZero\Json\Test\FixtureClasses\SimpleObject;
-use PHPUnit_Framework_TestCase;
+use OneOfZero\Json\Test\FixtureClasses\ReferableClass;
+use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
 
-class CustomConverterTests extends PHPUnit_Framework_TestCase
+class CustomConverterTests extends AbstractTest
 {
 	public function testCustomConverters()
 	{
@@ -19,14 +19,16 @@ class CustomConverterTests extends PHPUnit_Framework_TestCase
 		$expectedJson = json_encode([
 			'@class' => 'OneOfZero\\Json\\Test\\FixtureClasses\\ClassUsingCustomConverters',
 			'dateObject' => $date->getTimestamp(),
-			'variableObject' => '1234',
+			'simpleClass' => '1234|abcd',
+			'referableClass' => 1337,
 			'foo' => 877,
 			'bar' => 1123
 		]);
 
 		$object = new ClassUsingCustomConverters();
 		$object->dateObject = $date;
-		$object->variableObject = new SimpleObject('1234', 'abcd');
+		$object->simpleClass = new SimpleClass('1234', 'abcd');
+		$object->referableClass = new ReferableClass(1337);
 		$object->foo = 123;
 		$object->bar = 123;
 
@@ -34,6 +36,6 @@ class CustomConverterTests extends PHPUnit_Framework_TestCase
 		$this->assertEquals($expectedJson, $json);
 
 		$deserialized = JsonConvert::fromJson($json);
-		//var_dump($deserialized);
+		$this->assertObjectEquals($object, $deserialized);
 	}
 }
