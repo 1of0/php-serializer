@@ -1,14 +1,29 @@
 <?php
 
+/**
+ * Copyright (c) 2015 Bernardo van der Wal
+ * MIT License
+ *
+ * Refer to the LICENSE file for the full copyright notice.
+ */
 
 namespace OneOfZero\Json\Internals;
 
 
-use Doctrine\Common\Annotations\Annotation;
 use ReflectionClass;
 
+/**
+ * Class ClassContext
+ * @package OneOfZero\Json\Internals
+ *
+ * Provides a reflection context of a class, and provides helper methods to obtain the annotations of the relevant
+ * class.
+ */
 class ClassContext
 {
+	/**
+	 * Provides annotation helper methods.
+	 */
 	use AnnotationHelperTrait;
 
 	/**
