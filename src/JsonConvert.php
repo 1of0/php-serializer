@@ -17,8 +17,8 @@ class JsonConvert
 		return Serializer::get()->serialize($data);
 	}
 
-	public static function fromJson($json)
+	public static function fromJson($json, $typeHint = null)
 	{
-		return Serializer::get()->deserialize($json);
+		return Serializer::get()->deserialize($json, $typeHint);
 	}
 }
