@@ -25,7 +25,7 @@ class Metadata
 	 */
 	public static function set(&$target, $metaType, $metaValue)
 	{
-		if (is_null($target))
+		if ($target === null)
 		{
 			throw new InvalidArgumentException("Null provided as target for metadata storage");
 		}
@@ -52,7 +52,7 @@ class Metadata
 	 */
 	public static function contains(&$target, $metaType)
 	{
-		return !is_null($target)
+		return $target !== null
 			&& (is_array($target) || $target instanceof stdClass)
 			&& array_key_exists($metaType, $target)
 		;

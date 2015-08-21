@@ -22,21 +22,30 @@ during serialization, and maximum depth for serialization and deserialization.
 
 ### JsonConverterInterface
 
-Implementing the `JsonConverterInterface` allows customization to the serialization process on a per-property basis. By
-annotating properties/methods that need custom serialization with a `@CustomConverter` annotation, and providing it
-with the implementation's class name, the serializer will use the implementation to serialize the property.
+Implementing the `JsonConverterInterface` interface allows customization to the serialization process on a per-property
+basis. By annotating properties/methods that need custom serialization with a `@CustomConverter` annotation, and
+providing it with the implementation's class name, the serializer will use the implementation to serialize the property.
 
 ### ReferableInterface
 
-The `ReferableInterface` should be implemented by any class that may represent a reference. This way properties may
-specifically declare whether a sub-object will be fully serialized, or whether only its reference will be serialized.
-Note, a referable class must also declare a `@Repository` annotation with a repository class as value to indicate a
-source that returns full instances from only a reference.
+The `ReferableInterface` interface should be implemented by any class that may represent a reference. This way
+properties may specifically declare whether a sub-object will be fully serialized, or whether only its reference will be
+serialized.
 
-### RepositoryInterface
+### ReferenceResolverInterface
 
-The `RepositoryInterface` should be implemented for any `ReferableInterface` implementation, as it is needed to resolve
-object instances from references. An implementation may for example connect to an ORM, or may provide a lazy instance.
+The `ReferenceResolverInterface` interface should be implemented to support any `ReferableInterface` implementation, as
+it is needed to resolve object instances from references. An implementation may for example connect to an ORM, or may
+provide a lazy instance.
+
+### ContainerAdapterInterface
+
+The `ContainerAdapterInterface` interface may be implemented around an instance of your application's DI container. From
+this library's perspective, the DI container must provide an `AnnotationReader` instance, and optionally a
+`ReferenceResolverInterface` instance if you use the reference property feature.
+
+While its purpose is to wrap around a DI container, you may build an implementation that simply returns a static
+instance of the `AnnotationReader` and `ReferenceResolverInterface`.
 
 ## Built-in converters
 

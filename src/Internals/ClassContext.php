@@ -45,6 +45,6 @@ class ClassContext
 	{
 		$this->class = $class;
 		$this->instance = $instance;
-		$this->annotations = $context->annotationReader->getClassAnnotations($class);
+		$this->annotations = $context->getAnnotationReader()->getClassAnnotations($class);
 	}
 }

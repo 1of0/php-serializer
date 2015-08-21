@@ -69,10 +69,9 @@ You might often deal with sub-objects that you don't want to serialize, but rath
 serialize and deserialize references like that. To achieve this:
 
 - The referenced object needs to implement the `ReferableInterface` interface
-- A repository needs to exist for the referenced object (and needs to implements the `RepositoryInterface` interface)
-- The referenced object needs to declare the `@Repository` annotation, and provide the previously mentioned repository 
-  class
 - The property that holds the referenced object has to be marked with the `@IsReference` annotation
+- A reference resolver needs to exist that supports the referenced object (and needs to implements the 
+  `ReferenceResolverInterface` interface)
 
 ## Roadmap
 

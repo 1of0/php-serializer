@@ -21,7 +21,7 @@ class DateTimeConverter implements JsonConverterInterface
 	 */
 	public function canConvert($class)
 	{
-		return !is_null($class) && ($class === DateTime::class || in_array(DateTime::class, class_parents($class)));
+		return $class !== null && ($class === DateTime::class || in_array(DateTime::class, class_parents($class)));
 	}
 
 	/**

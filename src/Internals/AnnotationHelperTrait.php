@@ -33,7 +33,7 @@ trait AnnotationHelperTrait
 	 */
 	public function hasAnnotation($annotationClass)
 	{
-		return !is_null($this->getAnnotation($annotationClass));
+		return $this->getAnnotation($annotationClass) !== null;
 	}
 
 	/**
@@ -64,7 +64,7 @@ trait AnnotationHelperTrait
 	 */
 	public function getAnnotations($annotationClass = null)
 	{
-		if (is_null($annotationClass))
+		if ($annotationClass === null)
 		{
 			return $this->annotations;
 		}
