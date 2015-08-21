@@ -11,9 +11,9 @@ namespace OneOfZero\Json\Converters;
 
 
 use DateTime;
-use OneOfZero\Json\JsonConverterInterface;
+use OneOfZero\Json\CustomConverterInterface;
 
-class DateTimeConverter implements JsonConverterInterface
+class DateTimeConverter implements CustomConverterInterface
 {
 	/**
 	 * @param string $class
@@ -28,9 +28,10 @@ class DateTimeConverter implements JsonConverterInterface
 	 * @param mixed $object
 	 * @param string $propertyName
 	 * @param string $propertyClass
+	 * @param mixed $objectContext
 	 * @return mixed
 	 */
-	public function serialize($object, $propertyName, $propertyClass)
+	public function serialize($object, $propertyName, $propertyClass, $objectContext)
 	{
 		/** @var DateTime $object */
 		return $object->getTimestamp();
@@ -40,9 +41,10 @@ class DateTimeConverter implements JsonConverterInterface
 	 * @param string $data
 	 * @param string $propertyName
 	 * @param string $propertyClass
+	 * @param array $objectContext
 	 * @return mixed
 	 */
-	public function deserialize($data, $propertyName, $propertyClass)
+	public function deserialize($data, $propertyName, $propertyClass, array $objectContext)
 	{
 		$date = new DateTime();
 		$date->setTimestamp($data);

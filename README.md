@@ -60,7 +60,7 @@ available.
 ### Custom property converters
 
 Much like [Json.NET's custom converters](http://www.newtonsoft.com/json/help/html/CustomJsonConverter.htm), this library
-also allows you to build and specify custom converters for specified properties. Refer to the `JsonConverterInterface`
+also allows you to build and specify custom converters for specified properties. Refer to the `CustomConverterInterface`
 interface and `@CustomConverter` annotation in the [documentation](documentation.md) for this feature.
 
 ### Reference properties
@@ -70,7 +70,7 @@ serialize and deserialize references like that. To achieve this:
 
 - The referenced object needs to implement the `ReferableInterface` interface
 - The property that holds the referenced object has to be marked with the `@IsReference` annotation
-- A reference resolver needs to exist that supports the referenced object (and needs to implements the 
+- A reference resolver needs to exist that supports the referenced object (and needs to implement the 
   `ReferenceResolverInterface` interface)
 
 ## Roadmap
