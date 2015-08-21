@@ -6,7 +6,7 @@ namespace OneOfZero\Json\Test\FixtureClasses;
 
 use OneOfZero\Json\CustomConverterInterface;
 
-class PropertyDependentCustomConverter implements CustomConverterInterface
+class ContextSensitiveCustomConverter implements CustomConverterInterface
 {
 	/**
 	 * @param string $class
@@ -26,17 +26,8 @@ class PropertyDependentCustomConverter implements CustomConverterInterface
 	 */
 	public function serialize($object, $propertyName, $propertyClass, $objectContext)
 	{
-		if ($propertyName === 'foo')
-		{
-			return 1000 - $object;
-		}
-
-		if ($propertyName === 'bar')
-		{
-			return 1000 + $object;
-		}
-
-		return 0;
+		/** @var ClassUsingCustomConverters $objectContext */
+		return intval($object) * intval($objectContext->referableClass->getId());
 	}
 
 	/**
@@ -48,16 +39,6 @@ class PropertyDependentCustomConverter implements CustomConverterInterface
 	 */
 	public function deserialize($data, $propertyName, $propertyClass, array $objectContext)
 	{
-		if ($propertyName === 'foo')
-		{
-			return 1000 - $data;
-		}
-
-		if ($propertyName === 'bar')
-		{
-			return $data - 1000;
-		}
-
-		return 0;
+		return intval($data) / intval($objectContext['referableClass']);
 	}
 }

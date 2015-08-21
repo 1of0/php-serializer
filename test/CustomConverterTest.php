@@ -22,7 +22,8 @@ class CustomConverterTests extends AbstractTest
 			'simpleClass' => '1234|abcd',
 			'referableClass' => 1337,
 			'foo' => 877,
-			'bar' => 1123
+			'bar' => 1123,
+			'contextSensitive' => 1337 * 2
 		]);
 
 		$object = new ClassUsingCustomConverters();
@@ -31,6 +32,7 @@ class CustomConverterTests extends AbstractTest
 		$object->referableClass = new ReferableClass(1337);
 		$object->foo = 123;
 		$object->bar = 123;
+		$object->contextSensitive = 2;
 
 		$json = JsonConvert::toJson($object);
 		$this->assertEquals($expectedJson, $json);

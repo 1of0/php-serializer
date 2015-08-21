@@ -20,11 +20,12 @@ during serialization, and maximum depth for serialization and deserialization.
 
 ## Interfaces
 
-### JsonConverterInterface
+### CustomConverterInterface
 
-Implementing the `JsonConverterInterface` interface allows customization to the serialization process on a per-property
-basis. By annotating properties/methods that need custom serialization with a `@CustomConverter` annotation, and
-providing it with the implementation's class name, the serializer will use the implementation to serialize the property.
+Implementing the `CustomConverterInterface` interface allows customization to the serialization process on a 
+per-property basis. By annotating properties/methods that need custom serialization with a `@CustomConverter` 
+annotation, and providing it with the implementation's class name, the serializer will use the implementation to 
+serialize the property.
 
 ### ReferableInterface
 
@@ -51,8 +52,8 @@ instance of the `AnnotationReader` and `ReferenceResolverInterface`.
 
 ### DateTimeConverter
 
-The `DateTimeConverter` class is an implementation of the `JsonConverterInterface`, that converts DateTime objects into
-unix timestamps. It may be applied on properties that are `DateTime` objects or `DateTime` derivatives (such as
+The `DateTimeConverter` class is an implementation of the `CustomConverterInterface`, that converts DateTime objects 
+into unix timestamps. It may be applied on properties that are `DateTime` objects or `DateTime` derivatives (such as
 `Carbon`).
 
 ## Annotations

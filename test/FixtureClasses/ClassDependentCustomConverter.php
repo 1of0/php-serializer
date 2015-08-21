@@ -4,9 +4,9 @@
 namespace OneOfZero\Json\Test\FixtureClasses;
 
 
-use OneOfZero\Json\JsonConverterInterface;
+use OneOfZero\Json\CustomConverterInterface;
 
-class ClassDependentCustomConverter implements JsonConverterInterface
+class ClassDependentCustomConverter implements CustomConverterInterface
 {
 	/**
 	 * @param string $class
@@ -21,9 +21,10 @@ class ClassDependentCustomConverter implements JsonConverterInterface
 	 * @param mixed $object
 	 * @param string $propertyName
 	 * @param string $propertyClass
+	 * @param mixed $objectContext
 	 * @return string
 	 */
-	public function serialize($object, $propertyName, $propertyClass)
+	public function serialize($object, $propertyName, $propertyClass, $objectContext)
 	{
 		if ($propertyClass === SimpleClass::class)
 		{
@@ -44,9 +45,10 @@ class ClassDependentCustomConverter implements JsonConverterInterface
 	 * @param mixed $data
 	 * @param string $propertyName
 	 * @param string $propertyClass
+	 * @param array $objectContext
 	 * @return mixed
 	 */
-	public function deserialize($data, $propertyName, $propertyClass)
+	public function deserialize($data, $propertyName, $propertyClass, array $objectContext)
 	{
 		if ($propertyClass === SimpleClass::class)
 		{

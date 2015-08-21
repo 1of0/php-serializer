@@ -22,7 +22,7 @@ use OneOfZero\Json\Annotations\Property;
 use OneOfZero\Json\Annotations\Setter;
 use OneOfZero\Json\Annotations\Type;
 use OneOfZero\Json\Exceptions\SerializationException;
-use OneOfZero\Json\JsonConverterInterface;
+use OneOfZero\Json\CustomConverterInterface;
 use OneOfZero\Json\ReferableInterface;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -37,7 +37,7 @@ use ReflectionProperty;
  * @property bool                       $isIncluded
  * @property bool                       $serialize
  * @property bool                       $deserialize
- * @property JsonConverterInterface     $converter
+ * @property CustomConverterInterface     $converter
  * @property mixed                      $value
  * @property SerializedMember           $serializedMember
  */
@@ -102,7 +102,8 @@ class Member
 			$value = $this->converter->serialize(
 				$this->value,
 				$this->serializedMember->propertyName,
-				$this->getType()
+				$this->getType(),
+				$this->parentContext->instance
 			);
 			$valueSet = true;
 		}
@@ -155,7 +156,8 @@ class Member
 			$this->setInstanceValue($instance, $this->converter->deserialize(
 				$this->serializedMember->value,
 				$this->serializedMember->propertyName,
-				$this->getType()
+				$this->getType(),
+				$arrayData
 			));
 			return;
 		}
