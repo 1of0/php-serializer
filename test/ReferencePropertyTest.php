@@ -6,6 +6,7 @@ namespace OneOfZero\Json\Test;
 
 use OneOfZero\Json\Serializer;
 use OneOfZero\Json\Test\FixtureClasses\ClassReferencingReferableClass;
+use OneOfZero\Json\Test\FixtureClasses\FakeContainerAdapter;
 use OneOfZero\Json\Test\FixtureClasses\ReferableClass;
 use PHPUnit_Framework_TestCase;
 
@@ -28,11 +29,13 @@ class ReferencePropertyTest extends PHPUnit_Framework_TestCase
 		$object->bar = 1.337;
 		$object->reference = new ReferableClass(9001);
 
-		$json = Serializer::get()->serialize($object);
+		$serializer = new Serializer(new FakeContainerAdapter());
+
+		$json = $serializer->serialize($object);
 		$this->assertEquals($expectedJson, $json);
 
 		/** @var ClassReferencingReferableClass $deserialized */
-		$deserialized = Serializer::get()->deserialize($json);
+		$deserialized = $serializer->deserialize($json);
 		$this->assertNotNull($deserialized);
 		$this->assertEquals($object->foo, $deserialized->foo);
 		$this->assertEquals($object->bar, $deserialized->bar);

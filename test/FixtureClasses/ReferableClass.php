@@ -8,7 +8,7 @@ use OneOfZero\Json\Annotations\Repository;
 use OneOfZero\Json\ReferableInterface;
 
 /**
- * @Repository(ReferableClassRepository::class)
+ * @Repository(ReferableClassResolver::class)
  */
 class ReferableClass implements ReferableInterface
 {

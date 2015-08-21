@@ -32,7 +32,7 @@ class MemberWalker
 
 	public function serialize($data)
 	{
-		if (is_null($data))
+		if ($data === null)
 		{
 			return null;
 		}
@@ -70,7 +70,7 @@ class MemberWalker
 		foreach ($members as $member)
 		{
 			$result = $member->serialize();
-			if (!is_null($result))
+			if ($result !== null)
 			{
 				$serializationData[$result->propertyName] = $result->value;
 			}
@@ -95,7 +95,7 @@ class MemberWalker
 
 	public function deserialize($deserializedData, $typeHint = null)
 	{
-		if (is_null($deserializedData))
+		if ($deserializedData === null)
 		{
 			return null;
 		}
@@ -120,7 +120,7 @@ class MemberWalker
 			$typeHint = Metadata::get($deserializedData, Metadata::TYPE);
 		}
 
-		if (is_null($typeHint))
+		if ($typeHint === null)
 		{
 			return $deserializedData;
 		}

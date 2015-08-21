@@ -33,12 +33,12 @@ class MemberContext
 
 		if ($member instanceof ReflectionProperty)
 		{
-			$this->annotations = $context->annotationReader->getPropertyAnnotations($member);
+			$this->annotations = $context->getAnnotationReader()->getPropertyAnnotations($member);
 		}
 
 		if ($member instanceof ReflectionMethod)
 		{
-			$this->annotations = $context->annotationReader->getMethodAnnotations($member);
+			$this->annotations = $context->getAnnotationReader()->getMethodAnnotations($member);
 		}
 	}
 }

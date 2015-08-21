@@ -19,79 +19,44 @@ use OneOfZero\Json\Annotations\Ignore;
 use OneOfZero\Json\Annotations\IsArray;
 use OneOfZero\Json\Annotations\IsReference;
 use OneOfZero\Json\Annotations\Property;
-use OneOfZero\Json\Annotations\Repository;
 use OneOfZero\Json\Annotations\Setter;
 use OneOfZero\Json\Annotations\Type;
 use OneOfZero\Json\Exceptions\SerializationException;
 use OneOfZero\Json\JsonConverterInterface;
 use OneOfZero\Json\ReferableInterface;
-use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
 
+/**
+ * @property SerializationContext       $context
+ * @property MemberContext              $memberContext
+ * @property ClassContext               $parentContext
+ * @property string                     $name
+ * @property bool                       $isArray
+ * @property bool                       $isReference
+ * @property bool                       $isIncluded
+ * @property bool                       $serialize
+ * @property bool                       $deserialize
+ * @property JsonConverterInterface     $converter
+ * @property mixed                      $value
+ * @property SerializedMember           $serializedMember
+ */
 class Member
 {
 	const TYPE_PROPERTY = 0;
 	const TYPE_METHOD = 1;
 
-	/**
-	 * @var SerializationContext $context
-	 */
 	private $context;
-
-	/**
-	 * @var MemberContext $memberContext
-	 */
 	private $memberContext;
-
-	/**
-	 * @var ClassContext $parentContext
-	 */
 	private $parentContext;
-
-	/**
-	 * @var string $name
-	 */
 	private $name;
-
-	/**
-	 * @var bool $isArray
-	 */
 	private $isArray = false;
-
-	/**
-	 * @var bool $isReference
-	 */
 	private $isReference = false;
-
-	/**
-	 * @var bool $isIncluded
-	 */
 	private $isIncluded = true;
-
-	/**
-	 * @var bool $serialize
-	 */
 	private $serialize = true;
-
-	/**
-	 * @var bool $deserialize
-	 */
 	private $deserialize = true;
-
-	/**
-	 * @var JsonConverterInterface $converter
-	 */
 	private $converter;
-
-	/**
-	 * @var mixed $value
-	 */
 	private $value;
-
-	/**
-	 * @var SerializedMember $serializedMember
-	 */
 	private $serializedMember;
 
 	/**
@@ -153,12 +118,12 @@ class Member
 			$value = $this->value;
 		}
 
-		if (!$this->context->configuration->includeNullValues && is_null($value))
+		if (!$this->context->getConfiguration()->includeNullValues && $value === null)
 		{
 			return null;
 		}
 
-		$value = $this->context->memberWalker->serialize($value);
+		$value = $this->context->getMemberWalker()->serialize($value);
 		$this->serializedMember->value = $value;
 
 		return $this->serializedMember;
@@ -202,7 +167,7 @@ class Member
 		}
 
 		$value = $this->serializedMember->value;
-		$value = $this->context->memberWalker->deserialize($value, $this->getType());
+		$value = $this->context->getMemberWalker()->deserialize($value, $this->getType());
 
 		$this->setInstanceValue($instance, $value);
 	}
@@ -225,7 +190,7 @@ class Member
 	 */
 	private function getReference()
 	{
-		if (is_null($this->value))
+		if ($this->value === null)
 		{
 			return null;
 		}
@@ -253,15 +218,16 @@ class Member
 	 */
 	private function resolveReference()
 	{
-		if (is_null($this->serializedMember->value))
+		if ($this->serializedMember->value === null)
 		{
 			return null;
 		}
 
 		$this->validateReference();
 
+		$referenceClass = $this->getType();
 		$referenceId = $this->serializedMember->getMetadata(Metadata::ID);
-		if (is_null($referenceId))
+		if ($referenceId === null)
 		{
 			throw new SerializationException(
 				"Property {$this->name} in class {$this->parentContext->class->name} is marked as a reference, but " .
@@ -269,12 +235,14 @@ class Member
 			);
 		}
 
-		// Load @Repository annotation
-		$referenceContext = new ClassContext($this->context, new ReflectionClass($this->getType()));
-		$repositoryAnnotation = $referenceContext->getAnnotation(Repository::class);
+		$referenceResolver = $this->context->getReferenceResolver();
+		if (!$referenceResolver)
+		{
+			throw new SerializationException("Could not load the reference resolver from the container");
+		}
 
-		// Load instance from repository
-		$object = call_user_func([ $repositoryAnnotation->value, 'get' ], $referenceId);
+		// Resolve reference
+		$object = $this->context->getReferenceResolver()->resolve($referenceClass, $referenceId);
 
 		return $object;
 	}
@@ -285,31 +253,11 @@ class Member
 	 */
 	private function validateReference()
 	{
-		$type = $this->getType();
-
-		if (is_null($type))
+		if ($this->getType() === null)
 		{
 			throw new SerializationException(
 				"Property {$this->name} in class {$this->parentContext->class->name} is marked as a reference, but " .
 				"does not specify or imply a valid type"
-			);
-		}
-
-		$referenceContext = new ClassContext($this->context, new ReflectionClass($type));
-		$repositoryAnnotation = $referenceContext->getAnnotation(Repository::class);
-		if (!$repositoryAnnotation)
-		{
-			throw new SerializationException(
-				"Property {$this->name} in class {$this->parentContext->class->name} is marked as a reference, but " .
-				"the type {$type} does not specify a @Repository annotation"
-			);
-		}
-
-		// Check for repository existence
-		if (!class_exists($repositoryAnnotation->value))
-		{
-			throw new SerializationException(
-				"The repository specified on the {$referenceContext->class->name} class can not be found"
 			);
 		}
 	}
@@ -378,7 +326,7 @@ class Member
 	 */
 	private function determineValue()
 	{
-		if (is_null($this->parentContext->instance))
+		if ($this->parentContext->instance === null)
 		{
 			return;
 		}
