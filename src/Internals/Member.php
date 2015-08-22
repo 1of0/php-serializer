@@ -381,7 +381,7 @@ class Member
 			$this->value = $this->memberContext->reflector->getValue($parentInstance);
 		}
 
-		if ($this->isMethod() && $this->hasAnnotation(Getter::class))
+		if ($this->isGetter())
 		{
 			$this->value = $this->memberContext->reflector->invoke($parentInstance);
 		}
@@ -395,11 +395,17 @@ class Member
 	 */
 	private function setValue($instance, $value)
 	{
+		if ($instance === null)
+		{
+			return;
+		}
+
 		if ($this->isProperty())
 		{
 			$this->memberContext->reflector->setValue($instance, $value);
 		}
-		else
+
+		if ($this->isSetter())
 		{
 			$this->memberContext->reflector->invoke($instance, $value);
 		}
