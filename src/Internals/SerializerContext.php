@@ -17,7 +17,7 @@ use OneOfZero\Json\DependencyInjection\ContainerAdapterInterface;
 use OneOfZero\Json\ReferenceResolverInterface;
 use OneOfZero\Json\Serializer;
 
-class SerializationContext
+class SerializerContext
 {
 	/**
 	 * @var Serializer $serializer
@@ -66,6 +66,14 @@ class SerializationContext
 	public function setContainer($container)
 	{
 		$this->container = $container;
+	}
+
+	/**
+	 * @return ContainerAdapterInterface
+	 */
+	public function getContainer()
+	{
+		return $this->container;
 	}
 
 	/**
