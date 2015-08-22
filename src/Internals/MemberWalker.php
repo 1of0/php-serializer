@@ -18,14 +18,14 @@ use stdClass;
 class MemberWalker
 {
 	/**
-	 * @var SerializationContext $serializationContext
+	 * @var SerializerContext $serializationContext
 	 */
 	private $serializationContext;
 
 	/**
-	 * @param SerializationContext $context
+	 * @param SerializerContext $context
 	 */
-	public function __construct(SerializationContext $context)
+	public function __construct(SerializerContext $context)
 	{
 		$this->serializationContext = $context;
 	}
@@ -51,13 +51,13 @@ class MemberWalker
 	}
 
 	/**
-	 * @param mixed $data
+	 * @param object $object
 	 * @return array
 	 */
-	private function serializeMembers($data)
+	private function serializeMembers($object)
 	{
-		$class = new ReflectionClass($data);
-		$context = new ClassContext($this->serializationContext, $class, $data);
+		$class = new ReflectionClass($object);
+		$context = new ReflectionContext($this->serializationContext, $class);
 		$members = $this->getMembers($context);
 
 		$serializationData = [];
@@ -69,11 +69,7 @@ class MemberWalker
 
 		foreach ($members as $member)
 		{
-			$result = $member->serialize();
-			if ($result !== null)
-			{
-				$serializationData[$result->propertyName] = $result->value;
-			}
+			$member->serialize($object, $serializationData);
 		}
 
 		return $serializationData;
@@ -126,13 +122,13 @@ class MemberWalker
 		}
 
 		$class = new ReflectionClass($typeHint);
-		$members = $this->getMembers(new ClassContext($this->serializationContext, $class));
+		$members = $this->getMembers(new ReflectionContext($this->serializationContext, $class));
 
 		$instance = $class->newInstance();
 
 		foreach ($members as $member)
 		{
-			$member->deserialize($deserializedData, $instance);
+			$member->deserialize((array)$deserializedData, $instance);
 		}
 
 		return $instance;
@@ -149,23 +145,23 @@ class MemberWalker
 	}
 
 	/**
-	 * @param ClassContext $classContext
+	 * @param ReflectionContext $classContext
 	 * @return Member[]
 	 */
-	private function getMembers(ClassContext $classContext)
+	private function getMembers(ReflectionContext $classContext)
 	{
 		$members = [];
 
-		foreach ($classContext->class->getProperties(ReflectionProperty::IS_PUBLIC) as $property)
+		foreach ($classContext->reflector->getProperties(ReflectionProperty::IS_PUBLIC) as $property)
 		{
 			$members[] = new Member(
 				$this->serializationContext,
 				$classContext,
-				new MemberContext($this->serializationContext, $property)
+				new ReflectionContext($this->serializationContext, $property)
 			);
 		}
 
-		foreach ($classContext->class->getMethods(ReflectionMethod::IS_PUBLIC) as $method)
+		foreach ($classContext->reflector->getMethods(ReflectionMethod::IS_PUBLIC) as $method)
 		{
 			// Skip magic methods
 			if (strpos($method->name, '__') === 0)
@@ -176,7 +172,7 @@ class MemberWalker
 			$members[] = new Member(
 				$this->serializationContext,
 				$classContext,
-				new MemberContext($this->serializationContext, $method)
+				new ReflectionContext($this->serializationContext, $method)
 			);
 		}
 

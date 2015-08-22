@@ -5,6 +5,8 @@ namespace OneOfZero\Json\Test\FixtureClasses;
 
 
 use OneOfZero\Json\CustomConverterInterface;
+use OneOfZero\Json\Internals\DeserializationState;
+use OneOfZero\Json\Internals\SerializationState;
 
 class ClassDependentCustomConverter implements CustomConverterInterface
 {
@@ -21,10 +23,10 @@ class ClassDependentCustomConverter implements CustomConverterInterface
 	 * @param mixed $object
 	 * @param string $propertyName
 	 * @param string $propertyClass
-	 * @param mixed $objectContext
+	 * @param SerializationState $state
 	 * @return string
 	 */
-	public function serialize($object, $propertyName, $propertyClass, $objectContext)
+	public function serialize($object, $propertyName, $propertyClass, SerializationState $state)
 	{
 		if ($propertyClass === SimpleClass::class)
 		{
@@ -45,10 +47,10 @@ class ClassDependentCustomConverter implements CustomConverterInterface
 	 * @param mixed $data
 	 * @param string $propertyName
 	 * @param string $propertyClass
-	 * @param array $objectContext
+	 * @param DeserializationState $state
 	 * @return mixed
 	 */
-	public function deserialize($data, $propertyName, $propertyClass, array $objectContext)
+	public function deserialize($data, $propertyName, $propertyClass, DeserializationState $state)
 	{
 		if ($propertyClass === SimpleClass::class)
 		{

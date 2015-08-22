@@ -10,6 +10,22 @@ use OneOfZero\Json\ReferenceResolverInterface;
 interface ContainerAdapterInterface
 {
 	/**
+	 * Returns an instance for the given $id.
+	 *
+	 * @param string $id
+	 * @return mixed
+	 */
+	public function get($id);
+
+	/**
+	 * Returns whether or not the given $id is available/resolvable in the container.
+	 *
+	 * @param string $id
+	 * @return bool
+	 */
+	public function has($id);
+
+	/**
 	 * Returns an instance of the AnnotationReader class.
 	 *
 	 * @return AnnotationReader

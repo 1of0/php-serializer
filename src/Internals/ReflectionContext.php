@@ -11,13 +11,16 @@ namespace OneOfZero\Json\Internals;
 
 
 use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
+use Reflector;
 
 /**
  * Class ReflectionContext
  * @package OneOfZero\Json\Internals
  *
- * Provides a reflection context of a class, and provides helper methods to obtain the annotations of the relevant
- * class.
+ * Provides a reflection context of a class, property, or method, and provides helper methods to obtain the annotations
+ * of the relevant reflected type.
  */
 class ReflectionContext
 {
@@ -27,17 +30,31 @@ class ReflectionContext
 	use AnnotationHelperTrait;
 
 	/**
-	 * @var ReflectionClass $class
+	 * @var ReflectionClass|ReflectionProperty|ReflectionMethod $reflector
 	 */
-	public $class;
+	public $reflector;
 
 	/**
 	 * @param SerializerContext $context
-	 * @param ReflectionClass $class
+	 * @param Reflector $reflector
 	 */
-	public function __construct(SerializerContext $context, ReflectionClass $class)
+	public function __construct(SerializerContext $context, Reflector $reflector)
 	{
-		$this->class = $class;
-		$this->annotations = $context->getAnnotationReader()->getClassAnnotations($class);
+		$this->reflector = $reflector;
+
+		if ($reflector instanceof ReflectionClass)
+		{
+			$this->annotations = $context->getAnnotationReader()->getClassAnnotations($reflector);
+		}
+
+		if ($reflector instanceof ReflectionProperty)
+		{
+			$this->annotations = $context->getAnnotationReader()->getPropertyAnnotations($reflector);
+		}
+
+		if ($reflector instanceof ReflectionMethod)
+		{
+			$this->annotations = $context->getAnnotationReader()->getMethodAnnotations($reflector);
+		}
 	}
 }

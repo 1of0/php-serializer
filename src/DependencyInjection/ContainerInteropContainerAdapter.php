@@ -34,25 +34,41 @@ class ContainerInteropContainerAdapter implements ContainerAdapterInterface
 	}
 
 	/**
-	 * Manually configure the key under which the AnnotationReader instance will be found in the container.
-	 * By default, the class name will be used as key.
-	 *
-	 * @param string $key
+	 * {@inheritdoc}
 	 */
-	public function setAnnotationReaderKey($key)
+	public function get($id)
 	{
-		$this->annotationReaderKey = $key;
+		return $this->container->get($id);
 	}
 
 	/**
-	 * Manually configure the key under which the ReferenceResolverInterface instance will be found in the container.
+	 * {@inheritdoc}
+	 */
+	public function has($id)
+	{
+		return $this->container->has($id);
+	}
+
+	/**
+	 * Manually configure the ID under which the AnnotationReader instance will be found in the container.
 	 * By default, the class name will be used as key.
 	 *
-	 * @param string $key
+	 * @param string $id
 	 */
-	public function setReferenceResolverKey($key)
+	public function setAnnotationReaderId($id)
 	{
-		$this->referenceResolverKey = $key;
+		$this->annotationReaderKey = $id;
+	}
+
+	/**
+	 * Manually configure the ID under which the ReferenceResolverInterface instance will be found in the container.
+	 * By default, the class name will be used as key.
+	 *
+	 * @param string $id
+	 */
+	public function setReferenceResolverId($id)
+	{
+		$this->referenceResolverKey = $id;
 	}
 
 	/**

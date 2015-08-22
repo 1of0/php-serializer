@@ -27,48 +27,81 @@ use OneOfZero\Json\ReferableInterface;
 use ReflectionMethod;
 use ReflectionProperty;
 
-/**
- * @property SerializationContext       $context
- * @property MemberContext              $memberContext
- * @property ClassContext               $parentContext
- * @property string                     $name
- * @property bool                       $isArray
- * @property bool                       $isReference
- * @property bool                       $isIncluded
- * @property bool                       $serialize
- * @property bool                       $deserialize
- * @property CustomConverterInterface     $converter
- * @property mixed                      $value
- * @property SerializedMember           $serializedMember
- */
 class Member
 {
 	const TYPE_PROPERTY = 0;
 	const TYPE_METHOD = 1;
 
+	/**
+	 * @var SerializerContext $context
+	 */
 	private $context;
+
+	/**
+	 * @var ReflectionContext $memberContext
+	 */
 	private $memberContext;
+
+	/**
+	 * @var ReflectionContext $parentContext
+	 */
 	private $parentContext;
+
+	/**
+	 * @var string $name
+	 */
 	private $name;
+
+	/**
+	 * @var bool $isArray
+	 */
 	private $isArray = false;
+
+	/**
+	 * @var bool $isReference
+	 */
 	private $isReference = false;
+
+	/**
+	 * @var bool $isIncluded
+	 */
 	private $isIncluded = true;
+
+	/**
+	 * @var bool $serialize
+	 */
 	private $serialize = true;
+
+	/**
+	 * @var bool $deserialize
+	 */
 	private $deserialize = true;
+
+	/**
+	 * @var CustomConverterInterface $converter
+	 */
 	private $converter;
+
+	/**
+	 * @var mixed $value
+	 */
 	private $value;
+
+	/**
+	 * @var SerializedMember $serializedMember
+	 */
 	private $serializedMember;
 
 	/**
-	 * @param SerializationContext $context
-	 * @param ClassContext $parentContext
-	 * @param MemberContext $memberContext
+	 * @param SerializerContext $context
+	 * @param ReflectionContext $parentContext
+	 * @param ReflectionContext $memberContext
 	 */
-	public function __construct(SerializationContext $context, ClassContext $parentContext,
-	                            MemberContext $memberContext)
+	public function __construct(SerializerContext $context, ReflectionContext $parentContext,
+	                            ReflectionContext $memberContext)
 	{
 		$this->context = $context;
-		$this->name = $memberContext->member->name;
+		$this->name = $memberContext->reflector->name;
 		$this->parentContext = $parentContext;
 		$this->memberContext = $memberContext;
 		$this->serializedMember = new SerializedMember($this->name);
@@ -78,21 +111,27 @@ class Member
 		$this->determineInclusion();
 		$this->determineSerializationSupport();
 		$this->determinePropertyName();
-		$this->determineValue();
 		$this->detectCustomConverter();
 	}
 
-	public function serialize()
+	/**
+	 * @param object $parentInstance
+	 * @param array $serializedParent
+	 * @throws SerializationException
+	 */
+	public function serialize($parentInstance, array &$serializedParent)
 	{
 		if (!$this->isIncluded || !$this->serialize)
 		{
-			return null;
+			return;
 		}
 
 		if ($this->isMethod() && !$this->hasAnnotation(Getter::class))
 		{
-			return null;
+			return;
 		}
+
+		$this->loadValue($parentInstance);
 
 		$value = null;
 		$valueSet = false;
@@ -103,7 +142,7 @@ class Member
 				$this->value,
 				$this->serializedMember->propertyName,
 				$this->getType(),
-				$this->parentContext->instance
+				new SerializationState($parentInstance, $serializedParent)
 			);
 			$valueSet = true;
 		}
@@ -121,16 +160,21 @@ class Member
 
 		if (!$this->context->getConfiguration()->includeNullValues && $value === null)
 		{
-			return null;
+			return;
 		}
 
 		$value = $this->context->getMemberWalker()->serialize($value);
 		$this->serializedMember->value = $value;
 
-		return $this->serializedMember;
+		$serializedParent[$this->serializedMember->propertyName] = $this->serializedMember->value;
 	}
 
-	public function deserialize($serializedData, $instance)
+	/**
+	 * @param array $serializedParent
+	 * @param object $parentInstance
+	 * @throws SerializationException
+	 */
+	public function deserialize(array $serializedParent, $parentInstance)
 	{
 		if (!$this->isIncluded || !$this->deserialize)
 		{
@@ -143,47 +187,34 @@ class Member
 		}
 
 		$propertyName = $this->serializedMember->propertyName;
-		if (!array_key_exists($propertyName, $serializedData))
+		if (!array_key_exists($propertyName, $serializedParent))
 		{
 			return;
 		}
 
-		$arrayData = (array)$serializedData;
-		$this->serializedMember->value = $arrayData[$propertyName];
+		$this->serializedMember->value = $serializedParent[$propertyName];
 
 		if ($this->converter && $this->converter->canConvert($this->getType()))
 		{
-			$this->setInstanceValue($instance, $this->converter->deserialize(
+			$this->setValue($parentInstance, $this->converter->deserialize(
 				$this->serializedMember->value,
 				$this->serializedMember->propertyName,
 				$this->getType(),
-				$arrayData
+				new DeserializationState($serializedParent, $parentInstance)
 			));
 			return;
 		}
 
 		if ($this->isReference)
 		{
-			$this->setInstanceValue($instance, $this->resolveReference());
+			$this->setValue($parentInstance, $this->resolveReference());
 			return;
 		}
 
 		$value = $this->serializedMember->value;
 		$value = $this->context->getMemberWalker()->deserialize($value, $this->getType());
 
-		$this->setInstanceValue($instance, $value);
-	}
-
-	private function setInstanceValue($instance, $value)
-	{
-		if ($this->isProperty())
-		{
-			$this->memberContext->member->setValue($instance, $value);
-		}
-		else
-		{
-			$this->memberContext->member->invoke($instance, $value);
-		}
+		$this->setValue($parentInstance, $value);
 	}
 
 	/**
@@ -200,7 +231,7 @@ class Member
 		if (!($this->value instanceof ReferableInterface))
 		{
 			throw new SerializationException(
-				"Property {$this->name} in class {$this->parentContext->class->name} is marked as a reference, but " .
+				"Property {$this->name} in class {$this->parentContext->reflector->name} is marked as a reference, but " .
 				"does not implement ReferableInterface"
 			);
 		}
@@ -232,7 +263,7 @@ class Member
 		if ($referenceId === null)
 		{
 			throw new SerializationException(
-				"Property {$this->name} in class {$this->parentContext->class->name} is marked as a reference, but " .
+				"Property {$this->name} in class {$this->parentContext->reflector->name} is marked as a reference, but " .
 				"the serialized data does not contain a valid reference"
 			);
 		}
@@ -258,7 +289,7 @@ class Member
 		if ($this->getType() === null)
 		{
 			throw new SerializationException(
-				"Property {$this->name} in class {$this->parentContext->class->name} is marked as a reference, but " .
+				"Property {$this->name} in class {$this->parentContext->reflector->name} is marked as a reference, but " .
 				"does not specify or imply a valid type"
 			);
 		}
@@ -324,23 +355,43 @@ class Member
 	}
 
 	/**
-	 * Determine the initial value (if an instance was provided in the parent context).
+	 * Load the value for this member given the $parentInstance
+	 *
+	 * @param object $parentInstance
 	 */
-	private function determineValue()
+	private function loadValue($parentInstance)
 	{
-		if ($this->parentContext->instance === null)
+		if ($parentInstance === null)
 		{
 			return;
 		}
 
 		if ($this->isProperty())
 		{
-			$this->value = $this->memberContext->member->getValue($this->parentContext->instance);
+			$this->value = $this->memberContext->reflector->getValue($parentInstance);
 		}
 
 		if ($this->isMethod() && $this->hasAnnotation(Getter::class))
 		{
-			$this->value = $this->memberContext->member->invoke($this->parentContext->instance);
+			$this->value = $this->memberContext->reflector->invoke($parentInstance);
+		}
+	}
+
+	/**
+	 * Set the value for this member given the $instance and the $value
+	 *
+	 * @param object $instance
+	 * @param mixed $value
+	 */
+	private function setValue($instance, $value)
+	{
+		if ($this->isProperty())
+		{
+			$this->memberContext->reflector->setValue($instance, $value);
+		}
+		else
+		{
+			$this->memberContext->reflector->invoke($instance, $value);
 		}
 	}
 
@@ -353,7 +404,18 @@ class Member
 		if ($converterAnnotation)
 		{
 			$converterClass = $converterAnnotation->value;
-			$this->converter = new $converterClass();
+
+			if ($this->context->getContainer() && $this->context->getContainer()->has($converterClass))
+			{
+				// Use converter instance from container, if available
+				$this->converter = $this->context->getContainer()->get($converterClass);
+			}
+			else
+			{
+				// Otherwise manually instantiate
+				// TODO: Check if class has public constructor (or no constructor)
+				$this->converter = new $converterClass();
+			}
 		}
 	}
 
@@ -391,7 +453,7 @@ class Member
 	 */
 	private function isProperty()
 	{
-		return $this->memberContext->member instanceof ReflectionProperty;
+		return $this->memberContext->reflector instanceof ReflectionProperty;
 	}
 
 	/**
@@ -399,7 +461,7 @@ class Member
 	 */
 	private function isMethod()
 	{
-		return $this->memberContext->member instanceof ReflectionMethod;
+		return $this->memberContext->reflector instanceof ReflectionMethod;
 	}
 
 	/**

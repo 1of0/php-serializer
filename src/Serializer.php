@@ -12,7 +12,7 @@ namespace OneOfZero\Json;
 
 use OneOfZero\Json\DependencyInjection\ContainerAdapterInterface;
 use OneOfZero\Json\Internals\MemberWalker;
-use OneOfZero\Json\Internals\SerializationContext;
+use OneOfZero\Json\Internals\SerializerContext;
 
 class Serializer
 {
@@ -34,7 +34,7 @@ class Serializer
 	}
 
 	/**
-	 * @var SerializationContext $context
+	 * @var SerializerContext $context
 	 */
 	private $context;
 
@@ -44,7 +44,7 @@ class Serializer
 	 */
 	public function __construct(ContainerAdapterInterface $containerAdapter = null, Configuration $configuration = null)
 	{
-		$this->context = new SerializationContext();
+		$this->context = new SerializerContext();
 		$this->context->setSerializer($this);
 		$this->context->setConfiguration($configuration ? $configuration : new Configuration());
 		$this->context->setContainer($containerAdapter);

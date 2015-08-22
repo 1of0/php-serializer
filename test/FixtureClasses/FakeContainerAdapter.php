@@ -39,4 +39,26 @@ class FakeContainerAdapter implements ContainerAdapterInterface
 	{
 		return $this->referenceResolver;
 	}
+
+	/**
+	 * Returns an instance for the given $key.
+	 *
+	 * @param string $id
+	 * @return mixed
+	 */
+	public function get($id)
+	{
+		return class_exists($id) ? new $id() : null;
+	}
+
+	/**
+	 * Returns whether or not the given $id is available/resolvable in the container.
+	 *
+	 * @param string $id
+	 * @return bool
+	 */
+	public function has($id)
+	{
+		return class_exists($id);
+	}
 }
