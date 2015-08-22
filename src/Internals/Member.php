@@ -104,7 +104,7 @@ class Member
 		$this->name = $memberContext->reflector->name;
 		$this->parentContext = $parentContext;
 		$this->memberContext = $memberContext;
-		$this->serializedMember = new SerializedMember($this->name);
+		$this->serializedMember = new SerializedMember();
 		$this->isArray = $this->hasAnnotation(IsArray::class);
 		$this->isReference = $this->hasAnnotation(IsReference::class);
 
@@ -343,15 +343,25 @@ class Member
 	 */
 	private function determinePropertyName()
 	{
-		// @Property, @Getter, and @Setter extend AbstractName and may provide a custom name
-
 		/** @var AbstractName $nameAnnotation */
-		$nameAnnotation = $this->getAnnotation(AbstractName::class);
 
-		if ($nameAnnotation)
+		// By default assume the member's name
+		$name = $this->name;
+
+		// But trim, get, set, and is if the member is a getter or setter
+		if ($this->isGetter() || $this->isSetter())
 		{
-			$this->serializedMember->propertyName = $nameAnnotation->name;
+			$name = lcfirst(preg_replace('/^(get|set|is)/', '', $name));
 		}
+
+		// @Property, @Getter, and @Setter extend AbstractName and may provide a custom name
+		$nameAnnotation = $this->getAnnotation(AbstractName::class);
+		if ($nameAnnotation && $nameAnnotation->name)
+		{
+			$name = $nameAnnotation->name;
+		}
+
+		$this->serializedMember->propertyName = $name;
 	}
 
 	/**
@@ -462,6 +472,28 @@ class Member
 	private function isMethod()
 	{
 		return $this->memberContext->reflector instanceof ReflectionMethod;
+	}
+
+	/**
+	 * @return bool
+	 */
+	private function isGetter()
+	{
+		return $this->isMethod()
+			&& $this->hasAnnotation(Getter::class)
+			&& $this->memberContext->reflector->getNumberOfRequiredParameters() == 0
+		;
+	}
+
+	/**
+	 * @return bool
+	 */
+	private function isSetter()
+	{
+		return $this->isMethod()
+			&& $this->hasAnnotation(Setter::class)
+			&& $this->memberContext->reflector->getNumberOfRequiredParameters() == 1
+		;
 	}
 
 	/**

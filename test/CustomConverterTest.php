@@ -23,7 +23,8 @@ class CustomConverterTests extends AbstractTest
 			'referableClass' => 1337,
 			'foo' => 877,
 			'bar' => 1123,
-			'contextSensitive' => 1337 * 2
+			'contextSensitive' => 1337 * 2,
+			'privateDateObject' => $date->getTimestamp()
 		]);
 
 		$object = new ClassUsingCustomConverters();
@@ -33,6 +34,7 @@ class CustomConverterTests extends AbstractTest
 		$object->foo = 123;
 		$object->bar = 123;
 		$object->contextSensitive = 2;
+		$object->setPrivateDateObject($date);
 
 		$json = JsonConvert::toJson($object);
 		$this->assertEquals($expectedJson, $json);
