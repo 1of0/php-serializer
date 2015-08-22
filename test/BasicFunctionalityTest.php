@@ -9,6 +9,7 @@ use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
 use OneOfZero\Json\Test\Traits\AssertObjectEqualsTrait;
 use OneOfZero\Json\Test\Traits\AssertSequenceEqualsTrait;
 use PHPUnit_Framework_TestCase;
+use stdClass;
 
 class BasicFunctionalityTest extends AbstractTest
 {
@@ -38,10 +39,22 @@ class BasicFunctionalityTest extends AbstractTest
 		$this->assertEquals($expectedJson, $json);
 
 		$deserialized = Serializer::get()->deserialize($json);
-
 		$this->assertObjectEquals($object, $deserialized);
-		/*$this->assertEquals($object->foo, $deserialized->foo);
-		$this->assertEquals($object->bar, $deserialized->bar);*/
+	}
+
+	public function testStdClass()
+	{
+		$object = new stdClass();
+		$object->foo = '1234';
+		$object->bar = 'abcd';
+
+		$expectedJson = json_encode($object);
+
+		$json = Serializer::get()->serialize($object);
+		$this->assertEquals($expectedJson, $json);
+
+		$deserialized = Serializer::get()->deserialize($json);
+		$this->assertObjectEquals($object, $deserialized);
 	}
 
 	public function testObjectArray()
@@ -60,11 +73,6 @@ class BasicFunctionalityTest extends AbstractTest
 		$this->assertEquals($expectedJson, $json);
 
 		$deserialized = Serializer::get()->deserialize($json);
-
 		$this->assertSequenceEquals($array, $deserialized);
-		/*$this->assertEquals($array[0]->foo, $deserialized[0]->foo);
-		$this->assertEquals($array[0]->bar, $deserialized[0]->bar);
-		$this->assertEquals($array[1]->foo, $deserialized[1]->foo);
-		$this->assertEquals($array[1]->bar, $deserialized[1]->bar);*/
 	}
 }

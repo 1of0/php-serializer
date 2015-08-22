@@ -39,7 +39,7 @@ class MemberWalker
 
 		if (is_array($data) || $data instanceof stdClass)
 		{
-			return $this->serializeArray($data);
+			return $this->serializeArray((array)$data);
 		}
 
 		if (is_object($data))
