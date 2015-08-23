@@ -309,6 +309,12 @@ class Member
 		// When @ExplicitInclusion is defined on the parent class, by default members are not included
 		$this->isIncluded = !$this->parentContext->hasAnnotation(ExplicitInclusion::class);
 
+		// If the member is not public, it will be excluded by default
+		if (!$this->memberContext->reflector->isPublic())
+		{
+			$this->isIncluded = false;
+		}
+
 		// @Property, @Getter, and @Setter mark inclusion, even when @ExplicitInclusion is defined on the parent class
 		if ($this->hasAnnotation(AbstractName::class))
 		{
@@ -403,6 +409,9 @@ class Member
 			return;
 		}
 
+		$isPublic = $this->memberContext->reflector->isPublic();
+		$this->memberContext->reflector->setAccessible(true);
+
 		if ($this->isProperty())
 		{
 			$this->value = $this->memberContext->reflector->getValue($parentInstance);
@@ -411,6 +420,11 @@ class Member
 		if ($this->isGetter())
 		{
 			$this->value = $this->memberContext->reflector->invoke($parentInstance);
+		}
+
+		if (!$isPublic)
+		{
+			$this->memberContext->reflector->setAccessible(false);
 		}
 	}
 
@@ -427,6 +441,9 @@ class Member
 			return;
 		}
 
+		$isPublic = $this->memberContext->reflector->isPublic();
+		$this->memberContext->reflector->setAccessible(true);
+
 		if ($this->isProperty())
 		{
 			$this->memberContext->reflector->setValue($instance, $value);
@@ -435,6 +452,11 @@ class Member
 		if ($this->isSetter())
 		{
 			$this->memberContext->reflector->invoke($instance, $value);
+		}
+
+		if (!$isPublic)
+		{
+			$this->memberContext->reflector->setAccessible(false);
 		}
 	}
 

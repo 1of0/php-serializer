@@ -152,7 +152,7 @@ class MemberWalker
 	{
 		$members = [];
 
-		foreach ($classContext->reflector->getProperties(ReflectionProperty::IS_PUBLIC) as $property)
+		foreach ($classContext->reflector->getProperties() as $property)
 		{
 			$members[] = new Member(
 				$this->serializationContext,
@@ -161,7 +161,7 @@ class MemberWalker
 			);
 		}
 
-		foreach ($classContext->reflector->getMethods(ReflectionMethod::IS_PUBLIC) as $method)
+		foreach ($classContext->reflector->getMethods() as $method)
 		{
 			// Skip magic methods
 			if (strpos($method->name, '__') === 0)
