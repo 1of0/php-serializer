@@ -12,6 +12,9 @@ namespace OneOfZero\Json;
 
 class Configuration
 {
+	const RESOLVE_LAZY = 0;
+	const RESOLVE_EAGER = 1;
+
 	/**
 	 * @var bool $prettyPrint
 	 */
@@ -26,4 +29,9 @@ class Configuration
 	 * @var int $maxDepth
 	 */
 	public $maxDepth = 32;
+
+	/**
+	 * @var int $defaultResolutionType
+	 */
+	public $defaultResolutionType = self::RESOLVE_LAZY;
 }

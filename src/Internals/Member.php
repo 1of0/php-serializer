@@ -21,6 +21,7 @@ use OneOfZero\Json\Annotations\IsReference;
 use OneOfZero\Json\Annotations\Property;
 use OneOfZero\Json\Annotations\Setter;
 use OneOfZero\Json\Annotations\Type;
+use OneOfZero\Json\Configuration;
 use OneOfZero\Json\Exceptions\SerializationException;
 use OneOfZero\Json\CustomConverterInterface;
 use OneOfZero\Json\ReferableInterface;
@@ -68,6 +69,11 @@ class Member
 	private $isIncluded = true;
 
 	/**
+	 * @var bool $lazyResolution
+	 */
+	private $lazyResolution = true;
+
+	/**
 	 * @var bool $serialize
 	 */
 	private $serialize = true;
@@ -106,9 +112,9 @@ class Member
 		$this->memberContext = $memberContext;
 		$this->serializedMember = new SerializedMember();
 		$this->isArray = $this->hasAnnotation(IsArray::class);
-		$this->isReference = $this->hasAnnotation(IsReference::class);
 
 		$this->determineInclusion();
+		$this->determineReferenceConfiguration();
 		$this->determineSerializationSupport();
 		$this->determinePropertyName();
 		$this->detectCustomConverter();
@@ -275,7 +281,7 @@ class Member
 		}
 
 		// Resolve reference
-		$object = $this->context->getReferenceResolver()->resolve($referenceClass, $referenceId);
+		$object = $this->context->getReferenceResolver()->resolve($referenceClass, $referenceId, $this->lazyResolution);
 
 		return $object;
 	}
@@ -313,6 +319,27 @@ class Member
 		if ($this->hasAnnotation(Ignore::class))
 		{
 			$this->isIncluded = false;
+		}
+	}
+
+	/**
+	 * Determine whether or not the member is marked as a reference, and determine the reference resolution type.
+	 */
+	private function determineReferenceConfiguration()
+	{
+		$referenceAnnotation = $this->getAnnotation(IsReference::class);
+
+		$this->isReference = (bool)$referenceAnnotation;
+
+		if ($referenceAnnotation && $referenceAnnotation->value !== null)
+		{
+			$this->lazyResolution = $referenceAnnotation->value;
+		}
+		else
+		{
+			$this->lazyResolution =
+				($this->context->getConfiguration()->defaultResolutionType === Configuration::RESOLVE_LAZY)
+			;
 		}
 	}
 

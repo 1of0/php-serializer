@@ -12,9 +12,10 @@ class ReferableClassResolver implements ReferenceResolverInterface
 	/**
 	 * @param string $referenceClass
 	 * @param mixed $referenceId
+	 * @param bool $lazy
 	 * @return ReferableInterface
 	 */
-	public function resolve($referenceClass, $referenceId)
+	public function resolve($referenceClass, $referenceId, $lazy = true)
 	{
 		if ($referenceClass === ReferableClass::class)
 		{
