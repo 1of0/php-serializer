@@ -111,7 +111,7 @@ class MemberWalker
 
 	private function deserializeMembers($deserializedData, $typeHint = null)
 	{
-		if (Metadata::contains($deserializedData, Metadata::TYPE))
+		if (!$typeHint && Metadata::contains($deserializedData, Metadata::TYPE))
 		{
 			$typeHint = Metadata::get($deserializedData, Metadata::TYPE);
 		}
