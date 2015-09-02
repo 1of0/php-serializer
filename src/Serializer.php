@@ -77,6 +77,16 @@ class Serializer
 		return $deserializedData;
 	}
 
+	/**
+	 * @param object $instance
+	 * @param string $type
+	 * @return object
+	 */
+	public function ghettoCast($instance, $type)
+	{
+		return $this->deserialize($this->serialize($instance), $type);
+	}
+
 	private function jsonEncode($data)
 	{
 		$options = 0;
