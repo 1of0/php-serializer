@@ -4,11 +4,11 @@
 namespace OneOfZero\Json\Test\FixtureClasses;
 
 
-use OneOfZero\Json\CustomConverterInterface;
+use OneOfZero\Json\CustomMemberConverterInterface;
 use OneOfZero\Json\Internals\DeserializationState;
 use OneOfZero\Json\Internals\SerializationState;
 
-class PropertyDependentCustomConverter implements CustomConverterInterface
+class PropertyDependentCustomConverter implements CustomMemberConverterInterface
 {
 	/**
 	 * @param string $class
@@ -21,19 +21,19 @@ class PropertyDependentCustomConverter implements CustomConverterInterface
 
 	/**
 	 * @param mixed $object
-	 * @param string $propertyName
-	 * @param string $propertyClass
-	 * @param SerializationState $state
+	 * @param string $memberName
+	 * @param string $memberClass
+	 * @param SerializationState $parent
 	 * @return string
 	 */
-	public function serialize($object, $propertyName, $propertyClass, SerializationState $state)
+	public function serialize($object, $memberName, $memberClass, SerializationState $parent)
 	{
-		if ($propertyName === 'foo')
+		if ($memberName === 'foo')
 		{
 			return 1000 - $object;
 		}
 
-		if ($propertyName === 'bar')
+		if ($memberName === 'bar')
 		{
 			return 1000 + $object;
 		}
@@ -43,19 +43,19 @@ class PropertyDependentCustomConverter implements CustomConverterInterface
 
 	/**
 	 * @param mixed $data
-	 * @param string $propertyName
-	 * @param string $propertyClass
-	 * @param DeserializationState $state
+	 * @param string $memberName
+	 * @param string $memberClass
+	 * @param DeserializationState $parent
 	 * @return mixed
 	 */
-	public function deserialize($data, $propertyName, $propertyClass, DeserializationState $state)
+	public function deserialize($data, $memberName, $memberClass, DeserializationState $parent)
 	{
-		if ($propertyName === 'foo')
+		if ($memberName === 'foo')
 		{
 			return 1000 - $data;
 		}
 
-		if ($propertyName === 'bar')
+		if ($memberName === 'bar')
 		{
 			return $data - 1000;
 		}

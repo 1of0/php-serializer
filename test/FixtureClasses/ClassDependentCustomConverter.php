@@ -4,11 +4,11 @@
 namespace OneOfZero\Json\Test\FixtureClasses;
 
 
-use OneOfZero\Json\CustomConverterInterface;
+use OneOfZero\Json\CustomMemberConverterInterface;
 use OneOfZero\Json\Internals\DeserializationState;
 use OneOfZero\Json\Internals\SerializationState;
 
-class ClassDependentCustomConverter implements CustomConverterInterface
+class ClassDependentCustomConverter implements CustomMemberConverterInterface
 {
 	/**
 	 * @param string $class
@@ -21,20 +21,20 @@ class ClassDependentCustomConverter implements CustomConverterInterface
 
 	/**
 	 * @param mixed $object
-	 * @param string $propertyName
-	 * @param string $propertyClass
-	 * @param SerializationState $state
+	 * @param string $memberName
+	 * @param string $memberClass
+	 * @param SerializationState $parent
 	 * @return string
 	 */
-	public function serialize($object, $propertyName, $propertyClass, SerializationState $state)
+	public function serialize($object, $memberName, $memberClass, SerializationState $parent)
 	{
-		if ($propertyClass === SimpleClass::class)
+		if ($memberClass === SimpleClass::class)
 		{
 			/** @var SimpleClass $object */
 			return implode('|', [ $object->foo, $object->bar ]);
 		}
 
-		if ($propertyClass === ReferableClass::class)
+		if ($memberClass === ReferableClass::class)
 		{
 			/** @var ReferableClass $object */
 			return $object->getId();
@@ -45,20 +45,20 @@ class ClassDependentCustomConverter implements CustomConverterInterface
 
 	/**
 	 * @param mixed $data
-	 * @param string $propertyName
-	 * @param string $propertyClass
-	 * @param DeserializationState $state
+	 * @param string $memberName
+	 * @param string $memberClass
+	 * @param DeserializationState $parent
 	 * @return mixed
 	 */
-	public function deserialize($data, $propertyName, $propertyClass, DeserializationState $state)
+	public function deserialize($data, $memberName, $memberClass, DeserializationState $parent)
 	{
-		if ($propertyClass === SimpleClass::class)
+		if ($memberClass === SimpleClass::class)
 		{
 			$pieces = explode('|', $data);
 			return new SimpleClass($pieces[0], $pieces[1]);
 		}
 
-		if ($propertyClass === ReferableClass::class)
+		if ($memberClass === ReferableClass::class)
 		{
 			return new ReferableClass($data);
 		}

@@ -7,22 +7,22 @@ namespace OneOfZero\Json\Internals;
 class DeserializationState
 {
 	/**
-	 * @var array $serializedParentState
+	 * @var array $serializedState
 	 */
-	public $serializedParentState;
+	public $serializedState;
 
 	/**
 	 * @var object $parentObject
 	 */
-	public $deserializedParentState;
+	public $deserializedState;
 
 	/**
-	 * @param array $serializedParentState
-	 * @param object $deserializedParentState
+	 * @param array $serializedState
+	 * @param object $deserializedState
 	 */
-	public function __construct(array $serializedParentState, $deserializedParentState)
+	public function __construct(array $serializedState, $deserializedState)
 	{
-		$this->serializedParentState = $serializedParentState;
-		$this->deserializedParentState = $deserializedParentState;
+		$this->serializedState = $serializedState;
+		$this->deserializedState = $deserializedState;
 	}
 }

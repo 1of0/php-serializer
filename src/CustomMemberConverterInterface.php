@@ -13,7 +13,7 @@ namespace OneOfZero\Json;
 use OneOfZero\Json\Internals\DeserializationState;
 use OneOfZero\Json\Internals\SerializationState;
 
-interface CustomConverterInterface
+interface CustomMemberConverterInterface
 {
 	/**
 	 * @param string $class
@@ -23,19 +23,19 @@ interface CustomConverterInterface
 
 	/**
 	 * @param mixed $object
-	 * @param string $propertyName
-	 * @param string $propertyClass
-	 * @param SerializationState $state
+	 * @param string $memberName
+	 * @param string $memberClass
+	 * @param SerializationState $parent
 	 * @return string
 	 */
-	public function serialize($object, $propertyName, $propertyClass, SerializationState $state);
+	public function serialize($object, $memberName, $memberClass, SerializationState $parent);
 
 	/**
 	 * @param mixed $data
-	 * @param string $propertyName
-	 * @param string $propertyClass
-	 * @param DeserializationState $state
+	 * @param string $memberName
+	 * @param string $memberClass
+	 * @param DeserializationState $parent
 	 * @return mixed
 	 */
-	public function deserialize($data, $propertyName, $propertyClass, DeserializationState $state);
+	public function deserialize($data, $memberName, $memberClass, DeserializationState $parent);
 }

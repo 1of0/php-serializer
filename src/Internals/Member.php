@@ -23,7 +23,7 @@ use OneOfZero\Json\Annotations\Setter;
 use OneOfZero\Json\Annotations\Type;
 use OneOfZero\Json\Configuration;
 use OneOfZero\Json\Exceptions\SerializationException;
-use OneOfZero\Json\CustomConverterInterface;
+use OneOfZero\Json\CustomMemberConverterInterface;
 use OneOfZero\Json\ReferableInterface;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -84,7 +84,7 @@ class Member
 	private $deserialize = true;
 
 	/**
-	 * @var CustomConverterInterface $converter
+	 * @var CustomMemberConverterInterface $converter
 	 */
 	private $converter;
 
@@ -468,19 +468,7 @@ class Member
 		$converterAnnotation = $this->getAnnotation(CustomConverter::class);
 		if ($converterAnnotation)
 		{
-			$converterClass = $converterAnnotation->value;
-
-			if ($this->context->getContainer() && $this->context->getContainer()->has($converterClass))
-			{
-				// Use converter instance from container, if available
-				$this->converter = $this->context->getContainer()->get($converterClass);
-			}
-			else
-			{
-				// Otherwise manually instantiate
-				// TODO: Check if class has public constructor (or no constructor)
-				$this->converter = new $converterClass();
-			}
+			$this->converter = $this->context->getInstance($converterAnnotation->value);
 		}
 	}
 

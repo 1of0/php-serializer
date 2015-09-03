@@ -9,10 +9,11 @@
 
 namespace OneOfZero\Json\Internals;
 
+use OneOfZero\Json\Annotations\CustomConverter;
 use OneOfZero\Json\Annotations\NoMetadata;
+use OneOfZero\Json\CustomObjectConverterInterface;
+use OneOfZero\Json\Exceptions\SerializationException;
 use ReflectionClass;
-use ReflectionMethod;
-use ReflectionProperty;
 use stdClass;
 
 class MemberWalker
@@ -30,6 +31,11 @@ class MemberWalker
 		$this->serializationContext = $context;
 	}
 
+	/**
+	 * @param mixed $data
+	 * @return array|mixed|null
+	 * @throws SerializationException
+	 */
 	public function serialize($data)
 	{
 		if ($data === null)
@@ -40,6 +46,19 @@ class MemberWalker
 		if (is_array($data) || $data instanceof stdClass)
 		{
 			return $this->serializeArray((array)$data);
+		}
+
+		$class = $this->getSerializingClass($data);
+		$customConverter = $this->getClassCustomConverter($class, false);
+
+		if ($customConverter)
+		{
+			$serializationData = $customConverter->serialize($data, $class->name);
+			if (is_array($serializationData) && !$this->hasNoMetaDataAnnotation($class))
+			{
+				Metadata::set($serializationData, Metadata::TYPE, $class->name);
+			}
+			return $serializationData;
 		}
 
 		if (is_object($data))
@@ -89,11 +108,25 @@ class MemberWalker
 		return $result;
 	}
 
+	/**
+	 * @param mixed $deserializedData
+	 * @param string|null $typeHint
+	 * @return array|null|object
+	 * @throws SerializationException
+	 */
 	public function deserialize($deserializedData, $typeHint = null)
 	{
 		if ($deserializedData === null)
 		{
 			return null;
+		}
+
+		$class = $this->getDeserializingClass($deserializedData, $typeHint);
+		$customConverter = $this->getClassCustomConverter($class, false);
+
+		if ($customConverter)
+		{
+			return $customConverter->deserialize((array)$deserializedData, $class->name);
 		}
 
 		if (is_array($deserializedData))
@@ -109,6 +142,11 @@ class MemberWalker
 		return $deserializedData;
 	}
 
+	/**
+	 * @param mixed $deserializedData
+	 * @param string|null $typeHint
+	 * @return object
+	 */
 	private function deserializeMembers($deserializedData, $typeHint = null)
 	{
 		if (!$typeHint && Metadata::contains($deserializedData, Metadata::TYPE))
@@ -122,9 +160,9 @@ class MemberWalker
 		}
 
 		$class = new ReflectionClass($typeHint);
-		$members = $this->getMembers(new ReflectionContext($this->serializationContext, $class));
-
 		$instance = $class->newInstance();
+
+		$members = $this->getMembers(new ReflectionContext($this->serializationContext, $class));
 
 		foreach ($members as $member)
 		{
@@ -134,6 +172,10 @@ class MemberWalker
 		return $instance;
 	}
 
+	/**
+	 * @param mixed $deserializedData
+	 * @return array
+	 */
 	private function deserializeArray($deserializedData)
 	{
 		$result = [];
@@ -142,6 +184,73 @@ class MemberWalker
 			$result[$key] = $this->deserialize($item);
 		}
 		return $result;
+	}
+
+	/**
+	 * @param mixed $data
+	 * @return ReflectionClass|null
+	 */
+	private function getSerializingClass($data)
+	{
+		return is_object($data) ? new ReflectionClass($data) : null;
+	}
+
+	/**
+	 * @param mixed $data
+	 * @param string|null $typeHint
+	 * @return ReflectionClass|null
+	 */
+	private function getDeserializingClass($data, $typeHint)
+	{
+		if (!$typeHint && Metadata::contains($data, Metadata::TYPE))
+		{
+			$typeHint = Metadata::get($data, Metadata::TYPE);
+		}
+
+		return $typeHint ? new ReflectionClass($typeHint) : null;
+	}
+
+	private function hasNoMetaDataAnnotation(ReflectionClass $class)
+	{
+		return (bool)$this->serializationContext->getAnnotationReader()->getClassAnnotation($class, NoMetadata::class);
+	}
+
+	/**
+	 * @param ReflectionClass $class
+	 * @param bool $isSerializing
+	 * @return null|CustomObjectConverterInterface
+	 * @throws SerializationException
+	 */
+	private function getClassCustomConverter(ReflectionClass $class = null, $isSerializing = true)
+	{
+		/** @var CustomConverter $annotation */
+		/** @var CustomObjectConverterInterface $converter */
+
+		if (!$class)
+		{
+			return null;
+		}
+
+		$annotationReader = $this->serializationContext->getAnnotationReader();
+		$annotation = $annotationReader->getClassAnnotation($class, CustomConverter::class);
+		if ($annotation)
+		{
+			if (($annotation->serialize && $isSerializing) || ($annotation->deserialize && !$isSerializing))
+			{
+				$converter = $this->serializationContext->getInstance($annotation->value);
+
+				if (!($converter instanceof CustomObjectConverterInterface))
+				{
+					throw new SerializationException('Converters that operate at class level must implement the CustomObjectConverterInterface interface');
+				}
+
+				if ($converter->canConvert($class->name))
+				{
+					return $converter;
+				}
+			}
+		}
+		return null;
 	}
 
 	/**

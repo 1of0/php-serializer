@@ -139,4 +139,28 @@ class SerializerContext
 	{
 		$this->memberWalker = $memberWalker;
 	}
+
+	/**
+	 * @param $class
+	 * @return object
+	 */
+	public function getInstance($class)
+	{
+		if (!class_exists($class))
+		{
+			return null;
+		}
+
+		if ($this->container && $this->container->has($class))
+		{
+			// Use instance from container, if available
+			return $this->container->get($class);
+		}
+		else
+		{
+			// Otherwise manually instantiate
+			// TODO: Check if class has public constructor (or no constructor)
+			return new $class();
+		}
+	}
 }

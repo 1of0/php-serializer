@@ -15,11 +15,11 @@ class ReferencePropertyTest extends PHPUnit_Framework_TestCase
 	public function testReference()
 	{
 		$expectedJson = json_encode([
-			'@class' => 'OneOfZero\\Json\\Test\\FixtureClasses\\ClassReferencingReferableClass',
+			'@class' => ClassReferencingReferableClass::class,
 			'foo' => 'String value',
 			'bar' => 1.337,
 			'reference' => [
-				'@class' => 'OneOfZero\\Json\\Test\\FixtureClasses\\ReferableClass',
+				'@class' => ReferableClass::class,
 				'id' => 9001
 			]
 		]);

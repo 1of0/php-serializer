@@ -4,11 +4,11 @@
 namespace OneOfZero\Json\Test\FixtureClasses;
 
 
-use OneOfZero\Json\CustomConverterInterface;
+use OneOfZero\Json\CustomMemberConverterInterface;
 use OneOfZero\Json\Internals\DeserializationState;
 use OneOfZero\Json\Internals\SerializationState;
 
-class ContextSensitiveCustomConverter implements CustomConverterInterface
+class ContextSensitiveCustomConverter implements CustomMemberConverterInterface
 {
 	/**
 	 * @param string $class
@@ -21,30 +21,30 @@ class ContextSensitiveCustomConverter implements CustomConverterInterface
 
 	/**
 	 * @param mixed $object
-	 * @param string $propertyName
-	 * @param string $propertyClass
-	 * @param SerializationState $state
+	 * @param string $memberName
+	 * @param string $memberClass
+	 * @param SerializationState $parent
 	 * @return string
 	 */
-	public function serialize($object, $propertyName, $propertyClass, SerializationState $state)
+	public function serialize($object, $memberName, $memberClass, SerializationState $parent)
 	{
 		/** @var ClassUsingCustomConverters $parentInstance */
-		$parentInstance = $state->parentObject;
+		$parentInstance = $parent->instance;
 
 		return intval($object) * intval($parentInstance->referableClass->getId());
 	}
 
 	/**
 	 * @param mixed $data
-	 * @param string $propertyName
-	 * @param string $propertyClass
-	 * @param DeserializationState $state
+	 * @param string $memberName
+	 * @param string $memberClass
+	 * @param DeserializationState $parent
 	 * @return mixed
 	 */
-	public function deserialize($data, $propertyName, $propertyClass, DeserializationState $state)
+	public function deserialize($data, $memberName, $memberClass, DeserializationState $parent)
 	{
 		/** @var ClassUsingCustomConverters $deserializedParent */
-		$deserializedParent = $state->deserializedParentState;
+		$deserializedParent = $parent->deserializedState;
 
 		return intval($data) / intval($deserializedParent->referableClass->getId());
 	}

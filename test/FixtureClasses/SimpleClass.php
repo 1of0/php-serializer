@@ -10,10 +10,6 @@ class SimpleClass
 
 	public $bar;
 
-	/**
-	 * @param $foo
-	 * @param $bar
-	 */
 	public function __construct($foo = null, $bar = null)
 	{
 		$this->foo = $foo;

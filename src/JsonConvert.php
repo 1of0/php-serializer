@@ -21,4 +21,9 @@ class JsonConvert
 	{
 		return Serializer::get()->deserialize($json, $typeHint);
 	}
+
+	public static function cast($instance, $type)
+	{
+		return Serializer::get()->cast($instance, $type);
+	}
 }

@@ -20,12 +20,18 @@ during serialization, and maximum depth for serialization and deserialization.
 
 ## Interfaces
 
-### CustomConverterInterface
+### CustomMemberConverterInterface
 
-Implementing the `CustomConverterInterface` interface allows customization to the serialization process on a 
-per-property basis. By annotating properties/methods that need custom serialization with a `@CustomConverter` 
-annotation, and providing it with the implementation's class name, the serializer will use the implementation to 
-serialize the property.
+Implementing the `CustomMemberConverterInterface` interface allows customization to the serialization process on a 
+per-member basis. By annotating members that need custom serialization with a `@CustomConverter` annotation, and
+providing it with the implementation's class name, the serializer will use the implementation to serialize the property.
+
+### CustomObjectConverterInterface
+
+Implementing the `CustomObjectConverterInterface` interface allows customization to the serialization process on a 
+class-level. By annotating a class that needs custom serialization with a `@CustomConverter` annotation, and
+providing it with the implementation's class name, the serializer will use the implementation to serialize any instance
+of that class.
 
 ### ReferableInterface
 

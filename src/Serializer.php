@@ -82,11 +82,15 @@ class Serializer
 	 * @param string $type
 	 * @return object
 	 */
-	public function ghettoCast($instance, $type)
+	public function cast($instance, $type)
 	{
 		return $this->deserialize($this->serialize($instance), $type);
 	}
 
+	/**
+	 * @param mixed $data
+	 * @return string
+	 */
 	private function jsonEncode($data)
 	{
 		$options = 0;
@@ -97,6 +101,10 @@ class Serializer
 		return json_encode($data, $options, $this->context->getConfiguration()->maxDepth);
 	}
 
+	/**
+	 * @param string $json
+	 * @return mixed
+	 */
 	private function jsonDecode($json)
 	{
 		return json_decode($json, false, $this->context->getConfiguration()->maxDepth);

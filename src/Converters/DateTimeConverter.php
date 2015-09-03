@@ -11,11 +11,11 @@ namespace OneOfZero\Json\Converters;
 
 
 use DateTime;
-use OneOfZero\Json\CustomConverterInterface;
+use OneOfZero\Json\CustomMemberConverterInterface;
 use OneOfZero\Json\Internals\DeserializationState;
 use OneOfZero\Json\Internals\SerializationState;
 
-class DateTimeConverter implements CustomConverterInterface
+class DateTimeConverter implements CustomMemberConverterInterface
 {
 	/**
 	 * @param string $class
@@ -28,12 +28,12 @@ class DateTimeConverter implements CustomConverterInterface
 
 	/**
 	 * @param mixed $object
-	 * @param string $propertyName
-	 * @param string $propertyClass
-	 * @param SerializationState $state
+	 * @param string $memberName
+	 * @param string $memberClass
+	 * @param SerializationState $parent
 	 * @return mixed
 	 */
-	public function serialize($object, $propertyName, $propertyClass, SerializationState $state)
+	public function serialize($object, $memberName, $memberClass, SerializationState $parent)
 	{
 		/** @var DateTime $object */
 		return $object->getTimestamp();
@@ -41,12 +41,12 @@ class DateTimeConverter implements CustomConverterInterface
 
 	/**
 	 * @param string $data
-	 * @param string $propertyName
-	 * @param string $propertyClass
-	 * @param DeserializationState $state
+	 * @param string $memberName
+	 * @param string $memberClass
+	 * @param DeserializationState $parent
 	 * @return mixed
 	 */
-	public function deserialize($data, $propertyName, $propertyClass, DeserializationState $state)
+	public function deserialize($data, $memberName, $memberClass, DeserializationState $parent)
 	{
 		$date = new DateTime();
 		$date->setTimestamp($data);

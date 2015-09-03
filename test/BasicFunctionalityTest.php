@@ -4,12 +4,11 @@
 namespace OneOfZero\Json\Test;
 
 
+use OneOfZero\Json\JsonConvert;
 use OneOfZero\Json\Serializer;
 use OneOfZero\Json\Test\FixtureClasses\PrivatePropertiesClass;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
-use OneOfZero\Json\Test\Traits\AssertObjectEqualsTrait;
-use OneOfZero\Json\Test\Traits\AssertSequenceEqualsTrait;
-use PHPUnit_Framework_TestCase;
+use OneOfZero\Json\Test\FixtureClasses\SimpleClassExtender;
 use stdClass;
 
 class BasicFunctionalityTest extends AbstractTest
@@ -29,7 +28,7 @@ class BasicFunctionalityTest extends AbstractTest
 	public function testSimpleObject()
 	{
 		$expectedJson = json_encode([
-			'@class' => 'OneOfZero\\Json\\Test\\FixtureClasses\\SimpleClass',
+			'@class' => SimpleClass::class,
 			'foo' => '1234',
 			'bar' => 'abcd'
 		]);
@@ -46,7 +45,7 @@ class BasicFunctionalityTest extends AbstractTest
 	public function testPrivatePropertiesObject()
 	{
 		$expectedJson = json_encode([
-			'@class' => 'OneOfZero\\Json\\Test\\FixtureClasses\\PrivatePropertiesClass',
+			'@class' => PrivatePropertiesClass::class,
 			'foo' => '1234'
 		]);
 
@@ -78,7 +77,7 @@ class BasicFunctionalityTest extends AbstractTest
 	public function testObjectArray()
 	{
 		$expectedObject = [
-			'@class' => 'OneOfZero\\Json\\Test\\FixtureClasses\\SimpleClass',
+			'@class' => SimpleClass::class,
 			'foo' => '1234',
 			'bar' => 'abcd'
 		];
@@ -92,5 +91,15 @@ class BasicFunctionalityTest extends AbstractTest
 
 		$deserialized = Serializer::get()->deserialize($json);
 		$this->assertSequenceEquals($array, $deserialized);
+	}
+
+	public function testCast()
+	{
+		$object = new SimpleClassExtender('1234', 'abcd', '1337');
+		$expected = new SimpleClass('1234', 'abcd');
+
+		$cast = JsonConvert::cast($object, SimpleClass::class);
+		$this->assertObjectEquals($expected, $cast);
+		$this->assertEquals(SimpleClass::class, get_class($cast));
 	}
 }
