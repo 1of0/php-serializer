@@ -20,9 +20,9 @@ interface CustomObjectConverterInterface
 	public function serialize($instance, $class);
 
 	/**
-	 * @param mixed $deserializedState
+	 * @param mixed $serializedState
 	 * @param string $class
 	 * @return object
 	 */
-	public function deserialize($deserializedState, $class);
+	public function deserialize($serializedState, $class);
 }

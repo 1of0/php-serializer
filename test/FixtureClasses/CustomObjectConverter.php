@@ -28,14 +28,14 @@ class CustomObjectConverter implements CustomObjectConverterInterface
 	}
 
 	/**
-	 * @param mixed $deserializedState
+	 * @param mixed $serializedState
 	 * @param string $class
 	 * @return object
 	 */
-	public function deserialize($deserializedState, $class)
+	public function deserialize($serializedState, $class)
 	{
 		$instance = new $class();
-		$instance->foo = $deserializedState['abc'];
+		$instance->foo = $serializedState['abc'];
 		return $instance;
 	}
 }
