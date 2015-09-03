@@ -160,7 +160,7 @@ class MemberWalker
 		}
 
 		$class = new ReflectionClass($typeHint);
-		$instance = $class->newInstance();
+		$instance = $this->serializationContext->getInstance($class);
 
 		$members = $this->getMembers(new ReflectionContext($this->serializationContext, $class));
 

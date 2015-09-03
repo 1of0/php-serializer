@@ -16,6 +16,7 @@ use OneOfZero\Json\Configuration;
 use OneOfZero\Json\DependencyInjection\ContainerAdapterInterface;
 use OneOfZero\Json\ReferenceResolverInterface;
 use OneOfZero\Json\Serializer;
+use ReflectionClass;
 
 class SerializerContext
 {
@@ -141,11 +142,16 @@ class SerializerContext
 	}
 
 	/**
-	 * @param $class
+	 * @param string|ReflectionClass $class
 	 * @return object
 	 */
 	public function getInstance($class)
 	{
+		if (is_object($class) && $class instanceof ReflectionClass)
+		{
+			$class = $class->name;
+		}
+
 		if (!class_exists($class))
 		{
 			return null;
