@@ -22,6 +22,7 @@ use OneOfZero\Json\Annotations\Property;
 use OneOfZero\Json\Annotations\Setter;
 use OneOfZero\Json\Annotations\Type;
 use OneOfZero\Json\Configuration;
+use OneOfZero\Json\Exceptions\ResumeSerializationException;
 use OneOfZero\Json\Exceptions\SerializationException;
 use OneOfZero\Json\CustomMemberConverterInterface;
 use OneOfZero\Json\ReferableInterface;
@@ -144,13 +145,19 @@ class Member
 
 		if ($this->converter && $this->converter->canConvert($this->getType()))
 		{
-			$value = $this->converter->serialize(
-				$this->value,
-				$this->serializedMember->propertyName,
-				$this->getType(),
-				new SerializationState($parentInstance, $serializedParent)
-			);
-			$valueSet = true;
+			try
+			{
+				$value = $this->converter->serialize(
+					$this->value,
+					$this->serializedMember->propertyName,
+					$this->getType(),
+					new SerializationState($parentInstance, $serializedParent)
+				);
+				$valueSet = true;
+			}
+			catch (ResumeSerializationException $e)
+			{
+			}
 		}
 
 		if ($this->isReference)
@@ -202,13 +209,19 @@ class Member
 
 		if ($this->converter && $this->converter->canConvert($this->getType()))
 		{
-			$this->setValue($parentInstance, $this->converter->deserialize(
-				$this->serializedMember->value,
-				$this->serializedMember->propertyName,
-				$this->getType(),
-				new DeserializationState($serializedParent, $parentInstance)
-			));
-			return;
+			try
+			{
+				$this->setValue($parentInstance, $this->converter->deserialize(
+					$this->serializedMember->value,
+					$this->serializedMember->propertyName,
+					$this->getType(),
+					new DeserializationState($serializedParent, $parentInstance)
+				));
+				return;
+			}
+			catch (ResumeSerializationException $e)
+			{
+			}
 		}
 
 		if ($this->isReference)

@@ -9,9 +9,11 @@
 
 namespace OneOfZero\Json\Internals;
 
+
 use OneOfZero\Json\Annotations\CustomConverter;
 use OneOfZero\Json\Annotations\NoMetadata;
 use OneOfZero\Json\CustomObjectConverterInterface;
+use OneOfZero\Json\Exceptions\ResumeSerializationException;
 use OneOfZero\Json\Exceptions\SerializationException;
 use ReflectionClass;
 use stdClass;
@@ -53,12 +55,18 @@ class MemberWalker
 
 		if ($customConverter)
 		{
-			$serializationData = $customConverter->serialize($data, $class->name);
-			if (is_array($serializationData) && !$this->hasNoMetaDataAnnotation($class))
+			try
 			{
-				Metadata::set($serializationData, Metadata::TYPE, $class->name);
+				$serializationData = $customConverter->serialize($data, $class->name);
+				if (is_array($serializationData) && !$this->hasNoMetaDataAnnotation($class))
+				{
+					Metadata::set($serializationData, Metadata::TYPE, $class->name);
+				}
+				return $serializationData;
 			}
-			return $serializationData;
+			catch (ResumeSerializationException $e)
+			{
+			}
 		}
 
 		if (is_object($data))
@@ -126,7 +134,13 @@ class MemberWalker
 
 		if ($customConverter)
 		{
-			return $customConverter->deserialize((array)$deserializedData, $class->name);
+			try
+			{
+				return $customConverter->deserialize((array)$deserializedData, $class->name);
+			}
+			catch (ResumeSerializationException $e)
+			{
+			}
 		}
 
 		if (is_array($deserializedData))
