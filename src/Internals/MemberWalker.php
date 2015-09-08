@@ -71,6 +71,11 @@ class MemberWalker
 
 		if (is_object($data))
 		{
+			if ($this->serializationContext->getProxyHelper()->isProxy($data))
+			{
+				$data = $this->serializationContext->getProxyHelper()->unproxy($data);
+			}
+
 			return $this->serializeMembers($data);
 		}
 
