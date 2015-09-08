@@ -56,7 +56,7 @@ class ProxyHelper
 	{
 		if (!$this->isProxy($classOrInstance))
 		{
-			return get_class($classOrInstance);
+			return is_string($classOrInstance) ? $classOrInstance : get_class($classOrInstance);
 		}
 		return $this->getClassBeneath(get_parent_class($classOrInstance));
 	}
