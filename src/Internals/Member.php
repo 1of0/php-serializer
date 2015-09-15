@@ -22,8 +22,8 @@ use OneOfZero\Json\Annotations\Setter;
 use OneOfZero\Json\Annotations\Type;
 use OneOfZero\Json\Configuration;
 use OneOfZero\Json\CustomMemberConverterInterface;
+use OneOfZero\Json\Exceptions\ReferenceException;
 use OneOfZero\Json\Exceptions\ResumeSerializationException;
-use OneOfZero\Json\Exceptions\SerializationException;
 use OneOfZero\Json\ReferableInterface;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -123,7 +123,7 @@ class Member
 	/**
 	 * @param object $parentInstance
 	 * @param array $serializedParent
-	 * @throws SerializationException
+	 * @throws ReferenceException
 	 */
 	public function serialize($parentInstance, array &$serializedParent)
 	{
@@ -184,7 +184,7 @@ class Member
 	/**
 	 * @param array $serializedParent
 	 * @param object $parentInstance
-	 * @throws SerializationException
+	 * @throws ReferenceException
 	 */
 	public function deserialize(array $serializedParent, $parentInstance)
 	{
@@ -237,7 +237,7 @@ class Member
 
 	/**
 	 * @return array|null
-	 * @throws SerializationException
+	 * @throws ReferenceException
 	 */
 	private function getReference()
 	{
@@ -248,10 +248,7 @@ class Member
 
 		if (!($this->value instanceof ReferableInterface))
 		{
-			throw new SerializationException(
-				"Property {$this->name} in class {$this->parentContext->reflector->name} is marked as a reference, but " .
-				"does not implement ReferableInterface"
-			);
+			throw new ReferenceException("Property {$this->name} in class {$this->parentContext->reflector->name} is marked as a reference, but does not implement ReferableInterface");
 		}
 
 		$this->validateReference();
@@ -265,7 +262,7 @@ class Member
 	/**
 	 * Attempts to resolve a reference from the serialized member data.
 	 * @return mixed|null
-	 * @throws SerializationException
+	 * @throws ReferenceException
 	 */
 	private function resolveReference()
 	{
@@ -280,16 +277,13 @@ class Member
 		$referenceId = $this->serializedMember->getMetadata(Metadata::ID);
 		if ($referenceId === null)
 		{
-			throw new SerializationException(
-				"Property {$this->name} in class {$this->parentContext->reflector->name} is marked as a reference, but " .
-				"the serialized data does not contain a valid reference"
-			);
+			throw new ReferenceException("Property {$this->name} in class {$this->parentContext->reflector->name} is marked as a reference, but the serialized data does not contain a valid reference");
 		}
 
 		$referenceResolver = $this->context->getReferenceResolver();
 		if (!$referenceResolver)
 		{
-			throw new SerializationException("Could not load the reference resolver from the container");
+			throw new ReferenceException("Could not load the reference resolver from the container");
 		}
 
 		// Resolve reference
@@ -300,16 +294,13 @@ class Member
 
 	/**
 	 * Assuming the member is marked as a reference, this method will validate the requirements for a reference.
-	 * @throws SerializationException
+	 * @throws ReferenceException
 	 */
 	private function validateReference()
 	{
 		if ($this->getType() === null)
 		{
-			throw new SerializationException(
-				"Property {$this->name} in class {$this->parentContext->reflector->name} is marked as a reference, but " .
-				"does not specify or imply a valid type"
-			);
+			throw new ReferenceException("Property {$this->name} in class {$this->parentContext->reflector->name} is marked as a reference, but does not specify or imply a valid type");
 		}
 	}
 
@@ -535,8 +526,8 @@ class Member
 	private function isGetter()
 	{
 		return $this->isMethod()
-		&& $this->hasAnnotation(Getter::class)
-			&& $this->memberContext->reflector->getNumberOfRequiredParameters() == 0
+		    && $this->hasAnnotation(Getter::class)
+		    && $this->memberContext->reflector->getNumberOfRequiredParameters() == 0
 		;
 	}
 
@@ -546,8 +537,8 @@ class Member
 	private function isSetter()
 	{
 		return $this->isMethod()
-		&& $this->hasAnnotation(Setter::class)
-			&& $this->memberContext->reflector->getNumberOfRequiredParameters() == 1
+		    && $this->hasAnnotation(Setter::class)
+		    && $this->memberContext->reflector->getNumberOfRequiredParameters() == 1
 		;
 	}
 

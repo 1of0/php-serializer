@@ -12,6 +12,7 @@ namespace OneOfZero\Json\Internals;
 use OneOfZero\Json\Annotations\CustomConverter;
 use OneOfZero\Json\Annotations\NoMetadata;
 use OneOfZero\Json\CustomObjectConverterInterface;
+use OneOfZero\Json\Exceptions\ReferenceException;
 use OneOfZero\Json\Exceptions\ResumeSerializationException;
 use OneOfZero\Json\Exceptions\SerializationException;
 use ReflectionClass;
@@ -35,6 +36,7 @@ class MemberWalker
 	/**
 	 * @param mixed $data
 	 * @return array|mixed|null
+	 * @throws ReferenceException
 	 * @throws SerializationException
 	 */
 	public function serialize($data)
@@ -79,6 +81,7 @@ class MemberWalker
 	/**
 	 * @param object $object
 	 * @return array
+	 * @throws ReferenceException
 	 */
 	private function serializeMembers($object)
 	{
@@ -119,6 +122,7 @@ class MemberWalker
 	 * @param mixed $deserializedData
 	 * @param string|null $typeHint
 	 * @return array|null|object
+	 * @throws ReferenceException
 	 * @throws SerializationException
 	 */
 	public function deserialize($deserializedData, $typeHint = null)
@@ -159,6 +163,7 @@ class MemberWalker
 	 * @param mixed $deserializedData
 	 * @param string|null $typeHint
 	 * @return object
+	 * @throws ReferenceException
 	 */
 	private function deserializeMembers($deserializedData, $typeHint = null)
 	{
