@@ -29,7 +29,7 @@ class CustomObjectConverter implements CustomObjectConverterInterface
 	 */
 	public function serialize($instance, $class)
 	{
-		return [ 'abc' => $instance->foo ];
+		return ['abc' => $instance->foo];
 	}
 
 	/**

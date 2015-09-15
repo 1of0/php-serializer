@@ -36,7 +36,7 @@ class ClassDependentCustomConverter implements CustomMemberConverterInterface
 		if ($memberClass === SimpleClass::class)
 		{
 			/** @var SimpleClass $object */
-			return implode('|', [ $object->foo, $object->bar ]);
+			return implode('|', [$object->foo, $object->bar]);
 		}
 
 		if ($memberClass === ReferableClass::class)

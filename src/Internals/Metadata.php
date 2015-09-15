@@ -52,8 +52,8 @@ class Metadata
 	public static function contains(&$target, $metaType)
 	{
 		return $target !== null
-			&& (is_array($target) || $target instanceof stdClass)
-			&& array_key_exists($metaType, $target)
+		    && (is_array($target) || $target instanceof stdClass)
+		    && array_key_exists($metaType, $target)
 		;
 	}
 

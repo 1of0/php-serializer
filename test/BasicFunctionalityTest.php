@@ -21,7 +21,7 @@ class BasicFunctionalityTest extends AbstractTest
 	public function testNumericArray()
 	{
 		$expectedJson = '[1,2,3,4]';
-		$array = [ 1, 2, 3, 4 ];
+		$array = [1, 2, 3, 4];
 
 		$json = Serializer::get()->serialize($array);
 		$this->assertEquals($expectedJson, $json);
@@ -86,10 +86,10 @@ class BasicFunctionalityTest extends AbstractTest
 			'foo' => '1234',
 			'bar' => 'abcd'
 		];
-		$expectedJson = json_encode([ $expectedObject, $expectedObject ]);
+		$expectedJson = json_encode([$expectedObject, $expectedObject]);
 
 		$object = new SimpleClass('1234', 'abcd');
-		$array = [ $object, $object ];
+		$array = [$object, $object];
 
 		$json = Serializer::get()->serialize($array);
 		$this->assertEquals($expectedJson, $json);

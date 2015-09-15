@@ -21,9 +21,9 @@ use OneOfZero\Json\Annotations\Property;
 use OneOfZero\Json\Annotations\Setter;
 use OneOfZero\Json\Annotations\Type;
 use OneOfZero\Json\Configuration;
+use OneOfZero\Json\CustomMemberConverterInterface;
 use OneOfZero\Json\Exceptions\ResumeSerializationException;
 use OneOfZero\Json\Exceptions\SerializationException;
-use OneOfZero\Json\CustomMemberConverterInterface;
 use OneOfZero\Json\ReferableInterface;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -535,7 +535,7 @@ class Member
 	private function isGetter()
 	{
 		return $this->isMethod()
-			&& $this->hasAnnotation(Getter::class)
+		&& $this->hasAnnotation(Getter::class)
 			&& $this->memberContext->reflector->getNumberOfRequiredParameters() == 0
 		;
 	}
@@ -546,7 +546,7 @@ class Member
 	private function isSetter()
 	{
 		return $this->isMethod()
-			&& $this->hasAnnotation(Setter::class)
+		&& $this->hasAnnotation(Setter::class)
 			&& $this->memberContext->reflector->getNumberOfRequiredParameters() == 1
 		;
 	}
