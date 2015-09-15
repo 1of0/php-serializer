@@ -9,16 +9,12 @@
 
 namespace OneOfZero\Json\Internals;
 
-
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
 use Reflector;
 
 /**
- * Class ReflectionContext
- * @package OneOfZero\Json\Internals
- *
  * Provides a reflection context of a class, property, or method, and provides helper methods to obtain the annotations
  * of the relevant reflected type.
  */

@@ -9,7 +9,6 @@
 
 namespace OneOfZero\Json;
 
-
 class JsonConvert
 {
 	public static function toJson($data)

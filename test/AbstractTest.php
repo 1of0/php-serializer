@@ -1,13 +1,17 @@
 <?php
 
+/**
+ * Copyright (c) 2015 Bernardo van der Wal
+ * MIT License
+ *
+ * Refer to the LICENSE file for the full copyright notice.
+ */
 
 namespace OneOfZero\Json\Test;
-
 
 use Exception;
 use OneOfZero\Json\Test\FixtureClasses\EqualityInterface;
 use PHPUnit_Framework_TestCase;
-use stdClass;
 
 abstract class AbstractTest extends PHPUnit_Framework_TestCase
 {

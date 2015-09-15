@@ -9,7 +9,6 @@
 
 namespace OneOfZero\Json;
 
-
 class Configuration
 {
 	const RESOLVE_LAZY = 0;

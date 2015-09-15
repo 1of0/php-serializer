@@ -9,7 +9,6 @@
 
 namespace OneOfZero\Json;
 
-
 interface ReferableInterface
 {
 	/**

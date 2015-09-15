@@ -9,7 +9,6 @@
 
 namespace OneOfZero\Json;
 
-
 use OneOfZero\Json\Internals\DeserializationState;
 use OneOfZero\Json\Internals\SerializationState;
 

@@ -9,7 +9,6 @@
 
 namespace OneOfZero\Json;
 
-
 use OneOfZero\Json\DependencyInjection\ContainerAdapterInterface;
 use OneOfZero\Json\Internals\MemberWalker;
 use OneOfZero\Json\Internals\SerializerContext;

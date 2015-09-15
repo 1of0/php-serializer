@@ -9,13 +9,9 @@
 
 namespace OneOfZero\Json\Internals;
 
-
 use Doctrine\Common\Annotations\Annotation;
 
 /**
- * Class AnnotationHelperTrait
- * @package OneOfZero\Json\Internals
- *
  * Provides annotation helper methods, given that annotations are stored in the $annotations field.
  */
 trait AnnotationHelperTrait

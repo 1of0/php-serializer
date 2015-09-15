@@ -9,7 +9,6 @@
 
 namespace OneOfZero\Json\Internals;
 
-
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use OneOfZero\Json\Configuration;

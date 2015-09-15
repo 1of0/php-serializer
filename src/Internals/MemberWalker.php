@@ -9,7 +9,6 @@
 
 namespace OneOfZero\Json\Internals;
 
-
 use OneOfZero\Json\Annotations\CustomConverter;
 use OneOfZero\Json\Annotations\NoMetadata;
 use OneOfZero\Json\CustomObjectConverterInterface;

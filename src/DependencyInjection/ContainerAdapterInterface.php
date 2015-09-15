@@ -9,7 +9,6 @@
 
 namespace OneOfZero\Json\DependencyInjection;
 
-
 use Doctrine\Common\Annotations\AnnotationReader;
 use OneOfZero\Json\ReferenceResolverInterface;
 

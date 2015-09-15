@@ -9,7 +9,6 @@
 
 namespace OneOfZero\Json\Internals;
 
-
 use Doctrine\Common\Annotations\Annotation;
 use OneOfZero\Json\Annotations\AbstractName;
 use OneOfZero\Json\Annotations\CustomConverter;

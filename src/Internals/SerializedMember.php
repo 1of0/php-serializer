@@ -9,7 +9,6 @@
 
 namespace OneOfZero\Json\Internals;
 
-
 class SerializedMember
 {
 	/**

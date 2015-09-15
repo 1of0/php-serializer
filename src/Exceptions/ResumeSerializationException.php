@@ -9,7 +9,6 @@
 
 namespace OneOfZero\Json\Exceptions;
 
-
 use Exception;
 
 class ResumeSerializationException extends Exception

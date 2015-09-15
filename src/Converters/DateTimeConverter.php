@@ -9,7 +9,6 @@
 
 namespace OneOfZero\Json\Converters;
 
-
 use DateTime;
 use OneOfZero\Json\CustomMemberConverterInterface;
 use OneOfZero\Json\Internals\DeserializationState;
