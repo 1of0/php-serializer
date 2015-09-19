@@ -11,6 +11,7 @@ namespace OneOfZero\Json;
 
 use OneOfZero\Json\DependencyInjection\ContainerAdapterInterface;
 use OneOfZero\Json\Internals\MemberWalker;
+use OneOfZero\Json\Internals\ProxyHelper;
 use OneOfZero\Json\Internals\SerializerContext;
 
 class Serializer
@@ -48,6 +49,7 @@ class Serializer
 		$this->context->setConfiguration($configuration ? $configuration : new Configuration());
 		$this->context->setContainer($containerAdapter);
 		$this->context->setMemberWalker(new MemberWalker($this->context));
+		$this->context->setProxyHelper(new ProxyHelper($this->context->getReferenceResolver()));
 	}
 
 	/**

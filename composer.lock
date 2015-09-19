@@ -5,6 +5,7 @@
         "This file is @generated automatically"
     ],
     "hash": "93d261a7b15dd52533a22e7296ff030c",
+    "content-hash": "bc8f535f7738b6bfbedcdd4dab3389bf",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -276,16 +277,16 @@
         },
         {
             "name": "php-di/invoker",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-DI/Invoker.git",
-                "reference": "67ad285484a1f783ba2ce26866b5d48f171d3abf"
+                "reference": "7b2d2cd0e40b1583fe6601fb343a280c378669c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-DI/Invoker/zipball/67ad285484a1f783ba2ce26866b5d48f171d3abf",
-                "reference": "67ad285484a1f783ba2ce26866b5d48f171d3abf",
+                "url": "https://api.github.com/repos/PHP-DI/Invoker/zipball/7b2d2cd0e40b1583fe6601fb343a280c378669c9",
+                "reference": "7b2d2cd0e40b1583fe6601fb343a280c378669c9",
                 "shasum": ""
             },
             "require": {
@@ -315,7 +316,7 @@
                 "invoke",
                 "invoker"
             ],
-            "time": "2015-09-12 09:14:11"
+            "time": "2015-09-17 09:57:25"
         },
         {
             "name": "php-di/php-di",
@@ -762,16 +763,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.8.7",
+            "version": "4.8.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "dab2ada9e9a503d2ec3c32fe0fb59dea9bdd9dfa"
+                "reference": "521720279261e5b14799cf1bb895d4b55e516f26"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/dab2ada9e9a503d2ec3c32fe0fb59dea9bdd9dfa",
-                "reference": "dab2ada9e9a503d2ec3c32fe0fb59dea9bdd9dfa",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/521720279261e5b14799cf1bb895d4b55e516f26",
+                "reference": "521720279261e5b14799cf1bb895d4b55e516f26",
                 "shasum": ""
             },
             "require": {
@@ -830,7 +831,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-09-14 06:57:22"
+            "time": "2015-09-19 05:44:37"
         },
         {
             "name": "phpunit/phpunit-mock-objects",

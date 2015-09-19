@@ -45,6 +45,11 @@ class SerializerContext
 	private $memberWalker;
 
 	/**
+	 * @var ProxyHelper $proxyHelper
+	 */
+	private $proxyHelper;
+
+	/**
 	 * @return Serializer
 	 */
 	public function getSerializer()
@@ -138,6 +143,22 @@ class SerializerContext
 	public function setMemberWalker($memberWalker)
 	{
 		$this->memberWalker = $memberWalker;
+	}
+
+	/**
+	 * @return ProxyHelper
+	 */
+	public function getProxyHelper()
+	{
+		return $this->proxyHelper;
+	}
+
+	/**
+	 * @param ProxyHelper $proxyHelper
+	 */
+	public function setProxyHelper($proxyHelper)
+	{
+		$this->proxyHelper = $proxyHelper;
 	}
 
 	/**
