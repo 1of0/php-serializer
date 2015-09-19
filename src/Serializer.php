@@ -87,6 +87,22 @@ class Serializer
 	}
 
 	/**
+	 * @return Configuration
+	 */
+	public function getConfiguration()
+	{
+		return $this->context->getConfiguration();
+	}
+
+	/**
+	 * @param Configuration $configuration
+	 */
+	public function setConfiguration(Configuration $configuration)
+	{
+		$this->context->setConfiguration($configuration);
+	}
+
+	/**
 	 * @param mixed $data
 	 * @return string
 	 */
