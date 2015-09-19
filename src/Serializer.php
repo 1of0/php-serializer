@@ -110,7 +110,7 @@ class Serializer
 	 */
 	private function jsonEncode($data)
 	{
-		$options = 0;
+		$options = $this->context->getConfiguration()->jsonEncodeOptions;
 		if ($this->context->getConfiguration()->prettyPrint)
 		{
 			$options |= JSON_PRETTY_PRINT;
@@ -124,6 +124,7 @@ class Serializer
 	 */
 	private function jsonDecode($json)
 	{
-		return json_decode($json, false, $this->context->getConfiguration()->maxDepth);
+		$options = $this->context->getConfiguration()->jsonEncodeOptions;
+		return json_decode($json, false, $this->context->getConfiguration()->maxDepth, $options);
 	}
 }

@@ -20,6 +20,11 @@ class Configuration
 	public $prettyPrint = false;
 
 	/**
+	 * @var int $jsonEncodeOptions
+	 */
+	public $jsonEncodeOptions = 0;
+
+	/**
 	 * @var bool $includeNullValues
 	 */
 	public $includeNullValues = false;
