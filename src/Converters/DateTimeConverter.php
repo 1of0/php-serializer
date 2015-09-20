@@ -34,6 +34,11 @@ class DateTimeConverter implements CustomMemberConverterInterface
 	 */
 	public function serialize($object, $memberName, $memberClass, SerializationState $parent)
 	{
+		if ($object === null)
+		{
+			return null;
+		}
+
 		/** @var DateTime $object */
 		return $object->getTimestamp();
 	}
@@ -47,6 +52,11 @@ class DateTimeConverter implements CustomMemberConverterInterface
 	 */
 	public function deserialize($data, $memberName, $memberClass, DeserializationState $parent)
 	{
+		if ($data === null)
+		{
+			return null;
+		}
+
 		$date = new DateTime();
 		$date->setTimestamp($data);
 		return $date;
