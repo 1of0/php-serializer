@@ -141,15 +141,16 @@ class Member
 
 		$value = null;
 		$valueSet = false;
+		$type = $this->getSerializationType($this->value);
 
-		if ($this->converter && $this->converter->canConvert($this->getType()))
+		if ($this->converter && $this->converter->canConvert($type))
 		{
 			try
 			{
 				$value = $this->converter->serialize(
 					$this->value,
 					$this->serializedMember->propertyName,
-					$this->getType(),
+					$type,
 					new SerializationState($parentInstance, $serializedParent)
 				);
 				$valueSet = true;
@@ -161,7 +162,7 @@ class Member
 
 		if ($this->isReference)
 		{
-			$value = $this->getReference();
+			$value = $this->getReference($this->value);
 			$valueSet = true;
 		}
 
@@ -204,16 +205,19 @@ class Member
 			return;
 		}
 
-		$this->serializedMember->value = $serializedParent[$propertyName];
+		$serializedValue = $serializedParent[$propertyName];
+		$serializedType = $this->getDeserializationType($serializedValue);
 
-		if ($this->converter && $this->converter->canConvert($this->getType()))
+		$this->serializedMember->value = $serializedValue;
+
+		if ($this->converter && $this->converter->canConvert($serializedType))
 		{
 			try
 			{
 				$this->setValue($parentInstance, $this->converter->deserialize(
-					$this->serializedMember->value,
+					$serializedValue,
 					$this->serializedMember->propertyName,
-					$this->getType(),
+					$serializedType,
 					new DeserializationState($serializedParent, $parentInstance)
 				));
 				return;
@@ -225,56 +229,91 @@ class Member
 
 		if ($this->isReference)
 		{
-			$this->setValue($parentInstance, $this->resolveReference());
+			$this->setValue($parentInstance, $this->resolveReference($serializedValue));
 			return;
 		}
 
-		$value = $this->serializedMember->value;
-		$value = $this->context->getMemberWalker()->deserialize($value, $this->getType());
-
+		$value = $this->context->getMemberWalker()->deserialize($serializedValue, $serializedType);
 		$this->setValue($parentInstance, $value);
 	}
 
 	/**
+	 * @param mixed $value
+	 * @param bool $isArrayItem
 	 * @return array|null
 	 * @throws ReferenceException
 	 */
-	private function getReference()
+	private function getReference($value, $isArrayItem = false)
 	{
-		if ($this->value === null)
+		if ($value === null)
 		{
 			return null;
 		}
 
-		if (!($this->value instanceof ReferableInterface))
+		if (!$isArrayItem && $this->isArray)
+		{
+			if (!is_array($value))
+			{
+				throw new ReferenceException("Property {$this->name} in class {$this->parentContext->reflector->name} is marked as an array, but does not hold an array");
+			}
+
+			$references = [];
+			foreach ($value as $item)
+			{
+				$references[] = $this->getReference($item, true);
+			}
+			return $references;
+		}
+
+		if (!($value instanceof ReferableInterface))
 		{
 			throw new ReferenceException("Property {$this->name} in class {$this->parentContext->reflector->name} is marked as a reference, but does not implement ReferableInterface");
 		}
 
-		$this->validateReference();
+		$type = $this->getSerializationType($value);
+		if ($type === null)
+		{
+			throw new ReferenceException("Property {$this->name} in class {$this->parentContext->reflector->name} is marked as a reference, but does not specify or imply a valid type");
+		}
 
 		$reference = [];
-		Metadata::set($reference, Metadata::TYPE, $this->getType());
-		Metadata::set($reference, Metadata::ID, $this->value->getId());
+		Metadata::set($reference, Metadata::TYPE, $type);
+		Metadata::set($reference, Metadata::ID, $value->getId());
 		return $reference;
 	}
 
 	/**
 	 * Attempts to resolve a reference from the serialized member data.
+	 * @param mixed $serializedValue
+	 * @param bool $isArrayItem
 	 * @return mixed|null
 	 * @throws ReferenceException
 	 */
-	private function resolveReference()
+	private function resolveReference($serializedValue, $isArrayItem = false)
 	{
-		if ($this->serializedMember->value === null)
+		if ($serializedValue === null)
 		{
 			return null;
 		}
 
-		$this->validateReference();
+		if (!$isArrayItem && $this->isArray)
+		{
+			$references = [];
+			foreach ($serializedValue as $item)
+			{
+				$references[] = $this->resolveReference($item, true);
+			}
+			return $references;
+		}
 
-		$referenceClass = $this->getType();
-		$referenceId = $this->serializedMember->getMetadata(Metadata::ID);
+		$type = $this->getDeserializationType($serializedValue);
+		if ($type === null)
+		{
+			throw new ReferenceException("Property {$this->name} in class {$this->parentContext->reflector->name} is marked as a reference, but does not specify or imply a valid type");
+		}
+
+		$referenceClass = $type;
+		$referenceId = Metadata::get($serializedValue, Metadata::ID);
 		if ($referenceId === null)
 		{
 			throw new ReferenceException("Property {$this->name} in class {$this->parentContext->reflector->name} is marked as a reference, but the serialized data does not contain a valid reference");
@@ -290,18 +329,6 @@ class Member
 		$object = $this->context->getReferenceResolver()->resolve($referenceClass, $referenceId, $this->lazyResolution);
 
 		return $object;
-	}
-
-	/**
-	 * Assuming the member is marked as a reference, this method will validate the requirements for a reference.
-	 * @throws ReferenceException
-	 */
-	private function validateReference()
-	{
-		if ($this->getType() === null)
-		{
-			throw new ReferenceException("Property {$this->name} in class {$this->parentContext->reflector->name} is marked as a reference, but does not specify or imply a valid type");
-		}
 	}
 
 	/**
@@ -346,9 +373,8 @@ class Member
 		}
 		else
 		{
-			$this->lazyResolution =
-				($this->context->getConfiguration()->defaultResolutionType === Configuration::RESOLVE_LAZY)
-			;
+			$defaultResolutionType = $this->context->getConfiguration()->defaultResolutionType;
+			$this->lazyResolution = ($defaultResolutionType === Configuration::RESOLVE_LAZY);
 		}
 	}
 
@@ -477,28 +503,38 @@ class Member
 
 	/**
 	 * Determine property type.
+	 * @param null $value
+	 * @return mixed|null|string
 	 */
-	private function getType()
+	private function getSerializationType($value)
 	{
-		/** @var Type $typeAnnotation */
-		$typeAnnotation = $this->getAnnotation(Type::class);
-
-		if ($typeAnnotation)
+		// Attempt resolution from @Type annotation
+		if ($this->hasAnnotation(Type::class))
 		{
-			// From annotation
-			return $typeAnnotation->value;
+			return $this->getAnnotation(Type::class)->value;
 		}
 
-		if (is_object($this->value))
+		// Attempt resolution from value class
+		if (is_object($value))
 		{
-			// From value (get_class)
-			return get_class($this->value);
+			return get_class($value);
 		}
 
-		if ($this->serializedMember->containsMetadata(Metadata::TYPE))
+		return null;
+	}
+
+	private function getDeserializationType($serializedValue)
+	{
+		// Attempt resolution from @Type annotation
+		if ($this->hasAnnotation(Type::class))
 		{
-			// From metadata (@class member in serialized data)
-			return $this->serializedMember->getMetadata(Metadata::TYPE);
+			return $this->getAnnotation(Type::class)->value;
+		}
+
+		// Attempt resolution from metadata (@class member in serialized data)
+		if (Metadata::contains($serializedValue, Metadata::TYPE))
+		{
+			return Metadata::get($serializedValue, Metadata::TYPE);
 		}
 
 		return null;
