@@ -9,7 +9,6 @@
 
 namespace OneOfZero\Json\Internals;
 
-
 use OneOfZero\Json\ReferableInterface;
 use OneOfZero\Json\ReferenceResolverInterface;
 

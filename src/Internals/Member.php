@@ -298,12 +298,12 @@ class Member
 
 		if (!$isArrayItem && $this->isArray)
 		{
-			$references = [];
+			$array = [];
 			foreach ($serializedValue as $item)
 			{
-				$references[] = $this->resolveReference($item, true);
+				$array[] = $this->resolveReference($item, true);
 			}
-			return $references;
+			return $array;
 		}
 
 		$type = $this->getDeserializationType($serializedValue);
