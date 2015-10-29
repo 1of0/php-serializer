@@ -26,9 +26,9 @@ class Environment
 	public static function getVendorPath()
 	{
 		$options = [
-			realpath($_SERVER['DOCUMENT_ROOT'] . '/vendor'),
-			realpath(__DIR__ . '/../../../../../../vendor'),
-			realpath(__DIR__ . '/../../../vendor'),
+			$_SERVER['DOCUMENT_ROOT'] . '/vendor',
+			__DIR__ . '/../../../../../../vendor',
+			__DIR__ . '/../../../vendor',
 		];
 
 		foreach ($options as $option)
