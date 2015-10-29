@@ -27,8 +27,9 @@ class Environment
 	{
 		$options = [
 			$_SERVER['DOCUMENT_ROOT'] . '/vendor',
-			__DIR__ . '/../../../../../../vendor',
-			__DIR__ . '/../../../vendor',
+			$_SERVER['DOCUMENT_ROOT'] . '/../vendor',
+			__DIR__ . '/../../../../../vendor',
+			__DIR__ . '/../../vendor',
 		];
 
 		foreach ($options as $option)
