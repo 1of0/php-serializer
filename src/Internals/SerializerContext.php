@@ -113,8 +113,7 @@ class SerializerContext
 			if (!$this->annotationReader)
 			{
 				// If the container didn't retrieve an AnnotationReader either, load it ourselves
-				AnnotationRegistry::registerLoader(array(require __DIR__ . '/../../vendor/autoload.php', 'loadClass'));
-				$this->annotationReader = new AnnotationReader();
+				$this->annotationReader = Environment::getAnnotationReader();
 			}
 		}
 
