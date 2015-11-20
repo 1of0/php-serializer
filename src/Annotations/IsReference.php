@@ -18,7 +18,7 @@ use Doctrine\Common\Annotations\Annotation;
 class IsReference extends Annotation
 {
 	/**
-	 * @var bool|null $lazy
+	 * @var bool $lazy
 	 */
-	public $lazy = null;
+	public $lazy = false;
 }
