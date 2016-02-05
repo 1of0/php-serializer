@@ -103,7 +103,17 @@ abstract class AbstractFieldMapper
 	/**
 	 *
 	 */
-	public abstract function map();
+	public function map()
+	{
+		// By default assume the target member's name
+		$this->name = $this->target->name;
+
+		if ($this->isClassMethod())
+		{
+			// For methods trim off get/set/is prefixes, and make the first character lower case
+			$this->name = lcfirst(preg_replace('/^(get|set|is)/', '', $this->target->name));
+		}
+	}
 
 	/**
 	 * @return bool
