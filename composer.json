@@ -14,15 +14,16 @@
 	{
 		"php": ">=5.6.0",
 		"ext-json": "*",
-		"doctrine/annotations": "1.2.*",
-		"phpdocumentor/reflection-docblock": "2.0.0",
-		"container-interop/container-interop": "1.1.*"
+		"1of0/better-annotations": "^0.1.0",
+		"1of0/phpdoc-reader": "^3.0.0",
+		"doctrine/annotations": "^1.2.0",
+		"container-interop/container-interop": "^1.0.0"
 	},
 	"require-dev":
 	{
-		"php-di/php-di": "5.1.*",
-		"ocramius/proxy-manager": "1.0.*",
-		"phpunit/phpunit": "4.8.*"
+		"php-di/php-di": "^5.1.0",
+		"ocramius/proxy-manager": "^1.0.0",
+		"phpunit/phpunit": "^5.0.0"
 	},
 	"autoload":
 	{

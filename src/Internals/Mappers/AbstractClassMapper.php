@@ -24,27 +24,12 @@ abstract class AbstractClassMapper
 	protected $methods = null;
 
 	/**
-	 * @var bool $explicitInclusion
-	 */
-	public $explicitInclusion = false;
-
-	/**
-	 * @var bool $noMetadata
-	 */
-	public $noMetadata = false;
-
-	/**
 	 * @param ReflectionClass $target
 	 */
-	public function setTarget(ReflectionClass $target)
+	public final function setTarget(ReflectionClass $target)
 	{
 		$this->target = $target;
 	}
-
-	/**
-	 *
-	 */
-	public abstract function map();
 
 	/**
 	 * @return AbstractFieldMapper
@@ -52,9 +37,25 @@ abstract class AbstractClassMapper
 	protected abstract function getFieldMapper();
 
 	/**
+	 * @return bool
+	 */
+	public function wantsExplicitInclusion()
+	{
+		return false;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function wantsNoMetadata()
+	{
+		return false;
+	}
+
+	/**
 	 * @return AbstractFieldMapper[]
 	 */
-	public function getProperties()
+	public final function getProperties()
 	{
 		if ($this->properties === null)
 		{
@@ -67,7 +68,7 @@ abstract class AbstractClassMapper
 	 * @param string $name
 	 * @return AbstractFieldMapper|null
 	 */
-	public function getProperty($name)
+	public final function getProperty($name)
 	{
 		$property = $this->target->getProperty($name);
 		return $property === null ? null : $this->mapField($property);
@@ -76,7 +77,7 @@ abstract class AbstractClassMapper
 	/**
 	 * @return AbstractFieldMapper[]
 	 */
-	public function getMethods()
+	public final function getMethods()
 	{
 		if ($this->methods === null)
 		{
@@ -89,7 +90,7 @@ abstract class AbstractClassMapper
 	 * @param string $name
 	 * @return AbstractFieldMapper|null
 	 */
-	public function getMethod($name)
+	public final function getMethod($name)
 	{
 		$method = $this->target->getMethod($name);
 		return $method === null ? null : $this->mapField($method);
@@ -99,7 +100,7 @@ abstract class AbstractClassMapper
 	 * @param ReflectionProperty[]|ReflectionMethod[] $fields
 	 * @return AbstractFieldMapper[]
 	 */
-	protected function mapFields($fields)
+	private final function mapFields($fields)
 	{
 		$fieldMappings = [];
 
@@ -115,11 +116,11 @@ abstract class AbstractClassMapper
 	 * @param ReflectionProperty|ReflectionMethod $field
 	 * @return AbstractFieldMapper
 	 */
-	protected function mapField($field)
+	private final function mapField($field)
 	{
 		$fieldMapping = $this->getFieldMapper();
+		$fieldMapping->setParent($this);
 		$fieldMapping->setTarget($field);
-		$fieldMapping->map();
 		return $fieldMapping;
 	}
 }

@@ -10,31 +10,33 @@
 namespace OneOfZero\Json\Internals\Mappers;
 
 use Doctrine\Common\Annotations\Annotation;
-use Doctrine\Common\Annotations\AnnotationReader;
-use OneOfZero\Json\Annotations;
+use OneOfZero\BetterAnnotations\Annotations;
+use OneOfZero\Json\Annotations\ExplicitInclusion;
+use OneOfZero\Json\Annotations\NoMetadata;
 
 class AnnotationClassMapper extends AbstractClassMapper
 {
 	/**
-	 * @var AnnotationReader $reader
+	 * @var Annotations $annotations
 	 */
-	private $reader;
+	private $annotations;
 
 	/**
 	 * @param AnnotationReader $reader
 	 */
-	public function __construct(AnnotationReader $reader)
+	public function __construct(Annotations $reader)
 	{
-		$this->reader = $reader;
+		$this->annotations = $reader;
 	}
 
-	/**
-	 *
-	 */
-	public function map()
+	public function wantsExplicitInclusion()
 	{
-		$this->explicitInclusion = $this->hasAnnotation(Annotations\ExplicitInclusion::class);
-		$this->noMetadata = $this->hasAnnotation(Annotations\NoMetadata::class);
+		return $this->annotations->has($this->target, ExplicitInclusion::class);
+	}
+
+	public function wantsNoMetadata()
+	{
+		return $this->annotations->has($this->target, NoMetadata::class);
 	}
 
 	/**
@@ -42,15 +44,6 @@ class AnnotationClassMapper extends AbstractClassMapper
 	 */
 	protected function getFieldMapper()
 	{
-		return new AnnotationFieldMapper($this->reader);
-	}
-
-	/**
-	 * @param string $annotationClass
-	 * @return bool
-	 */
-	private function hasAnnotation($annotationClass)
-	{
-		return $this->reader->getClassAnnotation($this->target, $annotationClass) !== null;
+		return new AnnotationFieldMapper($this->annotations);
 	}
 }
