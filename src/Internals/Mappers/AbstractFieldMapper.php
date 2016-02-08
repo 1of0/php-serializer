@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Copyright (c) 2015 Bernardo van der Wal
+ * MIT License
+ *
+ * Refer to the LICENSE file for the full copyright notice.
+ */
+
 namespace OneOfZero\Json\Internals\Mappers;
 
 use Closure;
@@ -7,6 +14,9 @@ use ReflectionMethod;
 use ReflectionParameter;
 use ReflectionProperty;
 
+/**
+ * Abstract implementation of a mapper that maps the serialization metadata for a property or method.
+ */
 abstract class AbstractFieldMapper
 {
 	const GETTER_REGEX = '/^(?<prefix>get|is|has)/';
@@ -14,42 +24,42 @@ abstract class AbstractFieldMapper
 	const GETTER_SETTER_REGEX = '/^(?<prefix>get|is|has|set)/';
 
 	/**
+	 * Holds the parent context.
+	 * 
 	 * @var AbstractClassMapper $parent
 	 */
 	protected $parent;
 
 	/**
+	 * Holds the target field.
+	 * 
 	 * @var ReflectionProperty|ReflectionMethod $target
 	 */
 	protected $target;
 
 	/**
-	 * @var bool $hasType
-	 */
-	public $hasType;
-
-	/**
-	 * @var string $type
-	 */
-	public $type;
-
-	/**
+	 * Sets the provided parent context.
+	 * 
 	 * @param AbstractClassMapper $parent
 	 */
-	public function setParent($parent)
+	public final function setParent($parent)
 	{
 		$this->parent = $parent;
 	}
 
 	/**
+	 * Sets the provided target context.
+	 * 
 	 * @param ReflectionProperty|ReflectionMethod $target
 	 */
-	public function setTarget($target)
+	public final function setTarget($target)
 	{
 		$this->target = $target;
 	}
 
 	/**
+	 * Should return the name that will be used for the JSON property.
+	 * 
 	 * @return string
 	 */
 	public function getName()
@@ -67,6 +77,8 @@ abstract class AbstractFieldMapper
 	}
 
 	/**
+	 * Should return the type of the field as a fully qualified class name.
+	 * 
 	 * @return string|null
 	 */
 	public function getType()
@@ -101,6 +113,8 @@ abstract class AbstractFieldMapper
 	}
 
 	/**
+	 * Should return a boolean value indicating whether or not the field is an array.
+	 * 
 	 * @return bool
 	 */
 	public function isArray()
@@ -109,6 +123,8 @@ abstract class AbstractFieldMapper
 	}
 
 	/**
+	 * Should return a boolean value indicating whether or not the mapped field is a getter.
+	 * 
 	 * @return bool
 	 */
 	public function isGetter()
@@ -128,6 +144,8 @@ abstract class AbstractFieldMapper
 	}
 
 	/**
+	 * Should return a boolean value indicating whether or not the mapped field is a setter.
+	 * 
 	 * @return bool
 	 */
 	public function isSetter()
@@ -147,6 +165,8 @@ abstract class AbstractFieldMapper
 	}
 
 	/**
+	 * Should return a boolean value indicating whether or not the field is a reference.
+	 * 
 	 * @return bool
 	 */
 	public function isReference()
@@ -155,6 +175,8 @@ abstract class AbstractFieldMapper
 	}
 
 	/**
+	 * Should return a boolean value indicating whether or not the field should be initialized lazily when deserialized.
+	 * 
 	 * @return bool
 	 */
 	public function isReferenceLazy()
@@ -163,6 +185,8 @@ abstract class AbstractFieldMapper
 	}
 
 	/**
+	 * Should return a boolean value indicating whether or not the field has a serializing custom converter configured.
+	 * 
 	 * @return bool
 	 */
 	public function hasSerializingCustomConverter()
@@ -171,6 +195,9 @@ abstract class AbstractFieldMapper
 	}
 
 	/**
+	 * Should return a boolean value indicating whether or not the field has a deserializing custom converter 
+	 * configured.
+	 * 
 	 * @return bool
 	 */
 	public function hasDeserializingCustomConverter()
@@ -179,6 +206,8 @@ abstract class AbstractFieldMapper
 	}
 
 	/**
+	 * Should return the type of the first serializing custom converter for the field.
+	 * 
 	 * @return string|null
 	 */
 	public function getSerializingCustomConverterType()
@@ -187,6 +216,8 @@ abstract class AbstractFieldMapper
 	}
 
 	/**
+	 * Should return the type of the first deserializing custom converter for the field.
+	 * 
 	 * @return string|null
 	 */
 	public function getDeserializingCustomConverterType()
@@ -195,6 +226,8 @@ abstract class AbstractFieldMapper
 	}
 
 	/**
+	 * Should return a boolean value indicating whether or not the field is configured to be serialized.
+	 * 
 	 * @return bool
 	 */
 	public function doesSerialization()
@@ -208,6 +241,8 @@ abstract class AbstractFieldMapper
 	}
 
 	/**
+	 * Should return a boolean value indicating whether or not the field is configured to be deserialized.
+	 * 
 	 * @return bool
 	 */
 	public function doesDeserialization()
@@ -221,6 +256,9 @@ abstract class AbstractFieldMapper
 	}
 
 	/**
+	 * Should return a boolean value indicating whether or not the field is included in serialization and 
+	 * deserialization.
+	 * 
 	 * @return bool
 	 */
 	public function isIncluded()
@@ -250,7 +288,7 @@ abstract class AbstractFieldMapper
 	 *
 	 * @return bool
 	 */
-	public function isClassProperty()
+	protected final function isClassProperty()
 	{
 		return $this->target instanceof ReflectionProperty;
 	}
@@ -260,7 +298,7 @@ abstract class AbstractFieldMapper
 	 *
 	 * @return bool
 	 */
-	public function isClassMethod()
+	protected final function isClassMethod()
 	{
 		return $this->target instanceof ReflectionMethod;
 	}
@@ -274,7 +312,7 @@ abstract class AbstractFieldMapper
 	 *
 	 * @return bool
 	 */
-	protected function isSupportedType($type)
+	protected final function isSupportedType($type)
 	{
 		return class_exists($type) && $type !== Closure::class;
 	}
@@ -286,7 +324,7 @@ abstract class AbstractFieldMapper
 	 *
 	 * @return string
 	 */
-	protected function getMethodPrefix()
+	protected final function getMethodPrefix()
 	{
 		if ($this->isClassMethod() && preg_match(self::GETTER_SETTER_REGEX, $this->target->name, $matches))
 		{

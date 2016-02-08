@@ -22,11 +22,11 @@ class AnnotationClassMapper extends AbstractClassMapper
 	private $annotations;
 
 	/**
-	 * @param AnnotationReader $reader
+	 * @param Annotations $annotations
 	 */
-	public function __construct(Annotations $reader)
+	public function __construct(Annotations $annotations)
 	{
-		$this->annotations = $reader;
+		$this->annotations = $annotations;
 	}
 
 	public function wantsExplicitInclusion()

@@ -97,7 +97,7 @@ class Member
 	 * @var SerializedMember $serializedMember
 	 */
 	private $serializedMember;
-
+	
 	/**
 	 * @param SerializerContext $context
 	 * @param ReflectionContext $parentContext
@@ -162,7 +162,10 @@ class Member
 
 		if ($this->isReference)
 		{
-			$value = $this->getReference($this->value);
+			$value = $this->isArray 
+				? $this->getReferenceArray($this->value) 
+				: $this->getReference($this->value)
+			;
 			$valueSet = true;
 		}
 
@@ -239,30 +242,14 @@ class Member
 
 	/**
 	 * @param mixed $value
-	 * @param bool $isArrayItem
 	 * @return array|null
 	 * @throws ReferenceException
 	 */
-	private function getReference($value, $isArrayItem = false)
+	private function getReference($value)
 	{
 		if ($value === null)
 		{
 			return null;
-		}
-
-		if (!$isArrayItem && $this->isArray)
-		{
-			if (!is_array($value))
-			{
-				throw new ReferenceException("Property {$this->name} in class {$this->parentContext->reflector->name} is marked as an array, but does not hold an array");
-			}
-
-			$references = [];
-			foreach ($value as $item)
-			{
-				$references[] = $this->getReference($item, true);
-			}
-			return $references;
 		}
 
 		if (!($value instanceof ReferableInterface))
@@ -280,6 +267,26 @@ class Member
 		Metadata::set($reference, Metadata::TYPE, $type);
 		Metadata::set($reference, Metadata::ID, $value->getId());
 		return $reference;
+	}
+
+	/**
+	 * @param array $array
+	 * @return array
+	 * @throws ReferenceException
+	 */
+	private function getReferenceArray($array)
+	{
+		if (!is_array($array))
+		{
+			throw new ReferenceException("Property {$this->name} in class {$this->parentContext->reflector->name} is marked as an array, but does not hold an array");
+		}
+
+		$references = [];
+		foreach ($array as $item)
+		{
+			$references[] = $this->getReference($item);
+		}
+		return $references;
 	}
 
 	/**
