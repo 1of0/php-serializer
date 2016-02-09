@@ -14,7 +14,7 @@ use OneOfZero\Json\ReferenceResolverInterface;
 
 class ProxyHelper
 {
-	const PROXY_INTERFACES = [
+	private static $proxyInterfaces = [
 		'ProxyManager\Proxy\ProxyInterface'
 	];
 
@@ -37,7 +37,7 @@ class ProxyHelper
 	 */
 	public function isProxy($classOrInstance)
 	{
-		foreach (self::PROXY_INTERFACES as $proxyInterface)
+		foreach (self::$proxyInterfaces as $proxyInterface)
 		{
 			if (in_array($proxyInterface, class_implements($classOrInstance)))
 			{
