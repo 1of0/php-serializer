@@ -11,7 +11,7 @@ namespace OneOfZero\Json\Internals;
 
 use Doctrine\Common\Annotations\Annotation;
 use OneOfZero\Json\Annotations\AbstractName;
-use OneOfZero\Json\Annotations\CustomConverter;
+use OneOfZero\Json\Annotations\Converter;
 use OneOfZero\Json\Annotations\ExplicitInclusion;
 use OneOfZero\Json\Annotations\Getter;
 use OneOfZero\Json\Annotations\Ignore;
@@ -21,7 +21,7 @@ use OneOfZero\Json\Annotations\Property;
 use OneOfZero\Json\Annotations\Setter;
 use OneOfZero\Json\Annotations\Type;
 use OneOfZero\Json\Configuration;
-use OneOfZero\Json\CustomMemberConverterInterface;
+use OneOfZero\Json\AbstractMemberConverter;
 use OneOfZero\Json\Exceptions\ReferenceException;
 use OneOfZero\Json\Exceptions\ResumeSerializationException;
 use OneOfZero\Json\ReferableInterface;
@@ -84,7 +84,7 @@ class Member
 	private $deserialize = true;
 
 	/**
-	 * @var CustomMemberConverterInterface $converter
+	 * @var AbstractMemberConverter $converter
 	 */
 	private $converter;
 
@@ -501,7 +501,7 @@ class Member
 	 */
 	private function detectCustomConverter()
 	{
-		$converterAnnotation = $this->getAnnotation(CustomConverter::class);
+		$converterAnnotation = $this->getAnnotation(Converter::class);
 		if ($converterAnnotation)
 		{
 			$this->converter = $this->context->getInstance($converterAnnotation->value);

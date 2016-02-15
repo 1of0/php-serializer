@@ -9,7 +9,7 @@
 
 namespace OneOfZero\Json\Test\FixtureClasses;
 
-use OneOfZero\Json\Annotations\CustomConverter;
+use OneOfZero\Json\Annotations\Converter;
 
 /**
  * @CustomConverter(CustomObjectConverter::class)

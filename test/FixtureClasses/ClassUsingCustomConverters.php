@@ -13,7 +13,7 @@ use DateTime;
 use OneOfZero\Json\Annotations\Getter;
 use OneOfZero\Json\Annotations\Setter;
 use OneOfZero\Json\Annotations\Type;
-use OneOfZero\Json\Annotations\CustomConverter;
+use OneOfZero\Json\Annotations\Converter;
 use /** @noinspection PhpUnusedAliasInspection */OneOfZero\Json\Converters\DateTimeConverter;
 
 class ClassUsingCustomConverters

@@ -9,9 +9,9 @@
 
 namespace OneOfZero\Json\Internals;
 
-use OneOfZero\Json\Annotations\CustomConverter;
+use OneOfZero\Json\Annotations\Converter;
 use OneOfZero\Json\Annotations\NoMetadata;
-use OneOfZero\Json\CustomObjectConverterInterface;
+use OneOfZero\Json\AbstractObjectConverter;
 use OneOfZero\Json\Exceptions\ReferenceException;
 use OneOfZero\Json\Exceptions\ResumeSerializationException;
 use OneOfZero\Json\Exceptions\SerializationException;
@@ -241,13 +241,14 @@ class MemberWalker
 	/**
 	 * @param ReflectionClass $class
 	 * @param bool $isSerializing
-	 * @return null|CustomObjectConverterInterface
+	 *
+*@return null|AbstractObjectConverter
 	 * @throws SerializationException
 	 */
 	private function getClassCustomConverter(ReflectionClass $class = null, $isSerializing = true)
 	{
-		/** @var CustomConverter $annotation */
-		/** @var CustomObjectConverterInterface $converter */
+		/** @var Converter $annotation */
+		/** @var AbstractObjectConverter $converter */
 
 		if (!$class)
 		{
@@ -255,14 +256,14 @@ class MemberWalker
 		}
 
 		$annotationReader = $this->serializationContext->getAnnotationReader();
-		$annotation = $annotationReader->getClassAnnotation($class, CustomConverter::class);
+		$annotation = $annotationReader->getClassAnnotation($class, Converter::class);
 		if ($annotation)
 		{
 			if (($annotation->serialize && $isSerializing) || ($annotation->deserialize && !$isSerializing))
 			{
 				$converter = $this->serializationContext->getInstance($annotation->value);
 
-				if (!($converter instanceof CustomObjectConverterInterface))
+				if (!($converter instanceof AbstractObjectConverter))
 				{
 					throw new SerializationException('Converters that operate at class level must implement the CustomObjectConverterInterface interface');
 				}

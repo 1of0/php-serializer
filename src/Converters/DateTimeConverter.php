@@ -10,11 +10,11 @@
 namespace OneOfZero\Json\Converters;
 
 use DateTime;
-use OneOfZero\Json\CustomMemberConverterInterface;
+use OneOfZero\Json\AbstractMemberConverter;
 use OneOfZero\Json\Internals\DeserializationState;
 use OneOfZero\Json\Internals\SerializationState;
 
-class DateTimeConverter implements CustomMemberConverterInterface
+class DateTimeConverter implements AbstractMemberConverter
 {
 	/**
 	 * @param string $class

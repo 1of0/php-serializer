@@ -12,7 +12,7 @@ namespace OneOfZero\Json\Internals\Mappers;
 use Doctrine\Common\Annotations\Annotation;
 use OneOfZero\BetterAnnotations\Annotations;
 use OneOfZero\Json\Annotations\AbstractName;
-use OneOfZero\Json\Annotations\CustomConverter;
+use OneOfZero\Json\Annotations\Converter;
 use OneOfZero\Json\Annotations\Getter;
 use OneOfZero\Json\Annotations\Ignore;
 use OneOfZero\Json\Annotations\IsArray;
@@ -24,7 +24,7 @@ use OneOfZero\Json\Exceptions\SerializationException;
 use OneOfZero\PhpDocReader\PhpDocReader;
 use ReflectionParameter;
 
-class AnnotationFieldMapper extends AbstractFieldMapper
+class MemberAnnotationMapper extends AbstractMemberMapper
 {
 	/**
 	 * @var Annotations $annotations
@@ -37,9 +37,9 @@ class AnnotationFieldMapper extends AbstractFieldMapper
 	private $docReader;
 
 	/**
-	 * @var CustomConverter[] $customConverterAnnotations
+	 * @var Converter[] $converterAnnotations
 	 */
-	private $customConverterAnnotations = null;
+	private $converterAnnotations = null;
 
 	/**
 	 * @param Annotations $annotations
@@ -51,7 +51,7 @@ class AnnotationFieldMapper extends AbstractFieldMapper
 	}
 
 	/**
-	 * @return string
+	 * {@inheritdoc}
 	 */
 	public function getName()
 	{
@@ -66,7 +66,7 @@ class AnnotationFieldMapper extends AbstractFieldMapper
 
 
 	/**
-	 * @return string|null
+	 * {@inheritdoc}
 	 */
 	public function getType()
 	{
@@ -112,7 +112,7 @@ class AnnotationFieldMapper extends AbstractFieldMapper
 	}
 
 	/**
-	 * @return bool
+	 * {@inheritdoc}
 	 */
 	public function isArray()
 	{
@@ -127,7 +127,6 @@ class AnnotationFieldMapper extends AbstractFieldMapper
 
 	/**
 	 * {@inheritdoc}
-	 *
 	 * @throws SerializationException
 	 */
 	public function isGetter()
@@ -149,7 +148,6 @@ class AnnotationFieldMapper extends AbstractFieldMapper
 
 	/**
 	 * {@inheritdoc}
-	 *
 	 * @throws SerializationException
 	 */
 	public function isSetter()
@@ -176,7 +174,7 @@ class AnnotationFieldMapper extends AbstractFieldMapper
 	}
 
 	/**
-	 * @return bool
+	 * {@inheritdoc}
 	 */
 	public function isIncluded()
 	{
@@ -194,7 +192,7 @@ class AnnotationFieldMapper extends AbstractFieldMapper
 	}
 
 	/**
-	 * @return bool
+	 * {@inheritdoc}
 	 */
 	public function isReference()
 	{
@@ -207,7 +205,7 @@ class AnnotationFieldMapper extends AbstractFieldMapper
 	}
 
 	/**
-	 * @return bool
+	 * {@inheritdoc}
 	 */
 	public function isReferenceLazy()
 	{
@@ -221,11 +219,11 @@ class AnnotationFieldMapper extends AbstractFieldMapper
 	}
 
 	/**
-	 * @return bool
+	 * {@inheritdoc}
 	 */
-	public function hasSerializingCustomConverter()
+	public function hasSerializingConverter()
 	{
-		foreach ($this->getCustomConverterAnnotations() as $annotation)
+		foreach ($this->getConverterAnnotations() as $annotation)
 		{
 			if ($annotation->serialize)
 			{
@@ -233,15 +231,15 @@ class AnnotationFieldMapper extends AbstractFieldMapper
 			}
 		}
 		
-		return parent::hasSerializingCustomConverter();
+		return parent::hasSerializingConverter();
 	}
 
 	/**
-	 * @return bool
+	 * {@inheritdoc}
 	 */
-	public function hasDeserializingCustomConverter()
+	public function hasDeserializingConverter()
 	{
-		foreach ($this->getCustomConverterAnnotations() as $annotation)
+		foreach ($this->getConverterAnnotations() as $annotation)
 		{
 			if ($annotation->deserialize)
 			{
@@ -249,15 +247,15 @@ class AnnotationFieldMapper extends AbstractFieldMapper
 			}
 		}
 
-		return parent::hasDeserializingCustomConverter();
+		return parent::hasDeserializingConverter();
 	}
 
 	/**
-	 * @return string
+	 * {@inheritdoc}
 	 */
-	public function getSerializingCustomConverterType()
+	public function getSerializingConverterType()
 	{
-		foreach ($this->getCustomConverterAnnotations() as $annotation)
+		foreach ($this->getConverterAnnotations() as $annotation)
 		{
 			if ($annotation->serialize)
 			{
@@ -265,15 +263,15 @@ class AnnotationFieldMapper extends AbstractFieldMapper
 			}
 		}
 
-		return parent::getSerializingCustomConverterType();
+		return parent::getSerializingConverterType();
 	}
 
 	/**
-	 * @return string
+	 * {@inheritdoc}
 	 */
-	public function getDeserializingCustomConverterType()
+	public function getDeserializingConverterType()
 	{
-		foreach ($this->getCustomConverterAnnotations() as $annotation)
+		foreach ($this->getConverterAnnotations() as $annotation)
 		{
 			if ($annotation->deserialize)
 			{
@@ -281,13 +279,13 @@ class AnnotationFieldMapper extends AbstractFieldMapper
 			}
 		}
 
-		return parent::getDeserializingCustomConverterType();
+		return parent::getDeserializingConverterType();
 	}
 
 	/**
-	 * @return bool
+	 * {@inheritdoc}
 	 */
-	public function doesSerialization()
+	public function isSerializable()
 	{
 		/** @var Property $annotation */
 		if ($annotation = $this->annotations->get($this->target, Property::class))
@@ -295,13 +293,13 @@ class AnnotationFieldMapper extends AbstractFieldMapper
 			return $annotation->serialize;
 		}
 		
-		return parent::doesSerialization();
+		return parent::isSerializable();
 	}
 
 	/**
-	 * @return bool
+	 * {@inheritdoc}
 	 */
-	public function doesDeserialization()
+	public function isDeserializable()
 	{
 		/** @var Property $annotation */
 		if ($annotation = $this->annotations->get($this->target, Property::class))
@@ -309,20 +307,20 @@ class AnnotationFieldMapper extends AbstractFieldMapper
 			return $annotation->deserialize;
 		}
 
-		return parent::doesDeserialization();
+		return parent::isDeserializable();
 	}
 
 	/**
-	 * @return CustomConverter[]
+	 * @return Converter[]
 	 */
-	private function getCustomConverterAnnotations()
+	private function getConverterAnnotations()
 	{
-		if ($this->customConverterAnnotations === null)
+		if ($this->converterAnnotations === null)
 		{
-			$this->customConverterAnnotations = $this->annotations->get($this->target, CustomConverter::class, true);
+			$this->converterAnnotations = $this->annotations->get($this->target, Converter::class, true);
 		}
 
-		return $this->customConverterAnnotations;
+		return $this->converterAnnotations;
 	}
 }
 

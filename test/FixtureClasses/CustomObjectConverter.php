@@ -9,9 +9,9 @@
 
 namespace OneOfZero\Json\Test\FixtureClasses;
 
-use OneOfZero\Json\CustomObjectConverterInterface;
+use OneOfZero\Json\AbstractObjectConverter;
 
-class CustomObjectConverter implements CustomObjectConverterInterface
+class AbstractObjectConverter implements AbstractObjectConverter
 {
 	/**
 	 * @param string $class

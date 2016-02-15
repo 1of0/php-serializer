@@ -16,7 +16,7 @@ use ReflectionProperty;
 /**
  * Abstract implementation of a mapper that maps the serialization metadata for a class.
  */
-abstract class AbstractClassMapper
+abstract class AbstractObjectMapper implements ObjectMapperInterface
 {
 	/**
 	 * Holds the target class.
@@ -28,23 +28,31 @@ abstract class AbstractClassMapper
 	/**
 	 * Holds cached field mappers for the class properties.
 	 * 
-	 * @var AbstractFieldMapper[]|null $properties
+	 * @var AbstractMemberMapper[]|null $properties
 	 */
 	protected $properties = null;
 
 	/**
 	 * Holds cached field mappers for the class methods.
 	 * 
-	 * @var AbstractFieldMapper[]|null $methods
+	 * @var AbstractMemberMapper[]|null $methods
 	 */
 	protected $methods = null;
 
 	/**
-	 * Sets the target context.
-	 * 
+	 * {@inheritdoc}
+	 * @return ReflectionClass
+	 */
+	public function getTarget()
+	{
+		return $this->target;
+	}
+
+	/**
+	 * {@inheritdoc}
 	 * @param ReflectionClass $target
 	 */
-	public final function setTarget(ReflectionClass $target)
+	public final function setTarget($target)
 	{
 		$this->target = $target;
 	}
@@ -52,14 +60,12 @@ abstract class AbstractClassMapper
 	/**
 	 * Should return an instance of an uninitialized field mapper.
 	 * 
-	 * @return AbstractFieldMapper
+	 * @return AbstractMemberMapper
 	 */
-	protected abstract function getFieldMapper();
+	protected abstract function getMemberMapper();
 
 	/**
-	 * Should return a boolean value indicating whether or not fields must be explicitly included.
-	 *
-	 * @return bool
+	 * {@inheritdoc}
 	 */
 	public function wantsExplicitInclusion()
 	{
@@ -67,10 +73,7 @@ abstract class AbstractClassMapper
 	}
 
 	/**
-	 * Should return a boolean value indicating whether or not the serialized representation of the class should bear
-	 * library-specific metadata.
-	 * 
-	 * @return bool
+	 * {@inheritdoc}
 	 */
 	public function wantsNoMetadata()
 	{
@@ -78,25 +81,59 @@ abstract class AbstractClassMapper
 	}
 
 	/**
-	 * Returns field mappers for all class properties.
-	 * 
-	 * @return AbstractFieldMapper[]
+	 * {@inheritdoc}
+	 */
+	public function hasSerializingConverter()
+	{
+		return false;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function hasDeserializingConverter()
+	{
+		return false;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getSerializingConverterType()
+	{
+		return null;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getDeserializingConverterType()
+	{
+		return null;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public final function getMembers()
+	{
+		return array_merge($this->getProperties(), $this->getMethods());
+	}
+
+	/**
+	 * {@inheritdoc}
 	 */
 	public final function getProperties()
 	{
 		if ($this->properties === null)
 		{
-			$this->properties = $this->mapFields($this->target->getProperties());
+			$this->properties = $this->mapMembers($this->target->getProperties());
 		}
 		return $this->properties;
 	}
 
 	/**
-	 * Returns a field mapper for the property with the provided name.
-	 * 
-	 * @param string $name
-	 * 
-	 * @return AbstractFieldMapper|null
+	 * {@inheritdoc}
 	 */
 	public final function getProperty($name)
 	{
@@ -104,32 +141,26 @@ abstract class AbstractClassMapper
 		
 		if ($property !== null)
 		{
-			return $this->mapField($property);
+			return $this->mapMember($property);
 		}
 		
 		return null;
 	}
 
 	/**
-	 * Returns field mappers for all class methods.
-	 * 
-	 * @return AbstractFieldMapper[]
+	 * {@inheritdoc}
 	 */
 	public final function getMethods()
 	{
 		if ($this->methods === null)
 		{
-			$this->methods = $this->mapFields($this->target->getMethods(), true);
+			$this->methods = $this->mapMembers($this->target->getMethods(), true);
 		}
 		return $this->methods;
 	}
 
 	/**
-	 * Returns a field mapper for the method with the provided name.
-	 * 
-	 * @param string $name
-	 * 
-	 * @return AbstractFieldMapper|null
+	 * {@inheritdoc}
 	 */
 	public final function getMethod($name)
 	{
@@ -137,7 +168,7 @@ abstract class AbstractClassMapper
 		
 		if ($method !== null)
 		{
-			return $this->mapField($method); 
+			return $this->mapMember($method);
 		}
 		
 		return null;
@@ -151,9 +182,9 @@ abstract class AbstractClassMapper
 	 * @param ReflectionProperty[]|ReflectionMethod[] $fields
 	 * @param bool $filterMagic
 	 * 
-	 * @return AbstractFieldMapper[]
+	 * @return AbstractMemberMapper[]
 	 */
-	private function mapFields($fields, $filterMagic = false)
+	private function mapMembers($fields, $filterMagic = false)
 	{
 		$fieldMappings = [];
 
@@ -165,7 +196,7 @@ abstract class AbstractClassMapper
 				continue;
 			}
 			
-			$fieldMappings[] = $this->mapField($field);
+			$fieldMappings[] = $this->mapMember($field);
 		}
 
 		return $fieldMappings;
@@ -176,11 +207,11 @@ abstract class AbstractClassMapper
 	 * 
 	 * @param ReflectionProperty|ReflectionMethod $field
 	 * 
-	 * @return AbstractFieldMapper
+	 * @return AbstractMemberMapper
 	 */
-	private function mapField($field)
+	private function mapMember($field)
 	{
-		$fieldMapping = $this->getFieldMapper();
+		$fieldMapping = $this->getMemberMapper();
 		$fieldMapping->setParent($this);
 		$fieldMapping->setTarget($field);
 		return $fieldMapping;

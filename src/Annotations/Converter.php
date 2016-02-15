@@ -15,7 +15,7 @@ use Doctrine\Common\Annotations\Annotation;
  * @Annotation
  * @Target({"CLASS", "PROPERTY", "METHOD"})
  */
-class CustomConverter extends Annotation
+class Converter extends Annotation
 {
 	/**
 	 * @var string $value

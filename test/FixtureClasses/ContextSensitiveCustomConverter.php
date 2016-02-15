@@ -9,11 +9,11 @@
 
 namespace OneOfZero\Json\Test\FixtureClasses;
 
-use OneOfZero\Json\CustomMemberConverterInterface;
+use OneOfZero\Json\AbstractMemberConverter;
 use OneOfZero\Json\Internals\DeserializationState;
 use OneOfZero\Json\Internals\SerializationState;
 
-class ContextSensitiveCustomConverter implements CustomMemberConverterInterface
+class ContextSensitiveAbstractConverter implements AbstractMemberConverter
 {
 	/**
 	 * @param string $class
