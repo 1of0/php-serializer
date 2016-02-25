@@ -200,12 +200,11 @@ class Member
 		}
 
 		$propertyName = $this->serializedMember->propertyName;
-		if (!array_key_exists($propertyName, $serializedParent))
-		{
-			return;
-		}
 
-		$serializedValue = $serializedParent[$propertyName];
+		$serializedValue = array_key_exists($propertyName, $serializedParent)
+			? $serializedParent[$propertyName]
+			: null
+		;
 		$serializedType = $this->getDeserializationType($serializedValue);
 
 		$this->serializedMember->value = $serializedValue;
