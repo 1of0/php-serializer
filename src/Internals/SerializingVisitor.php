@@ -11,43 +11,59 @@ use ReflectionClass;
 class SerializingVisitor extends AbstractVisitor
 {
 	/**
+	 * @param mixed $value
+	 * @param AbstractContext|null $parent
+	 *
+	 * @return mixed
+	 *
+	 * @throws SerializationException
+	 */
+	public function visit($value, AbstractContext $parent = null)
+	{
+		if (is_object($value))
+		{
+			$valueMapper = $this->mapperFactory->mapObject(new ReflectionClass($value));
+
+			$valueContext = (new ObjectContext)
+				->withReflector($valueMapper->getTarget())
+				->withMapper($valueMapper)
+				->withInstance($value)
+				->withParent($parent)
+			;
+
+			return $this->visitObject($valueContext)->getSerializedInstance();
+		}
+
+		if (is_array($value))
+		{
+			$valueContext = (new ArrayContext)
+				->withArray($value)
+				->withParent($parent)
+			;
+
+			return $this->visitArray($valueContext)->getSerializedArray();
+		}
+
+		return $value;
+	}
+
+	/**
 	 * @param ArrayContext $context
 	 *
 	 * @return ArrayContext
+	 *
+	 * @throws SerializationException
 	 */
-	public function visitArray(ArrayContext $context)
+	protected function visitArray(ArrayContext $context)
 	{
 		foreach ($context->getArray() as $key => $value)
 		{
 			if ($value === null)
 			{
-				$context = $context->withSerializedArrayValue(null);
+				$context = $context->withSerializedArrayValue(null, $key);
 			}
-			elseif (is_object($value))
-			{
-				$valueMapper = $this->mapperFactory->mapObject(new ReflectionClass($value));
-
-				$valueContext = (new ObjectContext)
-					->withReflector($valueMapper->getTarget())
-					->withMapper($valueMapper)
-					->withInstance($value)
-				;
-
-				$context = $context->withSerializedArrayValue($this->visitObject($valueContext));
-			}
-			elseif (is_array($value))
-			{
-				$valueContext = (new ArrayContext)
-					->withArray($value)
-					->withParent($context)
-				;
-
-				$context = $context->withSerializedArrayValue($this->visitArray($valueContext));
-			}
-			else
-			{
-				$context = $context->withSerializedArrayValue($value);
-			}
+			
+			$context = $context->withSerializedArrayValue($this->visit($value), $key);
 		}
 
 		return $context;
@@ -56,9 +72,11 @@ class SerializingVisitor extends AbstractVisitor
 	/**
 	 * @param ObjectContext $context
 	 *
-	 * @return ObjectContext
+	 * @return ObjectContext|null
+	 *
+	 * @throws SerializationException
 	 */
-	public function visitObject(ObjectContext $context)
+	protected function visitObject(ObjectContext $context)
 	{
 		$mapper = $context->getMapper();
 
@@ -94,9 +112,9 @@ class SerializingVisitor extends AbstractVisitor
 				->withParent($context)
 			;
 
-			if ($this->visitObjectMember($memberContext))
+			if ($result = $this->visitObjectMember($memberContext))
 			{
-				$context = $context->withSerializedMember($memberMapper->getName(), $memberContext->getSerializedValue());
+				$context = $context->withSerializedInstanceMember($memberMapper->getName(), $result->getSerializedValue());
 			}
 		}
 		
@@ -110,9 +128,10 @@ class SerializingVisitor extends AbstractVisitor
 	 *
 	 * @throws SerializationException
 	 */
-	private function visitObjectMember(MemberContext $context)
+	protected function visitObjectMember(MemberContext $context)
 	{
 		$mapper = $context->getMapper();
+		$value = $context->getValue();
 
 		if (!$mapper->isIncluded() || !$mapper->isSerializable())
 		{
@@ -132,33 +151,17 @@ class SerializingVisitor extends AbstractVisitor
 			}
 		}
 
-		if ($context->getValue() !== null)
+		if ($value === null)
 		{
-			if ($mapper->isReference())
-			{
-				return $context->withSerializedValue($this->createReference($context));
-			}
-
-			$value = $context->getValue();
-			$valueReflector = new ReflectionClass($value);
-
-			$valueContext = (new ObjectContext)
-				->withInstance($value)
-				->withReflector($valueReflector)
-				->withMapper($this->mapperFactory->mapObject($valueReflector))
-				->withParent($context)
-			;
-
-			$this->visitObject($valueContext);
-			$context = $context->withSerializedValue($valueContext->getSerializedInstance());
+			return $this->configuration->includeNullValues ? $context : null;
 		}
 
-		if (!$this->configuration->includeNullValues && $context->getSerializedValue() === null)
+		if ($mapper->isReference())
 		{
-			return null;
+			return $context->withSerializedValue($this->createReference($context));
 		}
 
-		return $context;
+		return $context->withSerializedValue($this->visit($value));
 	}
 
 	/**
@@ -168,7 +171,7 @@ class SerializingVisitor extends AbstractVisitor
 	 *
 	 * @throws ReferenceException
 	 */
-	private function createReference(MemberContext $context)
+	protected function createReference(MemberContext $context)
 	{
 		if ($context->getMapper()->isArray())
 		{
@@ -185,7 +188,7 @@ class SerializingVisitor extends AbstractVisitor
 	 *
 	 * @throws ReferenceException
 	 */
-	private function createReferenceArray(MemberContext $context)
+	protected function createReferenceArray(MemberContext $context)
 	{
 		$propertyName = $context->getReflector()->name;
 		$className = $context->getParent()->getReflector()->name;
@@ -211,7 +214,7 @@ class SerializingVisitor extends AbstractVisitor
 	 *
 	 * @throws ReferenceException
 	 */
-	private function createReferenceItem(MemberContext $context, $value)
+	protected function createReferenceItem(MemberContext $context, $value)
 	{
 		$propertyName = $context->getReflector()->name;
 		$className = $context->getParent()->getReflector()->name;
@@ -238,13 +241,19 @@ class SerializingVisitor extends AbstractVisitor
 	 *
 	 * @return string|null
 	 */
-	private function getType(MemberContext $context)
+	protected function getType(MemberContext $context)
 	{
-		if ($context->getMapper()->getType() === null && is_object($context->getValue()))
+		if ($context->getMapper()->getType() !== null)
+		{
+			return $context->getMapper()->getType();
+		}
+		elseif (is_object($context->getValue()))
 		{
 			return get_class($context->getValue());
 		}
-
-		return null;
+		else
+		{
+			return null;
+		}
 	}
 }

@@ -27,6 +27,8 @@ class AnnotationMapperFactory implements MapperFactoryInterface
 	 */
 	public function mapObject(ReflectionClass $reflector)
 	{
-		return new ObjectAnnotationMapper($this->annotations);
+		$mapper = new ObjectAnnotationMapper($this->annotations);
+		$mapper->setTarget($reflector);
+		return $mapper;
 	}
 }

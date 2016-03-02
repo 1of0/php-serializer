@@ -2,9 +2,7 @@
 
 namespace OneOfZero\Json\Exceptions;
 
-use Exception;
-
-class ConverterException extends Exception
+class ConverterException extends SerializationException
 {
 
 }

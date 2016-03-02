@@ -18,7 +18,7 @@ use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
 
 class CustomConverterTests extends AbstractTest
 {
-	public function testCustomConverters()
+	/*public function testCustomConverters()
 	{
 		$date = new DateTime();
 
@@ -64,5 +64,5 @@ class CustomConverterTests extends AbstractTest
 
 		$deserialized = JsonConvert::fromJson($json);
 		$this->assertObjectEquals($object, $deserialized);
-	}
+	}*/
 }

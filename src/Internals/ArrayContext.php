@@ -16,13 +16,45 @@ class ArrayContext extends AbstractContext
 
 	/**
 	 * @param mixed $value
+	 * @param string|null $key
 	 *
-	 * @return self
+	 * @return static
 	 */
-	public function withSerializedArrayValue($value)
+	public function withArrayValue($value, $key = null)
 	{
 		$new = clone $this;
-		$new->serializedArray[] = $value;
+
+		if (func_num_args() === 1)
+		{
+			$new->array[] = $value;
+		}
+		else
+		{
+			$new->array[$key] = $value;
+		}
+
+		return $new;
+	}
+
+	/**
+	 * @param mixed $value
+	 * @param string|null $key
+	 *
+	 * @return static
+	 */
+	public function withSerializedArrayValue($value, $key = null)
+	{
+		$new = clone $this;
+
+		if (func_num_args() === 1)
+		{
+			$new->serializedArray[] = $value;
+		}
+		else
+		{
+			$new->serializedArray[$key] = $value;
+		}
+
 		return $new;
 	}
 

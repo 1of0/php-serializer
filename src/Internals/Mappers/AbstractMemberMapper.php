@@ -76,9 +76,31 @@ abstract class AbstractMemberMapper implements MemberMapperInterface
 			return $this->target->getValue($instance);
 		}
 
-		if ($this->isClassMethod())
+		if ($this->isClassMethod() && $this->isGetter())
 		{
 			return $this->target->invoke($instance);
+		}
+
+		throw new RuntimeException('Member\'s reflection target is not a property nor a method; this should never happen');
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setValue($instance, $value)
+	{
+		$this->target->setAccessible(true);
+
+		if ($this->isClassProperty())
+		{
+			$this->target->setValue($instance, $value);
+			return;
+		}
+
+		if ($this->isClassMethod() && $this->isSetter())
+		{
+			$this->target->invoke($instance, $value);
+			return;
 		}
 
 		throw new RuntimeException('Member\'s reflection target is not a property nor a method; this should never happen');

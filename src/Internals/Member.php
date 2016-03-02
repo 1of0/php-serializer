@@ -380,8 +380,8 @@ class Member
 		}
 		else
 		{
-			$defaultResolutionType = $this->context->getConfiguration()->defaultResolutionType;
-			$this->lazyResolution = ($defaultResolutionType === Configuration::RESOLVE_LAZY);
+			$resolutionStrategy = $this->context->getConfiguration()->defaultReferenceResolutionStrategy;
+			$this->lazyResolution = ($resolutionStrategy === Configuration::RESOLVE_LAZY);
 		}
 	}
 

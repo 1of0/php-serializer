@@ -9,9 +9,7 @@
 
 namespace OneOfZero\Json\Exceptions;
 
-use Exception;
-
-class ReferenceException extends Exception
+class ReferenceException extends SerializationException
 {
 
 }

@@ -10,7 +10,7 @@ abstract class AbstractContext
 	protected $parent;
 
 	/**
-	 * @param AbstractContext $parent
+	 * @param AbstractContext|null $parent
 	 *
 	 * @return self
 	 */

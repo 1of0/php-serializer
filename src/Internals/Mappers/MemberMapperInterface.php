@@ -34,6 +34,14 @@ interface MemberMapperInterface extends MapperInterface
 	public function getValue($instance);
 
 	/**
+	 * Sets the provided value on this member of the provided instance.
+	 *
+	 * @param object $instance
+	 * @param mixed $value
+	 */
+	public function setValue($instance, $value);
+
+	/**
 	 * Should return the name that will be used for the JSON property.
 	 *
 	 * @return string
