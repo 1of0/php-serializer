@@ -13,6 +13,7 @@ use Closure;
 use ReflectionMethod;
 use ReflectionParameter;
 use ReflectionProperty;
+use RuntimeException;
 
 /**
  * Abstract implementation of a mapper that maps the serialization metadata for a property or method.
@@ -61,6 +62,26 @@ abstract class AbstractMemberMapper implements MemberMapperInterface
 	public final function setTarget($target)
 	{
 		$this->target = $target;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getValue($instance)
+	{
+		$this->target->setAccessible(true);
+
+		if ($this->isClassProperty())
+		{
+			return $this->target->getValue($instance);
+		}
+
+		if ($this->isClassMethod())
+		{
+			return $this->target->invoke($instance);
+		}
+
+		throw new RuntimeException('Member\'s reflection target is not a property nor a method; this should never happen');
 	}
 
 	/**

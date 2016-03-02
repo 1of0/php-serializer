@@ -6,17 +6,17 @@ use OneOfZero\Json\Internals\Mappers\MemberMapperInterface;
 use ReflectionMethod;
 use ReflectionProperty;
 
-class MemberContext
+class MemberContext extends AbstractContext
 {
 	/**
 	 * @var mixed $value
 	 */
-	public $value;
+	private $value;
 
 	/**
 	 * @var mixed $serializedValue
 	 */
-	public $serializedValue;
+	private $serializedValue;
 
 	/**
 	 * @var ReflectionMethod|ReflectionProperty $reflector
@@ -29,30 +29,81 @@ class MemberContext
 	private $mapper;
 
 	/**
-	 * @var ObjectContext $parentContext
+	 * @return ObjectContext
 	 */
-	private $parentContext;
+	public function getParent()
+	{
+		return parent::getParent();
+	}
+	
+	#region // Generic immutability helpers
 
 	/**
 	 * @param mixed $value
-	 * @param mixed $serializedValue
-	 * @param ReflectionMethod|ReflectionProperty $reflector
-	 * @param MemberMapperInterface $mapper
-	 * @param ObjectContext $parentContext
+	 *
+	 * @return self
 	 */
-	public function __construct(
-		$value,
-		$serializedValue,
-		$reflector,
-		MemberMapperInterface $mapper,
-		ObjectContext $parentContext
-	)
+	public function withValue($value)
 	{
-		$this->value = $value;
-		$this->serializedValue = $serializedValue;
-		$this->reflector = $reflector;
-		$this->mapper = $mapper;
-		$this->parentContext = $parentContext;
+		$new = clone $this;
+		$new->value = $value;
+		return $new;
+	}
+
+	/**
+	 * @param mixed $value
+	 *
+	 * @return self
+	 */
+	public function withSerializedValue($value)
+	{
+		$new = clone $this;
+		$new->serializedValue = $value;
+		return $new;
+	}
+
+	/**
+	 * @param ReflectionProperty|ReflectionMethod $reflector
+	 *
+	 * @return self
+	 */
+	public function withReflector($reflector)
+	{
+		$new = clone $this;
+		$new->reflector = $reflector;
+		return $new;
+	}
+
+	/**
+	 * @param MemberMapperInterface $mapper
+	 *
+	 * @return self
+	 */
+	public function withMapper(MemberMapperInterface $mapper)
+	{
+		$new = clone $this;
+		$new->mapper = $mapper;
+		return $new;
+	}
+
+	#endregion
+
+	#region // Generic getters and setters
+
+	/**
+	 * @return mixed
+	 */
+	public function getValue()
+	{
+		return $this->value;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getSerializedValue()
+	{
+		return $this->serializedValue;
 	}
 
 	/**
@@ -71,11 +122,5 @@ class MemberContext
 		return $this->mapper;
 	}
 
-	/**
-	 * @return ObjectContext
-	 */
-	public function getParentContext()
-	{
-		return $this->parentContext;
-	}
+	#endregion
 }

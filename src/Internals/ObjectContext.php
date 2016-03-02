@@ -4,18 +4,24 @@ namespace OneOfZero\Json\Internals;
 
 use OneOfZero\Json\Internals\Mappers\ObjectMapperInterface;
 use ReflectionClass;
+use RuntimeException;
 
-class ObjectContext
+class ObjectContext extends AbstractContext
 {
 	/**
 	 * @var mixed $instance
 	 */
-	public $instance;
+	private $instance;
 
 	/**
 	 * @var array $serializedInstance
 	 */
-	public $serializedInstance;
+	private $serializedInstance;
+
+	/**
+	 * @var array $metadata
+	 */
+	private $metadata;
 
 	/**
 	 * @var ReflectionClass $reflector
@@ -28,30 +34,119 @@ class ObjectContext
 	private $mapper;
 
 	/**
-	 * @var MemberContext|null $parentContext
+	 * @param string $name
+	 * @param mixed $value
+	 *
+	 * @return self
 	 */
-	private $parentContext;
+	public function withSerializedMember($name, $value)
+	{
+		if ($this->serializedInstance !== null && !is_array($this->serializedInstance))
+		{
+			throw new RuntimeException('Cannot set members when the serialized instance is not an array type');
+		}
+
+		$new = clone $this;
+		$new->serializedInstance[$name] = $value;
+		return $new;
+	}
 
 	/**
-	 * @param mixed $instance
-	 * @param array $serializedInstance
-	 * @param ReflectionClass $reflector
-	 * @param ObjectMapperInterface $mapper
-	 * @param MemberContext|null $parentContext
+	 * @param string $key
+	 * @param mixed $value
+	 *
+	 * @return self
 	 */
-	public function __construct(
-		$instance,
-		array $serializedInstance,
-		ReflectionClass $reflector,
-		ObjectMapperInterface $mapper,
-		MemberContext $parentContext = null
-	)
+	public function withMetadata($key, $value)
 	{
-		$this->instance = $instance;
-		$this->serializedInstance = $serializedInstance;
-		$this->reflector = $reflector;
-		$this->mapper = $mapper;
-		$this->parentContext = $parentContext;
+		$new = clone $this;
+		$new->metadata[$key] = $value;
+		return $new;
+	}
+
+	/**
+	 * @param bool $includeMetadata
+	 *
+	 * @return array
+	 */
+	public function getSerializedInstance($includeMetadata = false)
+	{
+		if ($includeMetadata && is_array($this->serializedInstance))
+		{
+			return array_merge($this->metadata, $this->serializedInstance);
+		}
+
+		return $this->serializedInstance;
+	}
+
+	#region // Generic immutability helpers
+
+	/**
+	 * @param object $instance
+	 *
+	 * @return self
+	 */
+	public function withInstance($instance)
+	{
+		$new = clone $this;
+		$new->instance = $instance;
+		return $new;
+	}
+
+	/**
+	 * @param mixed $serializedInstance
+	 *
+	 * @return self
+	 */
+	public function withSerializedInstance($serializedInstance)
+	{
+		$new = clone $this;
+		$new->serializedInstance = $serializedInstance;
+		return $new;
+	}
+
+	/**
+	 * @param ReflectionClass $reflector
+	 *
+	 * @return self
+	 */
+	public function withReflector(ReflectionClass $reflector)
+	{
+		$new = clone $this;
+		$new->reflector = $reflector;
+		return $new;
+	}
+
+	/**
+	 * @param ObjectMapperInterface $mapper
+	 *
+	 * @return self
+	 */
+	public function withMapper(ObjectMapperInterface $mapper)
+	{
+		$new = clone $this;
+		$new->mapper = $mapper;
+		return $new;
+	}
+	
+	#endregion
+
+	#region // Generic getters and setters
+
+	/**
+	 * @return mixed
+	 */
+	public function getInstance()
+	{
+		return $this->instance;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getMetadata()
+	{
+		return $this->metadata;
 	}
 
 	/**
@@ -70,11 +165,5 @@ class ObjectContext
 		return $this->mapper;
 	}
 
-	/**
-	 * @return null|MemberContext
-	 */
-	public function getParentContext()
-	{
-		return $this->parentContext;
-	}
+	#endregion
 }

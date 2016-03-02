@@ -31,11 +31,7 @@ abstract class AbstractVisitor
 	 * @param MapperFactoryInterface $mapperFactory
 	 * @param ContainerInterface|null $container
 	 */
-	public function __construct(
-		Configuration $configuration,
-		MapperFactoryInterface $mapperFactory,
-		ContainerInterface $container = null
-	)
+	public function __construct(Configuration $configuration, MapperFactoryInterface $mapperFactory, ContainerInterface $container = null)
 	{
 		$this->configuration = $configuration;
 		$this->mapperFactory = $mapperFactory;

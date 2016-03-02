@@ -15,7 +15,9 @@ use OneOfZero\Json\Internals\MemberContext;
 abstract class AbstractMemberConverter
 {
 	/**
-	 * Should return a serialized representation of the value in the provided member context.
+	 * Should return a representation of the member value in the provided member context.
+	 *
+	 * The return value should be a type or structure that is serializable by json_encode().
 	 *
 	 * @param MemberContext $context
 	 *

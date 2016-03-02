@@ -2,40 +2,75 @@
 
 namespace OneOfZero\Json\Internals;
 
-class ArrayContext
+class ArrayContext extends AbstractContext
 {
 	/**
 	 * @var array $array
 	 */
-	public $array;
+	private $array;
 
 	/**
 	 * @var array $serializedArray
 	 */
-	public $serializedArray;
+	private $serializedArray;
 
 	/**
-	 * @var MemberContext|null $parentContext
+	 * @param mixed $value
+	 *
+	 * @return self
 	 */
-	private $parentContext;
+	public function withSerializedArrayValue($value)
+	{
+		$new = clone $this;
+		$new->serializedArray[] = $value;
+		return $new;
+	}
+
+	#region // Generic immutability helpers
 
 	/**
 	 * @param array $array
-	 * @param array $serializedArray
-	 * @param MemberContext|null $parentContext
+	 *
+	 * @return self
 	 */
-	public function __construct(array $array, array $serializedArray, $parentContext)
+	public function withArray(array $array)
 	{
-		$this->array = $array;
-		$this->serializedArray = $serializedArray;
-		$this->parentContext = $parentContext;
+		$new = clone $this;
+		$new->array = $array;
+		return $new;
 	}
 
 	/**
-	 * @return MemberContext|null
+	 * @param array $array
+	 *
+	 * @return self
 	 */
-	public function getParentContext()
+	public function withSerializedArray(array $array)
 	{
-		return $this->parentContext;
+		$new = clone $this;
+		$new->serializedArray = $array;
+		return $new;
 	}
+
+	#endregion
+
+	#region // Generic getters and setters
+
+	/**
+	 * @return array
+	 */
+	public function getArray()
+	{
+		return $this->array;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getSerializedArray()
+	{
+		return $this->serializedArray;
+	}
+
+	#endregion
 }
