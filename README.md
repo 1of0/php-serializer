@@ -61,7 +61,7 @@ available.
 
 Much like [Json.NET's custom converters](http://www.newtonsoft.com/json/help/html/CustomJsonConverter.htm), this library
 also allows you to build and specify custom converters for specified properties. Refer to the
-`CustomMemberConverterInterface` interface, `CustomObjectConverterInterface` interface and `@CustomConverter` annotation
+`CustomMemberConverterInterface` interface, `CustomObjectConverterInterface` interface and `@Converter` annotation
 in the [documentation](documentation.md) for this feature.
 
 ### Reference properties

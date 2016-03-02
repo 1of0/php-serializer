@@ -15,8 +15,13 @@ use OneOfZero\Json\Annotations\Converter;
 use OneOfZero\Json\Annotations\ExplicitInclusion;
 use OneOfZero\Json\Annotations\NoMetadata;
 
-class ObjectAnnotationMapper extends AbstractObjectMapper
+/**
+ * Implementation of a mapper that maps the serialization metadata for a class using annotations.
+ */
+class AnnotationObjectMapper implements ObjectMapperInterface
 {
+	use BaseObjectMapperTrait;
+	
 	/**
 	 * @var Annotations $annotations
 	 */
@@ -37,12 +42,22 @@ class ObjectAnnotationMapper extends AbstractObjectMapper
 
 	public function wantsExplicitInclusion()
 	{
-		return $this->annotations->has($this->target, ExplicitInclusion::class);
+		if ($this->annotations->has($this->target, ExplicitInclusion::class))
+		{
+			return true;
+		}
+		
+		return $this->getBase()->wantsExplicitInclusion();
 	}
 
 	public function wantsNoMetadata()
 	{
-		return $this->annotations->has($this->target, NoMetadata::class);
+		if ($this->annotations->has($this->target, NoMetadata::class))
+		{
+			return true;
+		}
+		
+		return $this->getBase()->wantsNoMetadata();
 	}
 
 	/**
@@ -58,7 +73,7 @@ class ObjectAnnotationMapper extends AbstractObjectMapper
 			}
 		}
 
-		return parent::hasSerializingConverter();
+		return $this->getBase()->hasSerializingConverter();
 	}
 
 	/**
@@ -74,7 +89,7 @@ class ObjectAnnotationMapper extends AbstractObjectMapper
 			}
 		}
 
-		return parent::hasDeserializingConverter();
+		return $this->getBase()->hasDeserializingConverter();
 	}
 
 	/**
@@ -90,7 +105,7 @@ class ObjectAnnotationMapper extends AbstractObjectMapper
 			}
 		}
 
-		return parent::getSerializingConverterType();
+		return $this->getBase()->getSerializingConverterType();
 	}
 
 	/**
@@ -106,15 +121,7 @@ class ObjectAnnotationMapper extends AbstractObjectMapper
 			}
 		}
 
-		return parent::getDeserializingConverterType();
-	}
-
-	/**
-	 * @return AbstractMemberMapper
-	 */
-	protected function getMemberMapper()
-	{
-		return new MemberAnnotationMapper($this->annotations);
+		return $this->getBase()->getDeserializingConverterType();
 	}
 
 	/**

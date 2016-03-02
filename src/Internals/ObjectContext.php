@@ -24,7 +24,6 @@ class ObjectContext extends AbstractObjectContext
 
 	/**
 	 * @param MemberContext $context
-	 * @param $value
 	 *
 	 * @return self
 	 */

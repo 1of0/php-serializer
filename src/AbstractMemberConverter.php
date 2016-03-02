@@ -21,7 +21,7 @@ abstract class AbstractMemberConverter
 	 *
 	 * @param MemberContext $context
 	 *
-	 * @return string
+	 * @return mixed
 	 *
 	 * @throws ResumeSerializationException May be thrown to indicate that the serializer should resume with the regular
 	 *                                      serialization strategy. This can be useful to avoid recursion.

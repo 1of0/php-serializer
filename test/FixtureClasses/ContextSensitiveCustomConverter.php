@@ -10,47 +10,29 @@
 namespace OneOfZero\Json\Test\FixtureClasses;
 
 use OneOfZero\Json\AbstractMemberConverter;
-use OneOfZero\Json\Internals\DeserializationState;
-use OneOfZero\Json\Internals\SerializationState;
+use OneOfZero\Json\Internals\MemberContext;
 
-class ContextSensitiveAbstractConverter implements AbstractMemberConverter
+class ContextSensitiveAbstractConverter extends AbstractMemberConverter
 {
 	/**
-	 * @param string $class
-	 * @return bool
+	 * {@inheritdoc}
 	 */
-	public function canConvert($class)
-	{
-		return true;
-	}
-
-	/**
-	 * @param mixed $object
-	 * @param string $memberName
-	 * @param string $memberClass
-	 * @param SerializationState $parent
-	 * @return string
-	 */
-	public function serialize($object, $memberName, $memberClass, SerializationState $parent)
+	public function serialize(MemberContext $context)
 	{
 		/** @var ClassUsingCustomConverters $parentInstance */
-		$parentInstance = $parent->instance;
+		$parentInstance = $context->getParent()->getInstance();
 
-		return intval($object) * intval($parentInstance->referableClass->getId());
+		return intval($context->getValue()) * intval($parentInstance->referableClass->getId());
 	}
 
 	/**
-	 * @param mixed $data
-	 * @param string $memberName
-	 * @param string $memberClass
-	 * @param DeserializationState $parent
-	 * @return mixed
+	 * {@inheritdoc}
 	 */
-	public function deserialize($data, $memberName, $memberClass, DeserializationState $parent)
+	public function deserialize(MemberContext $context)
 	{
 		/** @var ClassUsingCustomConverters $deserializedParent */
-		$deserializedParent = $parent->deserializedState;
+		$deserializedParent = $context->getParent()->getSerializedInstance();
 
-		return intval($data) / intval($deserializedParent->referableClass->getId());
+		return intval($context->getSerializedValue()) / intval($deserializedParent->referableClass->getId());
 	}
 }

@@ -10,38 +10,24 @@
 namespace OneOfZero\Json\Test\FixtureClasses;
 
 use OneOfZero\Json\AbstractMemberConverter;
-use OneOfZero\Json\Internals\DeserializationState;
-use OneOfZero\Json\Internals\SerializationState;
+use OneOfZero\Json\Internals\MemberContext;
 
-class ClassDependentAbstractConverter implements AbstractMemberConverter
+class ClassDependentAbstractConverter extends AbstractMemberConverter
 {
 	/**
-	 * @param string $class
-	 * @return bool
+	 * {@inheritdoc}
 	 */
-	public function canConvert($class)
+	public function serialize(MemberContext $context)
 	{
-		return $class === SimpleClass::class || $class === ReferableClass::class;
-	}
-
-	/**
-	 * @param mixed $object
-	 * @param string $memberName
-	 * @param string $memberClass
-	 * @param SerializationState $parent
-	 * @return string
-	 */
-	public function serialize($object, $memberName, $memberClass, SerializationState $parent)
-	{
-		if ($memberClass === SimpleClass::class)
+		$object = $context->getValue();
+		
+		if ($object instanceof SimpleClass)
 		{
-			/** @var SimpleClass $object */
 			return implode('|', [$object->foo, $object->bar]);
 		}
 
-		if ($memberClass === ReferableClass::class)
+		if ($object instanceof ReferableClass)
 		{
-			/** @var ReferableClass $object */
 			return $object->getId();
 		}
 
@@ -49,23 +35,21 @@ class ClassDependentAbstractConverter implements AbstractMemberConverter
 	}
 
 	/**
-	 * @param mixed $data
-	 * @param string $memberName
-	 * @param string $memberClass
-	 * @param DeserializationState $parent
-	 * @return mixed
+	 * {@inheritdoc}
 	 */
-	public function deserialize($data, $memberName, $memberClass, DeserializationState $parent)
+	public function deserialize(MemberContext $context)
 	{
-		if ($memberClass === SimpleClass::class)
+		$class = $context->getReflector()->name;
+		
+		if ($class === SimpleClass::class)
 		{
-			$pieces = explode('|', $data);
-			return new SimpleClass($pieces[0], $pieces[1]);
+			list($foo, $bar) = explode('|', $context->getSerializedValue());
+			return new SimpleClass($foo, $bar);
 		}
 
-		if ($memberClass === ReferableClass::class)
+		if ($class === ReferableClass::class)
 		{
-			return new ReferableClass($data);
+			return new ReferableClass($context->getSerializedValue());
 		}
 
 		return null;

@@ -23,13 +23,13 @@ during serialization, and maximum depth for serialization and deserialization.
 ### CustomMemberConverterInterface
 
 Implementing the `CustomMemberConverterInterface` interface allows customization to the serialization process on a 
-per-member basis. By annotating members that need custom serialization with a `@CustomConverter` annotation, and
+per-member basis. By annotating members that need custom serialization with a `@Converter` annotation, and
 providing it with the implementation's class name, the serializer will use the implementation to serialize the property.
 
 ### CustomObjectConverterInterface
 
 Implementing the `CustomObjectConverterInterface` interface allows customization to the serialization process on a 
-class-level. By annotating a class that needs custom serialization with a `@CustomConverter` annotation, and
+class-level. By annotating a class that needs custom serialization with a `@Converter` annotation, and
 providing it with the implementation's class name, the serializer will use the implementation to serialize any instance
 of that class.
 
@@ -82,4 +82,4 @@ into unix timestamps. It may be applied on properties that are `DateTime` object
 
 ### @IsArray
 
-### @CustomConverter
+### @Converter

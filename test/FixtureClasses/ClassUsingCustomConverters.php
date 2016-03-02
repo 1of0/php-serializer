@@ -25,39 +25,39 @@ class ClassUsingCustomConverters
 
 	/**
 	 * @Type(DateTime::class)
-	 * @CustomConverter(DateTimeConverter::class)
+	 * @Converter(DateTimeConverter::class)
 	 * @var DateTime $dateObject
 	 */
 	public $dateObject;
 
 	/**
 	 * @Type(SimpleClass::class)
-	 * @CustomConverter(ClassDependentCustomConverter::class)
+	 * @Converter(ClassDependentCustomConverter::class)
 	 * @var SimpleClass $simpleClass
 	 */
 	public $simpleClass;
 
 	/**
 	 * @Type(ReferableClass::class)
-	 * @CustomConverter(ClassDependentCustomConverter::class)
+	 * @Converter(ClassDependentCustomConverter::class)
 	 * @var ReferableClass $referableClass
 	 */
 	public $referableClass;
 
 	/**
-	 * @CustomConverter(PropertyDependentCustomConverter::class)
+	 * @Converter(PropertyDependentCustomConverter::class)
 	 * @var int $foo
 	 */
 	public $foo;
 
 	/**
-	 * @CustomConverter(PropertyDependentCustomConverter::class)
+	 * @Converter(PropertyDependentCustomConverter::class)
 	 * @var int $bar
 	 */
 	public $bar;
 
 	/**
-	 * @CustomConverter(ContextSensitiveCustomConverter::class)
+	 * @Converter(ContextSensitiveCustomConverter::class)
 	 * @var int $contextSensitive
 	 */
 	public $contextSensitive;
@@ -65,7 +65,7 @@ class ClassUsingCustomConverters
 	/**
 	 * @Getter
 	 * @Type(DateTime::class)
-	 * @CustomConverter(DateTimeConverter::class)
+	 * @Converter(DateTimeConverter::class)
 	 */
 	public function getPrivateDateObject()
 	{
@@ -75,7 +75,7 @@ class ClassUsingCustomConverters
 	/**
 	 * @Setter
 	 * @Type(DateTime::class)
-	 * @CustomConverter(DateTimeConverter::class)
+	 * @Converter(DateTimeConverter::class)
 	 * @param DateTime $dateObject
 	 */
 	public function setPrivateDateObject(DateTime $dateObject)

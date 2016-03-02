@@ -10,37 +10,26 @@
 namespace OneOfZero\Json\Test\FixtureClasses;
 
 use OneOfZero\Json\AbstractObjectConverter;
+use OneOfZero\Json\Internals\ObjectContext;
 
-class AbstractObjectConverter implements AbstractObjectConverter
+class CustomObjectConverter extends AbstractObjectConverter
 {
 	/**
-	 * @param string $class
-	 * @return bool
+	 * {@inheritdoc}
 	 */
-	public function canConvert($class)
+	public function serialize(ObjectContext $context)
 	{
-		return $class === ClassUsingClassLevelCustomConverter::class;
+		return ['abc' => $context->getInstance()->foo];
 	}
 
 	/**
-	 * @param object $instance
-	 * @param string $class
-	 * @return mixed
+	 * {@inheritdoc}
 	 */
-	public function serialize($instance, $class)
+	public function deserialize(ObjectContext $context)
 	{
-		return ['abc' => $instance->foo];
-	}
-
-	/**
-	 * @param mixed $serializedState
-	 * @param string $class
-	 * @return object
-	 */
-	public function deserialize($serializedState, $class)
-	{
-		$instance = new $class();
-		$instance->foo = $serializedState['abc'];
+		$instance = $context->getReflector()->newInstance();
+		$instance->foo = $context->getSerializedMemberValue('abc');
+		
 		return $instance;
 	}
 }

@@ -9,14 +9,28 @@ use ReflectionProperty;
 interface MapperInterface
 {
 	/**
-	 * Gets the target context.
+	 * Should return the base mapper.
+	 *
+	 * @return self
+	 */
+	public function getBase();
+
+	/**
+	 * Should set the provided mapper as base mapper.
+	 *
+	 * @param MapperInterface $mapper
+	 */
+	public function setBase(MapperInterface $mapper);
+
+	/**
+	 * Should return the reflection target of the member.
 	 *
 	 * @return ReflectionClass|ReflectionMethod|ReflectionProperty
 	 */
 	public function getTarget();
 
 	/**
-	 * Sets the target context.
+	 * Should set the provided target as reflection target for the member.
 	 *
 	 * @param ReflectionClass|ReflectionMethod|ReflectionProperty $target
 	 */

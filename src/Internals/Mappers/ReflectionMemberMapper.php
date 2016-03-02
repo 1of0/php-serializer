@@ -9,61 +9,15 @@
 
 namespace OneOfZero\Json\Internals\Mappers;
 
-use Closure;
-use ReflectionMethod;
 use ReflectionParameter;
-use ReflectionProperty;
-use RuntimeException;
 
 /**
- * Abstract implementation of a mapper that maps the serialization metadata for a property or method.
+ * Base implementation of a mapper that maps the serialization metadata for a property or method.
  */
-abstract class AbstractMemberMapper implements MemberMapperInterface
+class ReflectionMemberMapper implements MemberMapperInterface
 {
-	const GETTER_REGEX = '/^(?<prefix>get|is|has)/';
-	const SETTER_REGEX = '/^(?<prefix>set)/';
-	const GETTER_SETTER_REGEX = '/^(?<prefix>get|is|has|set)/';
-
-	/**
-	 * Holds the parent context.
-	 * 
-	 * @var AbstractObjectMapper $parent
-	 */
-	protected $parent;
-
-	/**
-	 * Holds the target field.
-	 * 
-	 * @var ReflectionProperty|ReflectionMethod $target
-	 */
-	protected $target;
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public final function setParent(ObjectMapperInterface $parent)
-	{
-		$this->parent = $parent;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 * @return ReflectionMethod|ReflectionProperty
-	 */
-	public function getTarget()
-	{
-		return $this->target;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 * @param ReflectionMethod|ReflectionProperty $target
-	 */
-	public final function setTarget($target)
-	{
-		$this->target = $target;
-	}
-
+	use BaseMemberMapperTrait;
+	
 	/**
 	 * {@inheritdoc}
 	 */
@@ -81,7 +35,7 @@ abstract class AbstractMemberMapper implements MemberMapperInterface
 			return $this->target->invoke($instance);
 		}
 
-		throw new RuntimeException('Member\'s reflection target is not a property nor a method; this should never happen');
+		return $this->getBase()->getValue($instance);
 	}
 
 	/**
@@ -103,7 +57,7 @@ abstract class AbstractMemberMapper implements MemberMapperInterface
 			return;
 		}
 
-		throw new RuntimeException('Member\'s reflection target is not a property nor a method; this should never happen');
+		$this->getBase()->setValue($instance, $value);
 	}
 
 	/**
@@ -132,12 +86,10 @@ abstract class AbstractMemberMapper implements MemberMapperInterface
 		{
 			if (version_compare(PHP_VERSION, '7.0.0', '>='))
 			{
-				$type = $this->target->getReturnType();
-
-				if ($type !== null && $this->isSupportedType($type))
+				// If PHP 7, try using the return type declaration
+				if ($this->target->getReturnType() !== null)
 				{
-					// Determine type from PHP7 return type constraint
-					return $type;
+					return $this->target->getReturnType();
 				}
 			}
 		}
@@ -147,14 +99,23 @@ abstract class AbstractMemberMapper implements MemberMapperInterface
 			/** @var ReflectionParameter $setter */
 			list($setter) = $this->target->getParameters();
 
-			if ($setter->hasType() && $this->isSupportedType($setter->getType()))
+			if (version_compare(PHP_VERSION, '7.0.0', '>='))
 			{
-				// Determine type from first method parameter
-				return $setter->getType();
+				// If PHP 7, try using the type declaration from the first method parameter
+				if ($setter->hasType())
+				{
+					return strval($setter->getType());
+				}
+			}
+			
+			// Try PHP 5 compatible type hint from the first method parameter
+			if ($setter->getClass() !== null)
+			{
+				return $setter->getClass()->name;
 			}
 		}
 
-		return null;
+		return $this->getBase()->getType();
 	}
 
 	/**
@@ -162,7 +123,7 @@ abstract class AbstractMemberMapper implements MemberMapperInterface
 	 */
 	public function isArray()
 	{
-		return false;
+		return $this->getBase()->isArray();
 	}
 
 	/**
@@ -170,7 +131,7 @@ abstract class AbstractMemberMapper implements MemberMapperInterface
 	 */
 	public function isGetter()
 	{
-		if (!$this->isClassMethod() || !preg_match(self::GETTER_REGEX, $this->target->name))
+		if (!$this->isClassMethod() || !preg_match(self::$GETTER_REGEX, $this->target->name))
 		{
 			return false;
 		}
@@ -189,7 +150,7 @@ abstract class AbstractMemberMapper implements MemberMapperInterface
 	 */
 	public function isSetter()
 	{
-		if (!$this->isClassMethod() || !preg_match(self::SETTER_REGEX, $this->target->name))
+		if (!$this->isClassMethod() || !preg_match(self::$SETTER_REGEX, $this->target->name))
 		{
 			return false;
 		}
@@ -208,7 +169,7 @@ abstract class AbstractMemberMapper implements MemberMapperInterface
 	 */
 	public function isReference()
 	{
-		return false;
+		return $this->getBase()->isReference();
 	}
 
 	/**
@@ -216,7 +177,7 @@ abstract class AbstractMemberMapper implements MemberMapperInterface
 	 */
 	public function isReferenceLazy()
 	{
-		return false;
+		return $this->getBase()->isReferenceLazy();
 	}
 
 	/**
@@ -224,7 +185,7 @@ abstract class AbstractMemberMapper implements MemberMapperInterface
 	 */
 	public function hasSerializingConverter()
 	{
-		return false;
+		return $this->getBase()->hasSerializingConverter();
 	}
 
 	/**
@@ -232,7 +193,7 @@ abstract class AbstractMemberMapper implements MemberMapperInterface
 	 */
 	public function hasDeserializingConverter()
 	{
-		return false;
+		return $this->getBase()->hasDeserializingConverter();
 	}
 
 	/**
@@ -240,7 +201,7 @@ abstract class AbstractMemberMapper implements MemberMapperInterface
 	 */
 	public function getSerializingConverterType()
 	{
-		return null;
+		return $this->getBase()->getSerializingConverterType();
 	}
 
 	/**
@@ -248,7 +209,7 @@ abstract class AbstractMemberMapper implements MemberMapperInterface
 	 */
 	public function getDeserializingConverterType()
 	{
-		return null;
+		return $this->getBase()->getDeserializingConverterType();
 	}
 
 	/**
@@ -261,7 +222,7 @@ abstract class AbstractMemberMapper implements MemberMapperInterface
 			return false;
 		}
 
-		return true;
+		return $this->getBase()->isSerializable();
 	}
 
 	/**
@@ -274,7 +235,7 @@ abstract class AbstractMemberMapper implements MemberMapperInterface
 			return false;
 		}
 
-		return true;
+		return $this->getBase()->isDeserializable();
 	}
 
 	/**
@@ -294,62 +255,11 @@ abstract class AbstractMemberMapper implements MemberMapperInterface
 			return false;
 		}
 
-		if ($this->parent->wantsExplicitInclusion())
+		if ($this->memberParent->wantsExplicitInclusion())
 		{
 			return false;
 		}
 
 		return true;
-	}
-
-	/**
-	 * Returns a boolean value indicating whether or not the target field is a property.
-	 *
-	 * @return bool
-	 */
-	protected final function isClassProperty()
-	{
-		return $this->target instanceof ReflectionProperty;
-	}
-
-	/**
-	 * Returns a boolean value indicating whether or not the target field is a method.
-	 *
-	 * @return bool
-	 */
-	protected final function isClassMethod()
-	{
-		return $this->target instanceof ReflectionMethod;
-	}
-
-	/**
-	 * Returns a boolean value indicating whether or not the provided type is a supported type.
-	 *
-	 * Supported types are all object types except \Closure.
-	 *
-	 * @param string $type
-	 *
-	 * @return bool
-	 */
-	protected final function isSupportedType($type)
-	{
-		return class_exists($type) && $type !== Closure::class;
-	}
-
-	/**
-	 * Determine if the method name has a prefix (get/set/is/has), and return that prefix.
-	 *
-	 * Returns an empty string if the method name does not have a prefix.
-	 *
-	 * @return string
-	 */
-	protected final function getMethodPrefix()
-	{
-		if ($this->isClassMethod() && preg_match(self::GETTER_SETTER_REGEX, $this->target->name, $matches))
-		{
-			return $matches['prefix'];
-		}
-
-		return '';
 	}
 }

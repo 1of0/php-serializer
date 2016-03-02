@@ -7,6 +7,7 @@ use OneOfZero\Json\Configuration;
 use OneOfZero\Json\Internals\DeserializingVisitor;
 use OneOfZero\Json\Internals\Environment;
 use OneOfZero\Json\Internals\Mappers\AnnotationMapperFactory;
+use OneOfZero\Json\Internals\Mappers\ReflectionMapperFactory;
 use OneOfZero\Json\Internals\Metadata;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
 
@@ -97,7 +98,7 @@ class DeserializingVisitorTest extends AbstractTest
 		$annotations = new Annotations(Environment::getAnnotationReader());
 
 		$config = new Configuration();
-		$factory = new AnnotationMapperFactory($annotations);
+		$factory = new AnnotationMapperFactory(new ReflectionMapperFactory(), $annotations);
 
 		return new DeserializingVisitor($config, $factory);
 	}

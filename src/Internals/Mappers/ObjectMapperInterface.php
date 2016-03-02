@@ -1,4 +1,12 @@
 <?php
+
+/**
+ * Copyright (c) 2015 Bernardo van der Wal
+ * MIT License
+ *
+ * Refer to the LICENSE file for the full copyright notice.
+ */
+
 namespace OneOfZero\Json\Internals\Mappers;
 
 /**
@@ -6,6 +14,20 @@ namespace OneOfZero\Json\Internals\Mappers;
  */
 interface ObjectMapperInterface extends MapperInterface
 {
+	/**
+	 * Should return the mapper factory.
+	 *
+	 * @return MapperFactoryInterface
+	 */
+	public function getFactory();
+
+	/**
+	 * Should store the provided mapper factory.
+	 *
+	 * @param MapperFactoryInterface $factory
+	 */
+	public function setFactory(MapperFactoryInterface $factory);
+
 	/**
 	 * Should return a boolean value indicating whether or not members must be explicitly included.
 	 *

@@ -24,8 +24,10 @@ use OneOfZero\Json\Exceptions\SerializationException;
 use OneOfZero\PhpDocReader\PhpDocReader;
 use ReflectionParameter;
 
-class MemberAnnotationMapper extends AbstractMemberMapper
+class AnnotationMemberMapper implements MemberMapperInterface
 {
+	use BaseMemberMapperTrait;
+	
 	/**
 	 * @var Annotations $annotations
 	 */
@@ -49,7 +51,23 @@ class MemberAnnotationMapper extends AbstractMemberMapper
 		$this->annotations = $annotations;
 		$this->docReader = new PhpDocReader(true);
 	}
+	
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getValue($instance)
+	{
+		return $this->getBase()->getValue($instance);
+	}
 
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setValue($instance, $value)
+	{
+		$this->getBase()->setValue($instance, $value);
+	}
+	
 	/**
 	 * {@inheritdoc}
 	 */
@@ -61,9 +79,8 @@ class MemberAnnotationMapper extends AbstractMemberMapper
 			return $nameAnnotation->name;
 		}
 		
-		return parent::getName();
+		return $this->getBase()->getName();
 	}
-
 
 	/**
 	 * {@inheritdoc}
@@ -108,7 +125,7 @@ class MemberAnnotationMapper extends AbstractMemberMapper
 		}
 
 		// Fallback to parent strategy
-		return parent::getType();
+		return $this->getBase()->getType();
 	}
 
 	/**
@@ -121,7 +138,7 @@ class MemberAnnotationMapper extends AbstractMemberMapper
 			return true;
 		}
 		
-		return parent::isArray();
+		return $this->getBase()->isArray();
 	}
 
 
@@ -133,7 +150,7 @@ class MemberAnnotationMapper extends AbstractMemberMapper
 	{
 		if (!$this->annotations->has($this->target, Getter::class))
 		{
-			return parent::isGetter();
+			return $this->getBase()->isGetter();
 		}
 
 		$paramCount = $this->target->getNumberOfRequiredParameters();
@@ -154,7 +171,7 @@ class MemberAnnotationMapper extends AbstractMemberMapper
 	{
 		if (!$this->annotations->has($this->target, Setter::class))
 		{
-			return parent::isSetter();
+			return $this->getBase()->isSetter();
 		}
 
 		if ($this->target->getNumberOfParameters() === 0)
@@ -183,12 +200,12 @@ class MemberAnnotationMapper extends AbstractMemberMapper
 			return false;
 		}
 
-		if ($this->parent->wantsExplicitInclusion() && $this->annotations->has($this->target, AbstractName::class))
+		if ($this->memberParent->wantsExplicitInclusion() && $this->annotations->has($this->target, AbstractName::class))
 		{
 			return true;
 		}
 		
-		return parent::isIncluded();
+		return $this->getBase()->isIncluded();
 	}
 
 	/**
@@ -201,7 +218,7 @@ class MemberAnnotationMapper extends AbstractMemberMapper
 			return true;
 		}
 		
-		return parent::isReference();
+		return $this->getBase()->isReference();
 	}
 
 	/**
@@ -215,7 +232,7 @@ class MemberAnnotationMapper extends AbstractMemberMapper
 			return $referenceAnnotation->lazy;
 		}
 		
-		return parent::isReferenceLazy();
+		return $this->getBase()->isReferenceLazy();
 	}
 
 	/**
@@ -231,7 +248,7 @@ class MemberAnnotationMapper extends AbstractMemberMapper
 			}
 		}
 		
-		return parent::hasSerializingConverter();
+		return $this->getBase()->hasSerializingConverter();
 	}
 
 	/**
@@ -247,7 +264,7 @@ class MemberAnnotationMapper extends AbstractMemberMapper
 			}
 		}
 
-		return parent::hasDeserializingConverter();
+		return $this->getBase()->hasDeserializingConverter();
 	}
 
 	/**
@@ -263,7 +280,7 @@ class MemberAnnotationMapper extends AbstractMemberMapper
 			}
 		}
 
-		return parent::getSerializingConverterType();
+		return $this->getBase()->getSerializingConverterType();
 	}
 
 	/**
@@ -279,7 +296,7 @@ class MemberAnnotationMapper extends AbstractMemberMapper
 			}
 		}
 
-		return parent::getDeserializingConverterType();
+		return $this->getBase()->getDeserializingConverterType();
 	}
 
 	/**
@@ -293,7 +310,7 @@ class MemberAnnotationMapper extends AbstractMemberMapper
 			return $annotation->serialize;
 		}
 		
-		return parent::isSerializable();
+		return $this->getBase()->isSerializable();
 	}
 
 	/**
@@ -307,7 +324,7 @@ class MemberAnnotationMapper extends AbstractMemberMapper
 			return $annotation->deserialize;
 		}
 
-		return parent::isDeserializable();
+		return $this->getBase()->isDeserializable();
 	}
 
 	/**

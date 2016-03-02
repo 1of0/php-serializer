@@ -1,9 +1,13 @@
 <?php
+
+/**
+ * Copyright (c) 2015 Bernardo van der Wal
+ * MIT License
+ *
+ * Refer to the LICENSE file for the full copyright notice.
+ */
+
 namespace OneOfZero\Json\Internals\Mappers;
-
-use ReflectionMethod;
-use ReflectionProperty;
-
 
 /**
  * Defines a mapper that maps the serialization metadata for a property or method.
@@ -11,21 +15,14 @@ use ReflectionProperty;
 interface MemberMapperInterface extends MapperInterface
 {
 	/**
-	 * Sets the provided parent context.
+	 * Should set the provided mapper as member parent.
 	 *
 	 * @param ObjectMapperInterface $parent
 	 */
-	public function setParent(ObjectMapperInterface $parent);
+	public function setMemberParent(ObjectMapperInterface $parent);
 
 	/**
-	 * Sets the provided target context.
-	 *
-	 * @param ReflectionProperty|ReflectionMethod $target
-	 */
-	public function setTarget($target);
-
-	/**
-	 * Returns the value for this member on the provided instance.
+	 * Should return the value for the member on the provided instance.
 	 *
 	 * @param object $instance
 	 *
@@ -34,7 +31,7 @@ interface MemberMapperInterface extends MapperInterface
 	public function getValue($instance);
 
 	/**
-	 * Sets the provided value on this member of the provided instance.
+	 * Should set the provided value on the member of the provided instance.
 	 *
 	 * @param object $instance
 	 * @param mixed $value

@@ -18,6 +18,11 @@ use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
 
 class CustomConverterTests extends AbstractTest
 {
+	public function testFoo()
+	{
+		$this->assertTrue(true);
+	}
+	
 	/*public function testCustomConverters()
 	{
 		$date = new DateTime();

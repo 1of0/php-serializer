@@ -2,26 +2,18 @@
 
 namespace OneOfZero\Json\Internals\Mappers;
 
-use OneOfZero\BetterAnnotations\Annotations;
 use ReflectionClass;
 
-class AnnotationMapperFactory implements MapperFactoryInterface
+class ReflectionMapperFactory implements MapperFactoryInterface
 {
 	use BaseFactoryTrait;
-	
-	/**
-	 * @var Annotations $annotations
-	 */
-	protected $annotations;
 
 	/**
-	 * @param MapperFactoryInterface $parent
-	 * @param Annotations $annotations
+	 * @param MapperFactoryInterface|null $parent
 	 */
-	public function __construct(MapperFactoryInterface $parent, Annotations $annotations)
+	public function __construct(MapperFactoryInterface $parent = null)
 	{
-		$this->annotations = $annotations;
-		$this->setParent($parent);
+		$this->setParent($parent ?: new NullMapperFactory());
 	}
 
 	/**
@@ -29,7 +21,7 @@ class AnnotationMapperFactory implements MapperFactoryInterface
 	 */
 	public function mapObject(ReflectionClass $reflector)
 	{
-		$mapper = new AnnotationObjectMapper($this->annotations);
+		$mapper = new ReflectionObjectMapper();
 
 		$mapper->setFactory($this);
 		$mapper->setTarget($reflector);
@@ -43,7 +35,7 @@ class AnnotationMapperFactory implements MapperFactoryInterface
 	 */
 	public function mapMember($reflector, ObjectMapperInterface $memberParent)
 	{
-		$mapper = new AnnotationMemberMapper($this->annotations);
+		$mapper = new ReflectionMemberMapper();
 		
 		$mapper->setTarget($reflector);
 		$mapper->setMemberParent($memberParent);

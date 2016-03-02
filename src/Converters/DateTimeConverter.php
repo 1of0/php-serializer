@@ -11,54 +11,32 @@ namespace OneOfZero\Json\Converters;
 
 use DateTime;
 use OneOfZero\Json\AbstractMemberConverter;
-use OneOfZero\Json\Internals\DeserializationState;
-use OneOfZero\Json\Internals\SerializationState;
+use OneOfZero\Json\Internals\MemberContext;
 
-class DateTimeConverter implements AbstractMemberConverter
+class DateTimeConverter extends AbstractMemberConverter
 {
 	/**
-	 * @param string $class
-	 * @return bool
+	 * {@inheritdoc}
 	 */
-	public function canConvert($class)
+	public function serialize(MemberContext $context)
 	{
-		return $class !== null && ($class === DateTime::class || in_array(DateTime::class, class_parents($class)));
+		$value = $context->getValue();
+		
+		return ($value instanceof DateTime) ? $value->getTimestamp() : null;
 	}
 
 	/**
-	 * @param mixed $object
-	 * @param string $memberName
-	 * @param string $memberClass
-	 * @param SerializationState $parent
-	 * @return mixed
+	 * {@inheritdoc}
 	 */
-	public function serialize($object, $memberName, $memberClass, SerializationState $parent)
+	public function deserialize(MemberContext $context)
 	{
-		if ($object === null)
+		if (ctype_digit($context->getSerializedValue()))
 		{
-			return null;
+			$date = new DateTime();
+			$date->setTimestamp($context->getSerializedValue());
+			return $date;
 		}
-
-		/** @var DateTime $object */
-		return $object->getTimestamp();
-	}
-
-	/**
-	 * @param string $data
-	 * @param string $memberName
-	 * @param string $memberClass
-	 * @param DeserializationState $parent
-	 * @return mixed
-	 */
-	public function deserialize($data, $memberName, $memberClass, DeserializationState $parent)
-	{
-		if ($data === null)
-		{
-			return null;
-		}
-
-		$date = new DateTime();
-		$date->setTimestamp($data);
-		return $date;
+		
+		return null;
 	}
 }
