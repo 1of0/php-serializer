@@ -9,11 +9,11 @@
 
 namespace OneOfZero\Json\DependencyInjection;
 
-use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader;
 use Interop\Container\ContainerInterface;
 use OneOfZero\Json\ReferenceResolverInterface;
 
-class ContainerInteropContainerAdapter implements ContainerAdapterInterface
+class ContainerAdapter implements ContainerAdapterInterface
 {
 	/**
 	 * @var ContainerInterface $container
@@ -23,7 +23,7 @@ class ContainerInteropContainerAdapter implements ContainerAdapterInterface
 	/**
 	 * @var string $annotationReaderKey
 	 */
-	private $annotationReaderKey = AnnotationReader::class;
+	private $annotationReaderKey = Reader::class;
 
 	/**
 	 * @var string $referenceResolverKey

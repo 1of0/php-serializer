@@ -9,7 +9,7 @@
 
 namespace OneOfZero\Json\DependencyInjection;
 
-use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader;
 use OneOfZero\Json\ReferenceResolverInterface;
 
 interface ContainerAdapterInterface
@@ -33,7 +33,7 @@ interface ContainerAdapterInterface
 	/**
 	 * Returns an instance of the AnnotationReader class.
 	 *
-	 * @return AnnotationReader
+	 * @return Reader
 	 */
 	public function getAnnotationReader();
 

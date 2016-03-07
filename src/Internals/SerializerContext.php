@@ -10,6 +10,7 @@
 namespace OneOfZero\Json\Internals;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader;
 use OneOfZero\Json\Configuration;
 use OneOfZero\Json\DependencyInjection\ContainerAdapterInterface;
 use OneOfZero\Json\ReferenceResolverInterface;
@@ -34,7 +35,7 @@ class SerializerContext
 	private $configuration;
 
 	/**
-	 * @var AnnotationReader $annotationReader
+	 * @var Reader $annotationReader
 	 */
 	private $annotationReader;
 
@@ -97,7 +98,7 @@ class SerializerContext
 	}
 
 	/**
-	 * @return AnnotationReader
+	 * @return Reader
 	 */
 	public function getAnnotationReader()
 	{

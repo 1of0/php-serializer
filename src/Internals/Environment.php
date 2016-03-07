@@ -11,12 +11,13 @@ namespace OneOfZero\Json\Internals;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\Common\Annotations\Reader;
 use RuntimeException;
 
 class Environment
 {
 	/**
-	 * @var AnnotationReader $annotationReader
+	 * @var Reader $annotationReader
 	 */
 	private static $annotationReader;
 
@@ -26,10 +27,12 @@ class Environment
 	public static function getVendorPath()
 	{
 		$options = [
+			__DIR__ . '/../../../../../vendor',
+			__DIR__ . '/../../../../vendor',
+			__DIR__ . '/../../../vendor',
+			__DIR__ . '/../../vendor',
 			$_SERVER['DOCUMENT_ROOT'] . '/vendor',
 			$_SERVER['DOCUMENT_ROOT'] . '/../vendor',
-			__DIR__ . '/../../../../../vendor',
-			__DIR__ . '/../../vendor',
 		];
 
 		foreach ($options as $option)
@@ -58,7 +61,7 @@ class Environment
 	}
 
 	/**
-	 * @return AnnotationReader
+	 * @return Reader
 	 */
 	public static function getAnnotationReader()
 	{
