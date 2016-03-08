@@ -2,6 +2,7 @@
 
 namespace OneOfZero\Json\Internals\Mappers;
 
+use OneOfZero\Json\Configuration;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -9,14 +10,28 @@ use ReflectionProperty;
 interface MapperFactoryInterface
 {
 	/**
+	 * @return Configuration
+	 */
+	public function getConfiguration();
+
+	/**
+	 * @param Configuration $configuration
+	 *
+	 * @return self
+	 */
+	public function withConfiguration(Configuration $configuration);
+
+	/**
 	 * @return MapperFactoryInterface
 	 */
 	public function getParent();
 
 	/**
 	 * @param MapperFactoryInterface $parent
+	 *
+	 * @return self
 	 */
-	public function setParent(MapperFactoryInterface $parent);
+	public function withParent(MapperFactoryInterface $parent);
 	
 	/**
 	 * @param ReflectionClass $reflector

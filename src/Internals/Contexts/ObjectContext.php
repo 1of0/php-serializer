@@ -1,6 +1,6 @@
 <?php
 
-namespace OneOfZero\Json\Internals;
+namespace OneOfZero\Json\Internals\Contexts;
 
 use OneOfZero\Json\Internals\Mappers\ObjectMapperInterface;
 use ReflectionClass;
@@ -10,7 +10,7 @@ class ObjectContext extends AbstractObjectContext
 	/**
 	 * @var array $metadata
 	 */
-	private $metadata;
+	private $metadata = [];
 
 	/**
 	 * @var ReflectionClass $reflector

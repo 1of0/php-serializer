@@ -15,7 +15,8 @@ use OneOfZero\Json\ReferenceResolverInterface;
 class ProxyHelper
 {
 	private static $proxyInterfaces = [
-		'ProxyManager\Proxy\ProxyInterface'
+		'ProxyManager\Proxy\ProxyInterface',
+		'Doctrine\Common\Persistence\Proxy'
 	];
 
 	/**
@@ -76,6 +77,14 @@ class ProxyHelper
 			return $this->referenceResolver->resolve($this->getClassBeneath($instance), $instance->getId(), false);
 		}
 
+		if (in_array('Doctrine\Common\Persistence\Proxy', class_implements($instance)))
+		{
+			if (!call_user_func([ $instance, '__isInitialized' ]))
+			{
+				call_user_func([$instance, '__load']);
+			}
+		}
+
 		if (in_array('ProxyManager\Proxy\LazyLoadingInterface', class_implements($instance)))
 		{
 			if (!call_user_func([ $instance, 'isProxyInitialized' ]))
@@ -88,9 +97,7 @@ class ProxyHelper
 		{
 			return call_user_func([$instance, 'getWrappedValueHolderValue']);
 		}
-		else
-		{
-			return clone $instance;
-		}
+
+		return clone $instance;
 	}
 }

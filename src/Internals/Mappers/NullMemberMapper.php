@@ -137,6 +137,6 @@ class NullMemberMapper implements MemberMapperInterface
 	 */
 	public function isIncluded()
 	{
-		return true;
+		return false;
 	}
 }

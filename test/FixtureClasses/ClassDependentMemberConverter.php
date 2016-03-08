@@ -10,9 +10,9 @@
 namespace OneOfZero\Json\Test\FixtureClasses;
 
 use OneOfZero\Json\AbstractMemberConverter;
-use OneOfZero\Json\Internals\MemberContext;
+use OneOfZero\Json\Internals\Contexts\MemberContext;
 
-class ClassDependentAbstractConverter extends AbstractMemberConverter
+class ClassDependentMemberConverter extends AbstractMemberConverter
 {
 	/**
 	 * {@inheritdoc}
@@ -39,7 +39,7 @@ class ClassDependentAbstractConverter extends AbstractMemberConverter
 	 */
 	public function deserialize(MemberContext $context)
 	{
-		$class = $context->getReflector()->name;
+		$class = $context->getMapper()->getType();
 		
 		if ($class === SimpleClass::class)
 		{

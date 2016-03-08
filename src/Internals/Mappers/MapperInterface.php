@@ -2,12 +2,18 @@
 
 namespace OneOfZero\Json\Internals\Mappers;
 
+use OneOfZero\Json\Configuration;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
 
 interface MapperInterface
 {
+	/**
+	 * @return Configuration
+	 */
+	public function getConfiguration();
+
 	/**
 	 * Should return the base mapper.
 	 *

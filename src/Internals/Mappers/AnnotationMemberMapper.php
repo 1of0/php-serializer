@@ -74,7 +74,9 @@ class AnnotationMemberMapper implements MemberMapperInterface
 	public function getName()
 	{
 		/** @var AbstractName $nameAnnotation */
-		if ($nameAnnotation = $this->annotations->get($this->target, AbstractName::class))
+		$nameAnnotation = $this->annotations->get($this->target, AbstractName::class);
+
+		if ($nameAnnotation && $nameAnnotation->name !== null)
 		{
 			return $nameAnnotation->name;
 		}
@@ -200,9 +202,14 @@ class AnnotationMemberMapper implements MemberMapperInterface
 			return false;
 		}
 
-		if ($this->memberParent->wantsExplicitInclusion() && $this->annotations->has($this->target, AbstractName::class))
+		if ($this->annotations->has($this->target, AbstractName::class))
 		{
 			return true;
+		}
+
+		if ($this->memberParent->wantsExplicitInclusion() && !$this->annotations->has($this->target, AbstractName::class))
+		{
+			return false;
 		}
 		
 		return $this->getBase()->isIncluded();

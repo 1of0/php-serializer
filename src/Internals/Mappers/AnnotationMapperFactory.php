@@ -2,6 +2,7 @@
 
 namespace OneOfZero\Json\Internals\Mappers;
 
+use Doctrine\Common\Annotations\Reader;
 use OneOfZero\BetterAnnotations\Annotations;
 use ReflectionClass;
 
@@ -12,16 +13,14 @@ class AnnotationMapperFactory implements MapperFactoryInterface
 	/**
 	 * @var Annotations $annotations
 	 */
-	protected $annotations;
+	private $annotations;
 
 	/**
-	 * @param MapperFactoryInterface $parent
-	 * @param Annotations $annotations
+	 * @param Reader $annotationReader
 	 */
-	public function __construct(MapperFactoryInterface $parent, Annotations $annotations)
+	public function __construct(Reader $annotationReader)
 	{
-		$this->annotations = $annotations;
-		$this->setParent($parent);
+		$this->annotations = new Annotations($annotationReader);
 	}
 
 	/**

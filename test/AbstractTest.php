@@ -10,11 +10,41 @@
 namespace OneOfZero\Json\Test;
 
 use Exception;
+use OneOfZero\Json\Configuration;
+use OneOfZero\Json\Internals\Environment;
+use OneOfZero\Json\Internals\Mappers\AnnotationMapperFactory;
+use OneOfZero\Json\Internals\Mappers\MapperFactoryInterface;
+use OneOfZero\Json\Internals\Mappers\MapperPipeline;
+use OneOfZero\Json\Internals\Mappers\ReflectionMapperFactory;
 use OneOfZero\Json\Test\FixtureClasses\EqualityInterface;
 use PHPUnit_Framework_TestCase;
 
 abstract class AbstractTest extends PHPUnit_Framework_TestCase
 {
+	/**
+	 * @var Configuration $defaultConfiguration
+	 */
+	protected $defaultConfiguration;
+
+	/**
+	 * @var MapperFactoryInterface $defaultPipeline
+	 */
+	protected $defaultPipeline;
+
+	/**
+	 *
+	 */
+	protected function setUp()
+	{
+		$this->defaultConfiguration = new Configuration();
+		$this->defaultPipeline = (new MapperPipeline)
+			->addFactory(new AnnotationMapperFactory(Environment::getAnnotationReader()))
+			->addFactory(new ReflectionMapperFactory())
+			->build($this->defaultConfiguration)
+		;
+	}
+
+
 	/**
 	 * @param $expected
 	 * @param $actual

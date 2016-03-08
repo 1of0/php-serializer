@@ -10,9 +10,9 @@
 namespace OneOfZero\Json\Test\FixtureClasses;
 
 use OneOfZero\Json\AbstractMemberConverter;
-use OneOfZero\Json\Internals\MemberContext;
+use OneOfZero\Json\Internals\Contexts\MemberContext;
 
-class PropertyDependentAbstractConverter extends AbstractMemberConverter
+class PropertyDependentMemberConverter extends AbstractMemberConverter
 {
 	/**
 	 * {@inheritdoc}

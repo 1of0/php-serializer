@@ -2,13 +2,8 @@
 
 namespace OneOfZero\Json\Test;
 
-use OneOfZero\BetterAnnotations\Annotations;
-use OneOfZero\Json\Configuration;
-use OneOfZero\Json\Internals\Environment;
-use OneOfZero\Json\Internals\Mappers\AnnotationMapperFactory;
-use OneOfZero\Json\Internals\Mappers\ReflectionMapperFactory;
 use OneOfZero\Json\Internals\Metadata;
-use OneOfZero\Json\Internals\SerializingVisitor;
+use OneOfZero\Json\Internals\Visitors\SerializingVisitor;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
 
 class SerializingVisitorTest extends AbstractTest
@@ -83,11 +78,6 @@ class SerializingVisitorTest extends AbstractTest
 
 	private function createVisitor()
 	{
-		$annotations = new Annotations(Environment::getAnnotationReader());
-
-		$config = new Configuration();
-		$factory = new AnnotationMapperFactory(new ReflectionMapperFactory(), $annotations);
-
-		return new SerializingVisitor($config, $factory);
+		return new SerializingVisitor(clone $this->defaultConfiguration, clone $this->defaultPipeline);
 	}
 }

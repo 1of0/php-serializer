@@ -1,10 +1,22 @@
 <?php
 
-namespace OneOfZero\Json\Internals;
+namespace OneOfZero\Json\Internals\Visitors;
 
+use Interop\Container\ContainerInterface;
+use OneOfZero\Json\Configuration;
 use OneOfZero\Json\Exceptions\MissingTypeException;
+use OneOfZero\Json\Exceptions\ReferenceException;
 use OneOfZero\Json\Exceptions\ResumeSerializationException;
 use OneOfZero\Json\Exceptions\SerializationException;
+use OneOfZero\Json\Internals\Contexts\AbstractContext;
+use OneOfZero\Json\Internals\Mappers\MapperFactoryInterface;
+use OneOfZero\Json\Internals\Contexts\AnonymousObjectContext;
+use OneOfZero\Json\Internals\Contexts\ArrayContext;
+use OneOfZero\Json\Internals\Contexts\MemberContext;
+use OneOfZero\Json\Internals\Metadata;
+use OneOfZero\Json\Internals\Contexts\ObjectContext;
+use OneOfZero\Json\ReferableInterface;
+use OneOfZero\Json\ReferenceResolverInterface;
 use ReflectionClass;
 use stdClass;
 
@@ -23,7 +35,7 @@ class DeserializingVisitor extends AbstractVisitor
 	{
 		if (is_object($serializedValue))
 		{
-			$type = $this->getType($serializedValue, $typeHint);
+			$type = $this->getType($serializedValue, $parent, $typeHint);
 
 			if ($type === null)
 			{
@@ -160,7 +172,7 @@ class DeserializingVisitor extends AbstractVisitor
 
 		if (!$mapper->isIncluded() || !$mapper->isDeserializable())
 		{
-			return null;
+			return $context;
 		}
 
 		if ($mapper->hasDeserializingConverter())
@@ -181,13 +193,13 @@ class DeserializingVisitor extends AbstractVisitor
 			return $context->withValue($this->resolveReference($context));
 		}
 
-		return $context->withValue($this->visit($context->getSerializedValue()));
+		return $context->withValue($this->visit($context->getSerializedValue(), $context, $context->getMapper()->getType()));
 	}
 
 	/**
 	 * @param MemberContext $context
 	 *
-	 * @return object
+	 * @return ReferableInterface
 	 */
 	protected function resolveReference(MemberContext $context)
 	{
@@ -196,32 +208,76 @@ class DeserializingVisitor extends AbstractVisitor
 			return $this->resolveReferenceArray($context);
 		}
 
-		return null;
+		return $this->resolveReferenceItem($context, $context->getSerializedValue());
 	}
 
 	/**
 	 * @param MemberContext $context
 	 *
-	 * @return object[]
+	 * @return ReferableInterface[]
 	 */
 	protected function resolveReferenceArray(MemberContext $context)
 	{
-		return [];
+		$resolved = [];
+
+		foreach ($context->getSerializedValue() as $item)
+		{
+			$resolved[] = $this->resolveReferenceItem($context, $item);
+		}
+
+		return $resolved;
+	}
+
+	/**
+	 * @param MemberContext $context
+	 * @param mixed $item
+	 *
+	 * @return ReferableInterface
+	 *
+	 * @throws ReferenceException
+	 */
+	protected function resolveReferenceItem(MemberContext $context, $item)
+	{
+		if (!$this->referenceResolver)
+		{
+			throw new ReferenceException("No reference resolver configured");
+		}
+
+		$id = Metadata::get($item, Metadata::ID);
+		$type = $this->getType($item, $context);
+
+		if ($type === null)
+		{
+			throw new ReferenceException("Property {$context->getReflector()->name} in class {$context->getParent()->getReflector()->name} is marked as a reference, but does not specify or imply a valid type");
+		}
+
+		if ($id === null)
+		{
+			throw new ReferenceException("Property {$context->getReflector()->name} in class {$context->getParent()->getReflector()->name} is marked as a reference, but the serialized data does not contain a valid reference");
+		}
+
+		return $this->referenceResolver->resolve($type, $id, $context->getMapper()->isReferenceLazy());
 	}
 
 	/**
 	 * @param stdClass $serializedValue
+	 * @param MemberContext|null $context
 	 * @param string|null $typeHint
 	 *
 	 * @return null|string
 	 * @throws MissingTypeException
 	 */
-	protected function getType($serializedValue, $typeHint = null)
+	protected function getType($serializedValue, $context = null, $typeHint = null)
 	{
 		if ($typeHint === null && Metadata::contains($serializedValue, Metadata::TYPE))
 		{
 			// Type hint is not explicitly provided, try to retrieve it from the serialized value's metadata
 			$typeHint = Metadata::get($serializedValue, Metadata::TYPE);
+		}
+
+		if ($typeHint === null && $context instanceof MemberContext)
+		{
+			$typeHint = $context->getMapper()->getType();
 		}
 
 		if ($typeHint !== null && !class_exists($typeHint))

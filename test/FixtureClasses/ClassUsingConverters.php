@@ -16,7 +16,7 @@ use OneOfZero\Json\Annotations\Type;
 use OneOfZero\Json\Annotations\Converter;
 use /** @noinspection PhpUnusedAliasInspection */OneOfZero\Json\Converters\DateTimeConverter;
 
-class ClassUsingCustomConverters
+class ClassUsingConverters
 {
 	/**
 	 * @var DateTime $privateDateObject
@@ -24,48 +24,46 @@ class ClassUsingCustomConverters
 	private $privateDateObject;
 
 	/**
-	 * @Type(DateTime::class)
 	 * @Converter(DateTimeConverter::class)
 	 * @var DateTime $dateObject
 	 */
 	public $dateObject;
 
 	/**
-	 * @Type(SimpleClass::class)
-	 * @Converter(ClassDependentCustomConverter::class)
+	 * @Converter(ClassDependentMemberConverter::class)
 	 * @var SimpleClass $simpleClass
 	 */
 	public $simpleClass;
 
 	/**
-	 * @Type(ReferableClass::class)
-	 * @Converter(ClassDependentCustomConverter::class)
+	 * @Converter(ClassDependentMemberConverter::class)
 	 * @var ReferableClass $referableClass
 	 */
 	public $referableClass;
 
 	/**
-	 * @Converter(PropertyDependentCustomConverter::class)
+	 * @Converter(PropertyDependentMemberConverter::class)
 	 * @var int $foo
 	 */
 	public $foo;
 
 	/**
-	 * @Converter(PropertyDependentCustomConverter::class)
+	 * @Converter(PropertyDependentMemberConverter::class)
 	 * @var int $bar
 	 */
 	public $bar;
 
 	/**
-	 * @Converter(ContextSensitiveCustomConverter::class)
+	 * @Converter(ContextSensitiveMemberConverter::class)
 	 * @var int $contextSensitive
 	 */
 	public $contextSensitive;
 
 	/**
 	 * @Getter
-	 * @Type(DateTime::class)
 	 * @Converter(DateTimeConverter::class)
+	 *
+	 * @return DateTime
 	 */
 	public function getPrivateDateObject()
 	{
@@ -74,8 +72,8 @@ class ClassUsingCustomConverters
 
 	/**
 	 * @Setter
-	 * @Type(DateTime::class)
 	 * @Converter(DateTimeConverter::class)
+	 * 
 	 * @param DateTime $dateObject
 	 */
 	public function setPrivateDateObject(DateTime $dateObject)

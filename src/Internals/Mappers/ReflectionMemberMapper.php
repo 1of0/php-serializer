@@ -9,6 +9,8 @@
 
 namespace OneOfZero\Json\Internals\Mappers;
 
+use OneOfZero\Json\Configuration;
+use OneOfZero\Json\Internals\Flags;
 use ReflectionParameter;
 
 /**
@@ -243,23 +245,47 @@ class ReflectionMemberMapper implements MemberMapperInterface
 	 */
 	public function isIncluded()
 	{
-		if (!$this->target->isPublic())
+		$strategy = $this->getConfiguration()->defaultMemberInclusionStrategy;
+
+		if ($this->isClassProperty())
 		{
-			// Non-public properties and methods are excluded by default
-			return false;
+			if ($this->target->isPublic() && Flags::has($strategy, Configuration::INCLUDE_PUBLIC_PROPERTIES))
+			{
+				return true;
+			}
+
+			if (!$this->target->isPublic() && Flags::has($strategy, Configuration::INCLUDE_NON_PUBLIC_PROPERTIES))
+			{
+				return true;
+			}
 		}
 
-		if ($this->isClassMethod() && !$this->isGetter() && !$this->isSetter())
+		if ($this->isGetter())
 		{
-			// Methods that are neither a valid getter or a setter are excluded by default
-			return false;
+			if ($this->target->isPublic() && Flags::has($strategy, Configuration::INCLUDE_PUBLIC_GETTERS))
+			{
+				return true;
+			}
+
+			if (!$this->target->isPublic() && Flags::has($strategy, Configuration::INCLUDE_NON_PUBLIC_GETTERS))
+			{
+				return true;
+			}
 		}
 
-		if ($this->memberParent->wantsExplicitInclusion())
+		if ($this->isSetter())
 		{
-			return false;
+			if ($this->target->isPublic() && Flags::has($strategy, Configuration::INCLUDE_PUBLIC_SETTERS))
+			{
+				return true;
+			}
+
+			if (!$this->target->isPublic() && Flags::has($strategy, Configuration::INCLUDE_NON_PUBLIC_SETTERS))
+			{
+				return true;
+			}
 		}
 
-		return true;
+		return $this->getBase()->isIncluded();
 	}
 }

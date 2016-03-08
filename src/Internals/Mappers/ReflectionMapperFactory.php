@@ -9,14 +9,6 @@ class ReflectionMapperFactory implements MapperFactoryInterface
 	use BaseFactoryTrait;
 
 	/**
-	 * @param MapperFactoryInterface|null $parent
-	 */
-	public function __construct(MapperFactoryInterface $parent = null)
-	{
-		$this->setParent($parent ?: new NullMapperFactory());
-	}
-
-	/**
 	 * {@inheritdoc}
 	 */
 	public function mapObject(ReflectionClass $reflector)

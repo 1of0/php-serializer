@@ -10,16 +10,16 @@
 namespace OneOfZero\Json\Test\FixtureClasses;
 
 use OneOfZero\Json\AbstractMemberConverter;
-use OneOfZero\Json\Internals\MemberContext;
+use OneOfZero\Json\Internals\Contexts\MemberContext;
 
-class ContextSensitiveAbstractConverter extends AbstractMemberConverter
+class ContextSensitiveMemberConverter extends AbstractMemberConverter
 {
 	/**
 	 * {@inheritdoc}
 	 */
 	public function serialize(MemberContext $context)
 	{
-		/** @var ClassUsingCustomConverters $parentInstance */
+		/** @var ClassUsingConverters $parentInstance */
 		$parentInstance = $context->getParent()->getInstance();
 
 		return intval($context->getValue()) * intval($parentInstance->referableClass->getId());
@@ -30,8 +30,8 @@ class ContextSensitiveAbstractConverter extends AbstractMemberConverter
 	 */
 	public function deserialize(MemberContext $context)
 	{
-		/** @var ClassUsingCustomConverters $deserializedParent */
-		$deserializedParent = $context->getParent()->getSerializedInstance();
+		/** @var ClassUsingConverters $deserializedParent */
+		$deserializedParent = $context->getParent()->getInstance();
 
 		return intval($context->getSerializedValue()) / intval($deserializedParent->referableClass->getId());
 	}

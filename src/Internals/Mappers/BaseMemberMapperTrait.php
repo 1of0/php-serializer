@@ -28,6 +28,14 @@ trait BaseMemberMapperTrait
 	protected $memberParent;
 
 	/**
+	 * {@inh}
+	 */
+	public final function getConfiguration()
+	{
+		return $this->memberParent->getConfiguration();
+	}
+
+	/**
 	 * {@inheritdoc}
 	 */
 	public final function setMemberParent(ObjectMapperInterface $memberParent)

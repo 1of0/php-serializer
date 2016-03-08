@@ -1,6 +1,6 @@
 <?php
 
-namespace OneOfZero\Json\Internals;
+namespace OneOfZero\Json\Internals\Contexts;
 
 class AnonymousObjectContext extends AbstractObjectContext
 {

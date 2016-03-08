@@ -36,7 +36,15 @@ trait BaseObjectMapperTrait
 	 * @var ReflectionMemberMapper[]|null $methods
 	 */
 	protected $methods = null;
-		
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public final function getConfiguration()
+	{
+		return $this->factory->getConfiguration();
+	}
+
 	/**
 	 * {@inheritdoc}
 	 */

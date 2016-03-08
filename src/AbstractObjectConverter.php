@@ -10,7 +10,7 @@
 namespace OneOfZero\Json;
 
 use OneOfZero\Json\Exceptions\ResumeSerializationException;
-use OneOfZero\Json\Internals\ObjectContext;
+use OneOfZero\Json\Internals\Contexts\ObjectContext;
 
 abstract class AbstractObjectConverter
 {

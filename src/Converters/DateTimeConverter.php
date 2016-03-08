@@ -11,7 +11,7 @@ namespace OneOfZero\Json\Converters;
 
 use DateTime;
 use OneOfZero\Json\AbstractMemberConverter;
-use OneOfZero\Json\Internals\MemberContext;
+use OneOfZero\Json\Internals\Contexts\MemberContext;
 
 class DateTimeConverter extends AbstractMemberConverter
 {

@@ -11,11 +11,23 @@ namespace OneOfZero\Json\Internals;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\Common\Annotations\CachedReader;
+use Doctrine\Common\Annotations\IndexedReader;
 use Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\Annotations\SimpleAnnotationReader;
+use Interop\Container\ContainerInterface;
 use RuntimeException;
 
 class Environment
 {
+	private static $readerImplementations = [
+		Reader::class,
+		AnnotationReader::class,
+		CachedReader::class,
+		SimpleAnnotationReader::class,
+		IndexedReader::class
+	];
+
 	/**
 	 * @var Reader $annotationReader
 	 */
@@ -61,10 +73,23 @@ class Environment
 	}
 
 	/**
+	 * @param ContainerInterface $container
+	 *
 	 * @return Reader
 	 */
-	public static function getAnnotationReader()
+	public static function getAnnotationReader(ContainerInterface $container = null)
 	{
+		if ($container !== null)
+		{
+			foreach (self::$readerImplementations as $readerClass)
+			{
+				if ($container->has($readerClass))
+				{
+					return $container->get($readerClass);
+				}
+			}
+		}
+		
 		if (!self::$annotationReader)
 		{
 			/** @noinspection PhpIncludeInspection */

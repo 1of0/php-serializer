@@ -1,6 +1,6 @@
 <?php
 
-namespace OneOfZero\Json\Internals;
+namespace OneOfZero\Json\Internals\Visitors;
 
 use Interop\Container\ContainerInterface;
 use OneOfZero\Json\AbstractMemberConverter;
@@ -8,6 +8,8 @@ use OneOfZero\Json\AbstractObjectConverter;
 use OneOfZero\Json\Configuration;
 use OneOfZero\Json\Exceptions\ConverterException;
 use OneOfZero\Json\Internals\Mappers\MapperFactoryInterface;
+use OneOfZero\Json\Internals\ProxyHelper;
+use OneOfZero\Json\ReferenceResolverInterface;
 
 abstract class AbstractVisitor
 {
@@ -27,15 +29,32 @@ abstract class AbstractVisitor
 	protected $container;
 
 	/**
+	 * @var ReferenceResolverInterface $referenceResolver
+	 */
+	protected $referenceResolver;
+
+	/**
+	 * @var ProxyHelper $proxyHelper
+	 */
+	protected $proxyHelper;
+
+	/**
 	 * @param Configuration $configuration
 	 * @param MapperFactoryInterface $mapperFactory
 	 * @param ContainerInterface|null $container
+	 * @param ReferenceResolverInterface|null $referenceResolver
 	 */
-	public function __construct(Configuration $configuration, MapperFactoryInterface $mapperFactory, ContainerInterface $container = null)
-	{
+	public function __construct(
+		Configuration $configuration,
+		MapperFactoryInterface $mapperFactory,
+		ContainerInterface $container = null,
+		ReferenceResolverInterface $referenceResolver = null
+	) {
 		$this->configuration = $configuration;
 		$this->mapperFactory = $mapperFactory;
 		$this->container = $container;
+		$this->referenceResolver = $referenceResolver;
+		$this->proxyHelper = new ProxyHelper($referenceResolver);
 	}
 
 	/**

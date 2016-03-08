@@ -1,12 +1,18 @@
 <?php
 
-namespace OneOfZero\Json\Internals;
+namespace OneOfZero\Json\Internals\Visitors;
 
 use OneOfZero\Json\Exceptions\ReferenceException;
 use OneOfZero\Json\Exceptions\ResumeSerializationException;
 use OneOfZero\Json\Exceptions\SerializationException;
+use OneOfZero\Json\Internals\Contexts\AbstractContext;
+use OneOfZero\Json\Internals\Contexts\ArrayContext;
+use OneOfZero\Json\Internals\Contexts\MemberContext;
+use OneOfZero\Json\Internals\Metadata;
+use OneOfZero\Json\Internals\Contexts\ObjectContext;
 use OneOfZero\Json\ReferableInterface;
 use ReflectionClass;
+use stdClass;
 
 class SerializingVisitor extends AbstractVisitor
 {
@@ -20,18 +26,10 @@ class SerializingVisitor extends AbstractVisitor
 	 */
 	public function visit($value, AbstractContext $parent = null)
 	{
-		if (is_object($value))
+		if (is_object($value) && $value instanceof stdClass)
 		{
-			$valueMapper = $this->mapperFactory->mapObject(new ReflectionClass($value));
-
-			$valueContext = (new ObjectContext)
-				->withReflector($valueMapper->getTarget())
-				->withMapper($valueMapper)
-				->withInstance($value)
-				->withParent($parent)
-			;
-
-			return $this->visitObject($valueContext)->getSerializedInstance();
+			// stdClass objects are weirdos
+			$value = (array)$value;
 		}
 
 		if (is_array($value))
@@ -42,6 +40,27 @@ class SerializingVisitor extends AbstractVisitor
 			;
 
 			return $this->visitArray($valueContext)->getSerializedArray();
+		}
+
+		if (is_object($value))
+		{
+			$class = $this->proxyHelper->getClassBeneath($value);
+
+			if ($this->proxyHelper->isProxy($value))
+			{
+				$value = $this->proxyHelper->unproxy($value);
+			}
+			
+			$valueMapper = $this->mapperFactory->mapObject(new ReflectionClass($class));
+
+			$valueContext = (new ObjectContext)
+				->withReflector($valueMapper->getTarget())
+				->withMapper($valueMapper)
+				->withInstance($value)
+				->withParent($parent)
+			;
+
+			return $this->visitObject($valueContext)->getSerializedInstance();
 		}
 
 		return $value;
@@ -190,12 +209,9 @@ class SerializingVisitor extends AbstractVisitor
 	 */
 	protected function createReferenceArray(MemberContext $context)
 	{
-		$propertyName = $context->getReflector()->name;
-		$className = $context->getParent()->getReflector()->name;
-
 		if (!is_array($context->getValue()))
 		{
-			throw new ReferenceException("Property $propertyName in class $className is marked as an array, but does not hold an array");
+			throw new ReferenceException("Property {$context->getReflector()->name} in class {$context->getParent()->getReflector()->name} is marked as an array, but does not hold an array");
 		}
 
 		$references = [];
@@ -216,18 +232,16 @@ class SerializingVisitor extends AbstractVisitor
 	 */
 	protected function createReferenceItem(MemberContext $context, $value)
 	{
-		$propertyName = $context->getReflector()->name;
-		$className = $context->getParent()->getReflector()->name;
-		$type = $this->getType($context);
+		$type = $this->getType($context, $value);
 
 		if (!($value instanceof ReferableInterface))
 		{
-			throw new ReferenceException("Property $propertyName in class $className is marked as a reference, but does not implement ReferableInterface");
+			throw new ReferenceException("Property {$context->getReflector()->name} in class {$context->getParent()->getReflector()->name} is marked as a reference, but does not implement ReferableInterface");
 		}
 
 		if ($type === null)
 		{
-			throw new ReferenceException("Property $propertyName in class $className is marked as a reference, but does not specify or imply a valid type");
+			throw new ReferenceException("Property {$context->getReflector()->name} in class {$context->getParent()->getReflector()->name} is marked as a reference, but does not specify or imply a valid type");
 		}
 
 		$reference = [];
@@ -238,18 +252,19 @@ class SerializingVisitor extends AbstractVisitor
 
 	/**
 	 * @param MemberContext $context
+	 * @param mixed $value
 	 *
-	 * @return string|null
+	 * @return null|string
 	 */
-	protected function getType(MemberContext $context)
+	protected function getType(MemberContext $context, $value)
 	{
 		if ($context->getMapper()->getType() !== null)
 		{
 			return $context->getMapper()->getType();
 		}
-		elseif (is_object($context->getValue()))
+		elseif (is_object($value))
 		{
-			return get_class($context->getValue());
+			return get_class($value);
 		}
 		else
 		{

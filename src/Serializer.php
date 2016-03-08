@@ -9,13 +9,17 @@
 
 namespace OneOfZero\Json;
 
-use OneOfZero\Json\DependencyInjection\ContainerAdapterInterface;
-use OneOfZero\Json\Internals\MemberWalker;
-use OneOfZero\Json\Internals\ProxyHelper;
-use OneOfZero\Json\Internals\SerializerContext;
+use Interop\Container\ContainerInterface;
+use OneOfZero\Json\Internals\Environment;
+use OneOfZero\Json\Internals\Mappers\AnnotationMapperFactory;
+use OneOfZero\Json\Internals\Mappers\MapperFactoryInterface;
+use OneOfZero\Json\Internals\Mappers\MapperPipeline;
+use OneOfZero\Json\Internals\Mappers\ReflectionMapperFactory;
+use OneOfZero\Json\Internals\Visitors\DeserializingVisitor;
+use OneOfZero\Json\Internals\Visitors\SerializingVisitor;
 
 class Serializer
-{
+{	
 	/**
 	 * @var Serializer $instance
 	 */
@@ -34,53 +38,81 @@ class Serializer
 	}
 
 	/**
-	 * @var SerializerContext $context
+	 * @var ContainerInterface $container
 	 */
-	private $context;
+	private $container;
 
 	/**
-	 * @param ContainerAdapterInterface $containerAdapter
-	 * @param Configuration|null $configuration
+	 * @var Configuration $configuration
 	 */
-	public function __construct(ContainerAdapterInterface $containerAdapter = null, Configuration $configuration = null)
-	{
-		$this->context = new SerializerContext();
-		$this->context->setSerializer($this);
-		$this->context->setConfiguration($configuration ? $configuration : new Configuration());
-		$this->context->setContainer($containerAdapter);
-		$this->context->setMemberWalker(new MemberWalker($this->context));
-		$this->context->setProxyHelper(new ProxyHelper($this->context->getReferenceResolver()));
+	private $configuration;
+
+	/**
+	 * @var MapperFactoryInterface $mapperFactory
+	 */
+	private $mapperFactory;
+
+	/**
+	 * @var ReferenceResolverInterface $referenceResolver
+	 */
+	private $referenceResolver;
+
+	/**
+	 * @param Configuration|null $configuration
+	 * @param ContainerInterface|null $container
+	 * @param MapperFactoryInterface|null $mapperFactory
+	 * @param ReferenceResolverInterface|null $referenceResolver
+	 */
+	public function __construct(
+		Configuration $configuration = null,
+		ContainerInterface $container = null,
+		MapperFactoryInterface $mapperFactory = null,
+		ReferenceResolverInterface $referenceResolver = null
+	) {
+		$this->configuration = $configuration ?: new Configuration();
+		$this->container = $container;
+		$this->mapperFactory = $mapperFactory ?: $this->createDefaultPipeline();
+		$this->referenceResolver = $referenceResolver;
 	}
 
 	/**
 	 * @param mixed $data
+	 *
 	 * @return string
 	 */
 	public function serialize($data)
 	{
-		return $this->jsonEncode($this->context->getMemberWalker()->serialize($data));
+		$visitor = new SerializingVisitor(
+			clone $this->configuration,
+			$this->mapperFactory->withConfiguration(clone $this->configuration),
+			$this->container
+		);
+
+		return $this->jsonEncode($visitor->visit($data));
 	}
 
 	/**
 	 * @param string $json
 	 * @param string|null $typeHint
+	 *
 	 * @return mixed
 	 */
 	public function deserialize($json, $typeHint = null)
 	{
-		$deserializedData = $this->jsonDecode($json);
+		$visitor = new DeserializingVisitor(
+			clone $this->configuration,
+			$this->mapperFactory->withConfiguration(clone $this->configuration),
+			$this->container,
+			$this->referenceResolver
+		);
 
-		if (is_object($deserializedData) || is_array($deserializedData))
-		{
-			return $this->context->getMemberWalker()->deserialize($deserializedData, $typeHint);
-		}
-
-		return $deserializedData;
+		return $visitor->visit($this->jsonDecode($json), null, $typeHint);
 	}
 
 	/**
 	 * @param object $instance
 	 * @param string $type
+	 *
 	 * @return object
 	 */
 	public function cast($instance, $type)
@@ -93,7 +125,7 @@ class Serializer
 	 */
 	public function getConfiguration()
 	{
-		return $this->context->getConfiguration();
+		return $this->configuration;
 	}
 
 	/**
@@ -101,30 +133,92 @@ class Serializer
 	 */
 	public function setConfiguration(Configuration $configuration)
 	{
-		$this->context->setConfiguration($configuration);
+		$this->configuration = $configuration;
+	}
+
+	/**
+	 * @return ContainerInterface
+	 */
+	public function getContainer()
+	{
+		return $this->container;
+	}
+
+	/**
+	 * @param ContainerInterface $container
+	 */
+	public function setContainer(ContainerInterface $container)
+	{
+		$this->container = $container;
+	}
+
+	/**
+	 * @return MapperFactoryInterface
+	 */
+	public function getMapperFactory()
+	{
+		return $this->mapperFactory;
+	}
+
+	/**
+	 * @param MapperFactoryInterface $mapperFactory
+	 */
+	public function setMapperFactory(MapperFactoryInterface $mapperFactory)
+	{
+		$this->mapperFactory = $mapperFactory;
+	}
+
+	/**
+	 * @return ReferenceResolverInterface
+	 */
+	public function getReferenceResolver()
+	{
+		return $this->referenceResolver;
+	}
+
+	/**
+	 * @param ReferenceResolverInterface $referenceResolver
+	 */
+	public function setReferenceResolver(ReferenceResolverInterface $referenceResolver)
+	{
+		$this->referenceResolver = $referenceResolver;
 	}
 
 	/**
 	 * @param mixed $data
+	 *
 	 * @return string
 	 */
 	private function jsonEncode($data)
 	{
-		$options = $this->context->getConfiguration()->jsonEncodeOptions;
-		if ($this->context->getConfiguration()->prettyPrint)
+		$options = $this->configuration->jsonEncodeOptions;
+		if ($this->configuration->prettyPrint)
 		{
 			$options |= JSON_PRETTY_PRINT;
 		}
-		return json_encode($data, $options, $this->context->getConfiguration()->maxDepth);
+		return json_encode($data, $options, $this->configuration->maxDepth);
 	}
 
 	/**
 	 * @param string $json
+	 *
 	 * @return mixed
 	 */
 	private function jsonDecode($json)
 	{
-		$options = $this->context->getConfiguration()->jsonEncodeOptions;
-		return json_decode($json, false, $this->context->getConfiguration()->maxDepth, $options);
+		$options = $this->configuration->jsonEncodeOptions;
+		return json_decode($json, false, $this->configuration->maxDepth, $options);
+	}
+
+	/**
+	 * @return MapperFactoryInterface
+	 */
+	private function createDefaultPipeline()
+	{
+		return (new MapperPipeline)
+			->addFactory(new AnnotationMapperFactory(Environment::getAnnotationReader($this->container)))
+			->addFactory(new ReflectionMapperFactory())
+			->build()
+		;
 	}
 }
