@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "92853d5b2f8e2d2362fe7119e6e68ff1",
-    "content-hash": "faa553b857c8a848127c7a4cfe55553b",
+    "hash": "a597f2938098bb6be4b4358052dedceb",
+    "content-hash": "c40cf7f55442698d134a0381ee27743c",
     "packages": [
         {
             "name": "1of0/better-annotations",

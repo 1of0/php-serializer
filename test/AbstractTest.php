@@ -43,8 +43,7 @@ abstract class AbstractTest extends PHPUnit_Framework_TestCase
 			->build($this->defaultConfiguration)
 		;
 	}
-
-
+	
 	/**
 	 * @param $expected
 	 * @param $actual
