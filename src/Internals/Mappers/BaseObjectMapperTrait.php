@@ -17,13 +17,6 @@ trait BaseObjectMapperTrait
 	use BaseMapperTrait;
 	
 	/**
-	 * Holds the parent mapper layer.
-	 * 
-	 * @var MapperFactoryInterface $factory
-	 */
-	protected $factory;
-	
-	/**
 	 * Holds cached field mappers for the class properties.
 	 *
 	 * @var ReflectionMemberMapper[]|null $properties
@@ -36,30 +29,6 @@ trait BaseObjectMapperTrait
 	 * @var ReflectionMemberMapper[]|null $methods
 	 */
 	protected $methods = null;
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public final function getConfiguration()
-	{
-		return $this->factory->getConfiguration();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public final function getFactory()
-	{
-		return $this->factory;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public final function setFactory(MapperFactoryInterface $factory)
-	{
-		$this->factory = $factory;
-	}
 	
 	/**
 	 * {@inheritdoc}

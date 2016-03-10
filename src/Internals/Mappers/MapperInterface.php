@@ -29,6 +29,20 @@ interface MapperInterface
 	public function setBase(MapperInterface $mapper);
 
 	/**
+	 * Should return the mapper factory.
+	 *
+	 * @return MapperFactoryInterface
+	 */
+	public function getFactory();
+
+	/**
+	 * Should store the provided mapper factory.
+	 *
+	 * @param MapperFactoryInterface $factory
+	 */
+	public function setFactory(MapperFactoryInterface $factory);
+
+	/**
 	 * Should return the reflection target of the member.
 	 *
 	 * @return ReflectionClass|ReflectionMethod|ReflectionProperty

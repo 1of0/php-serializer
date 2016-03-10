@@ -39,7 +39,7 @@ class AnnotationMemberMapper implements MemberMapperInterface
 	private $docReader;
 
 	/**
-	 * @var Converter[] $converterAnnotations
+	 * @var Converter[]|null $converterAnnotations
 	 */
 	private $converterAnnotations = null;
 
@@ -143,53 +143,36 @@ class AnnotationMemberMapper implements MemberMapperInterface
 		return $this->getBase()->isArray();
 	}
 
-
 	/**
 	 * {@inheritdoc}
+	 * 
 	 * @throws SerializationException
 	 */
 	public function isGetter()
 	{
-		if (!$this->annotations->has($this->target, Getter::class))
+		if ($this->annotations->has($this->target, Getter::class))
 		{
-			return $this->getBase()->isGetter();
+			$this->validateGetterSignature();
+			return true;
 		}
 
-		$paramCount = $this->target->getNumberOfRequiredParameters();
-
-		if ($paramCount > 0)
-		{
-			throw new SerializationException("Field {$this->target->name} has {$paramCount} required parameters. Fields mapped with the @Getter annotation must have no required parameters.");
-		}
-
-		return true;
+		return $this->getBase()->isGetter();
 	}
 
 	/**
 	 * {@inheritdoc}
+	 * 
 	 * @throws SerializationException
 	 */
 	public function isSetter()
 	{
-		if (!$this->annotations->has($this->target, Setter::class))
+		if ($this->annotations->has($this->target, Setter::class))
 		{
-			return $this->getBase()->isSetter();
+			$this->validateSetterSignature();
+			return true;
 		}
 
-		if ($this->target->getNumberOfParameters() === 0)
-		{
-			// Valid setters must have at least one parameter, and at most one required parameter
-			throw new SerializationException("Field {$this->target->name} has no parameters. Fields mapped with the @Setter annotation must have at least one parameter.");
-		}
-
-		$paramCount = $this->target->getNumberOfRequiredParameters();
-
-		if ($paramCount > 1)
-		{
-			throw new SerializationException("Field {$this->target->name} has {$paramCount} required parameters. Fields mapped with the @Setter annotation must have one required parameter at most.");
-		}
-
-		return true;
+		return $this->getBase()->isSetter();
 	}
 
 	/**
@@ -207,7 +190,7 @@ class AnnotationMemberMapper implements MemberMapperInterface
 			return true;
 		}
 
-		if ($this->memberParent->wantsExplicitInclusion() && !$this->annotations->has($this->target, AbstractName::class))
+		if ($this->memberParent->wantsExplicitInclusion()/* && !$this->annotations->has($this->target, AbstractName::class) */)
 		{
 			return false;
 		}

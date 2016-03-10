@@ -30,13 +30,12 @@ class ReferableClassResolver implements ReferenceResolverInterface
 	/**
 	 * 
 	 */
-	public function __construct( )
+	public function __construct()
 	{
 		$this->lazyFactory = new LazyLoadingValueHolderFactory();
 		$this->interceptorFactory = new AccessInterceptorValueHolderFactory();
 	}
-
-
+	
 	/**
 	 * @param string $referenceClass
 	 * @param mixed $referenceId
@@ -45,38 +44,38 @@ class ReferableClassResolver implements ReferenceResolverInterface
 	 */
 	public function resolve($referenceClass, $referenceId, $lazy = true)
 	{
-		if ($referenceClass === ReferableClass::class)
+		if ($referenceClass !== ReferableClass::class)
 		{
-			if ($lazy)
-			{
-				/** @var ReferableClassResolver $referenceResolver */
-				$referenceResolver = $this;
-
-				$lazyProxy = $this->lazyFactory->createProxy($referenceClass,
-					function (&$wrappedObject, LazyLoadingInterface $proxy, $method, array $parameters, &$initializer)
-					use ($referenceResolver, $referenceClass, $referenceId)
-					{
-						$initializer = null;
-						$wrappedObject = $referenceResolver->resolve($referenceClass, $referenceId, false);
-						return true;
-					}
-				);
-				$proxy = $this->interceptorFactory->createProxy($lazyProxy, [
-					'getId' => function ($proxy, $instance, $method, $params, &$returnEarly) use ($referenceId)
-					{
-						$returnEarly = true;
-						return $referenceId;
-					}
-				]);
-
-				return $proxy;
-			}
-			else
-			{
-				return new ReferableClass($referenceId);
-			}
+			return null;
 		}
 
-		return null;
+		if ($lazy)
+		{
+			/** @var ReferableClassResolver $referenceResolver */
+			$referenceResolver = $this;
+
+			$lazyProxy = $this->lazyFactory->createProxy($referenceClass,
+				function (&$wrappedObject, LazyLoadingInterface $proxy, $method, array $parameters, &$initializer)
+				use ($referenceResolver, $referenceClass, $referenceId)
+				{
+					$initializer = null;
+					$wrappedObject = $referenceResolver->resolve($referenceClass, $referenceId, false);
+					return true;
+				}
+			);
+			$proxy = $this->interceptorFactory->createProxy($lazyProxy, [
+				'getId' => function ($proxy, $instance, $method, $params, &$returnEarly) use ($referenceId)
+				{
+					$returnEarly = true;
+					return $referenceId;
+				}
+			]);
+
+			return $proxy;
+		}
+		else
+		{
+			return new ReferableClass($referenceId);
+		}
 	}
 }

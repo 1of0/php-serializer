@@ -18,7 +18,7 @@ class SerializingVisitorTest extends AbstractTest
 	
 	public function testObjectArray()
 	{
-		$input = [ new SimpleClass('foo'), new SimpleClass('bar'), new SimpleClass('baz') ];
+		$input = [ new SimpleClass('foo', null), new SimpleClass('bar', null), new SimpleClass('baz', null) ];
 
 		$expectedOutput = [
 			[ Metadata::TYPE => SimpleClass::class, 'foo' => 'foo' ],
@@ -32,7 +32,7 @@ class SerializingVisitorTest extends AbstractTest
 
 	public function testMixedArray()
 	{
-		$input = [ 'abc', 123, new SimpleClass('baz') ];
+		$input = [ 'abc', 123, new SimpleClass('baz', null) ];
 
 		$expectedOutput = [
 			'abc',
@@ -60,7 +60,7 @@ class SerializingVisitorTest extends AbstractTest
 
 	public function testObjectWithArray()
 	{
-		$input = new SimpleClass([ 'foo', 'bar', 'baz' ], new SimpleClass('123'));
+		$input = new SimpleClass([ 'foo', 'bar', 'baz' ], new SimpleClass('123', null));
 
 		$expectedOutput = [
 			Metadata::TYPE => SimpleClass::class,

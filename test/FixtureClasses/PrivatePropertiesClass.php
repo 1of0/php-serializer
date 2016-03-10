@@ -25,7 +25,7 @@ class PrivatePropertiesClass
 	 * @param $foo
 	 * @param $bar
 	 */
-	public function __construct($foo = null, $bar = null)
+	public function __construct($foo, $bar)
 	{
 		$this->foo = $foo;
 		$this->bar = $bar;

@@ -43,7 +43,8 @@ class AnnotationMapperFactory implements MapperFactoryInterface
 	public function mapMember($reflector, ObjectMapperInterface $memberParent)
 	{
 		$mapper = new AnnotationMemberMapper($this->annotations);
-		
+
+		$mapper->setFactory($this);
 		$mapper->setTarget($reflector);
 		$mapper->setMemberParent($memberParent);
 		$mapper->setBase($this->getParent()->mapMember($reflector, $memberParent->getBase()));

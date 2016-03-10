@@ -13,7 +13,7 @@ class SimpleClassExtender extends SimpleClass
 {
 	public $baz;
 
-	public function __construct($foo = null, $bar = null, $baz = null)
+	public function __construct($foo, $bar, $baz)
 	{
 		parent::__construct($foo, $bar);
 		$this->baz = $baz;

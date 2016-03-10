@@ -28,7 +28,8 @@ class ReflectionMapperFactory implements MapperFactoryInterface
 	public function mapMember($reflector, ObjectMapperInterface $memberParent)
 	{
 		$mapper = new ReflectionMemberMapper();
-		
+
+		$mapper->setFactory($this);
 		$mapper->setTarget($reflector);
 		$mapper->setMemberParent($memberParent);
 		$mapper->setBase($this->getParent()->mapMember($reflector, $memberParent->getBase()));

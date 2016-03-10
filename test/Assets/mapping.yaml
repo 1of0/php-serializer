@@ -1,7 +1,47 @@
-'OneOfZero\Json\Test\FixtureClasses\YamlMappedClass':
+'@use':
+  SimpleClass:                      'OneOfZero\Json\Test\FixtureClasses\SimpleClass'
+  ReferableClass:                   'OneOfZero\Json\Test\FixtureClasses\ReferableClass'
+  YamlMappedClass:                  'OneOfZero\Json\Test\FixtureClasses\YamlMappedClass'
+  YamlMappedClassUsingConverters:   'OneOfZero\Json\Test\FixtureClasses\YamlMappedClassUsingConverters'
+  DateTimeConverter:                'OneOfZero\Json\Converters\DateTimeConverter'
+  ClassDependentMemberConverter:    'OneOfZero\Json\Test\FixtureClasses\Converters\ClassDependentMemberConverter'
+  ContextSensitiveMemberConverter:  'OneOfZero\Json\Test\FixtureClasses\Converters\ContextSensitiveMemberConverter'
+  PropertyDependentMemberConverter: 'OneOfZero\Json\Test\FixtureClasses\Converters\PropertyDependentMemberConverter'
+
+YamlMappedClass:
+  properties:
     foo:
-        '@name': food
+      name: food
     bar:
-        '@include': true
+      include: true
     baz:
-        '@ignore': true
+      ignore: true
+
+YamlMappedClassUsingConverters:
+  properties:
+    dateObject:
+      type: DateTime
+      converters: [ DateTimeConverter ]
+    simpleClass:
+      type: SimpleClass
+      converters: [ ClassDependentMemberConverter ]
+    referableClass:
+      type: ReferableClass
+      converters: [ ClassDependentMemberConverter ]  
+    foo:
+      converters: [ PropertyDependentMemberConverter ]
+    bar:
+      converters: [ PropertyDependentMemberConverter ]
+    contextSensitive:
+      converters: [ ContextSensitiveMemberConverter ]
+
+  methods:
+    getPrivateDateObject:
+      getter: true
+      type: DateTime
+      converters: [ DateTimeConverter ]
+    setPrivateDateObject:
+      setter: true
+      type: DateTime
+      converters: [ DateTimeConverter ]
+      

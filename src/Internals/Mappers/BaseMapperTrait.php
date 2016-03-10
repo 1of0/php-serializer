@@ -28,6 +28,13 @@ trait BaseMapperTrait
 	 * @var ReflectionClass|ReflectionProperty|ReflectionMethod $target
 	 */
 	protected $target;
+
+	/**
+	 * Holds the parent mapper layer.
+	 *
+	 * @var MapperFactoryInterface $factory
+	 */
+	protected $factory;
 	
 	/**
 	 * {@inheritdoc}
@@ -59,5 +66,29 @@ trait BaseMapperTrait
 	public final function setTarget($target)
 	{
 		$this->target = $target;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public final function getFactory()
+	{
+		return $this->factory;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public final function setFactory(MapperFactoryInterface $factory)
+	{
+		$this->factory = $factory;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public final function getConfiguration()
+	{
+		return $this->factory->getConfiguration();
 	}
 }

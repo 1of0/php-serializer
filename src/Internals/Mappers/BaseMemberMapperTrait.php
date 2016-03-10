@@ -9,6 +9,7 @@
 
 namespace OneOfZero\Json\Internals\Mappers;
 
+use OneOfZero\Json\Exceptions\SerializationException;
 use ReflectionMethod;
 use ReflectionProperty;
 
@@ -26,14 +27,6 @@ trait BaseMemberMapperTrait
 	 * @var ReflectionObjectMapper $memberParent
 	 */
 	protected $memberParent;
-
-	/**
-	 * {@inh}
-	 */
-	public final function getConfiguration()
-	{
-		return $this->memberParent->getConfiguration();
-	}
 
 	/**
 	 * {@inheritdoc}
@@ -61,6 +54,48 @@ trait BaseMemberMapperTrait
 	protected final function isClassMethod()
 	{
 		return $this->target instanceof ReflectionMethod;
+	}
+
+	/**
+	 * @throws SerializationException
+	 */
+	protected final function validateGetterSignature()
+	{
+		if (!($this->target instanceof ReflectionMethod))
+		{
+			throw new SerializationException("Field {$this->target->name} is not a method. Only methods may be marked as getters.");
+		}
+
+		$paramCount = $this->target->getNumberOfRequiredParameters();
+
+		if ($paramCount > 0)
+		{
+			throw new SerializationException("Field {$this->target->name} has {$paramCount} required parameters. Fields marked as getters must have no required parameters.");
+		}
+	}
+
+	/**
+	 * @throws SerializationException
+	 */
+	protected final function validateSetterSignature()
+	{
+		if (!($this->target instanceof ReflectionMethod))
+		{
+			throw new SerializationException("Field {$this->target->name} is not a method. Only methods may be marked as setters.");
+		}
+		
+		if ($this->target->getNumberOfParameters() === 0)
+		{
+			// Valid setters must have at least one parameter, and at most one required parameter
+			throw new SerializationException("Field {$this->target->name} has no parameters. Fields marked as setters must have at least one parameter.");
+		}
+
+		$paramCount = $this->target->getNumberOfRequiredParameters();
+
+		if ($paramCount > 1)
+		{
+			throw new SerializationException("Field {$this->target->name} has {$paramCount} required parameters. Fields marked as setters must have one required parameter at most.");
+		}
 	}
 
 	/**

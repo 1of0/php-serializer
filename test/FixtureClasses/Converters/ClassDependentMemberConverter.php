@@ -7,10 +7,12 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Test\FixtureClasses;
+namespace OneOfZero\Json\Test\FixtureClasses\Converters;
 
 use OneOfZero\Json\AbstractMemberConverter;
 use OneOfZero\Json\Internals\Contexts\MemberContext;
+use OneOfZero\Json\Test\FixtureClasses\ReferableClass;
+use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
 
 class ClassDependentMemberConverter extends AbstractMemberConverter
 {

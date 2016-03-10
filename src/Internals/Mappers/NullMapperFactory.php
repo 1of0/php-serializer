@@ -27,7 +27,8 @@ class NullMapperFactory implements MapperFactoryInterface
 	public function mapMember($reflector, ObjectMapperInterface $memberParent)
 	{
 		$mapper = new NullMemberMapper();
-		
+
+		$mapper->setFactory($this);
 		$mapper->setTarget($reflector);
 		
 		return $mapper;
