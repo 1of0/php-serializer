@@ -53,7 +53,7 @@ class DeserializingVisitor extends AbstractVisitor
 
 			$object = $this->containerHas($type)
 				? $this->containerGet($type)
-				: $objectReflector->newInstance()
+				: $objectReflector->newInstanceWithoutConstructor()
 			;
 
 			$objectContext = (new ObjectContext)

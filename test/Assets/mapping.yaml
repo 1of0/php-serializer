@@ -1,0 +1,7 @@
+'OneOfZero\Json\Test\FixtureClasses\YamlMappedClass':
+    foo:
+        '@name': food
+    bar:
+        '@include': true
+    baz:
+        '@ignore': true

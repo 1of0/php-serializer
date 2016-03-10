@@ -72,6 +72,11 @@ abstract class AbstractTest extends PHPUnit_Framework_TestCase
 
 			$this->assertEquals($value, $actual[$key]);
 		}
+
+		foreach ($actual as $key => $value)
+		{
+			$this->assertTrue(array_key_exists($key, $expected), "Item with key $key is not expected");
+		}
 	}
 
 	/**

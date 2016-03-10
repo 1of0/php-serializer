@@ -2,27 +2,9 @@
 
 namespace OneOfZero\Json\Internals\Mappers;
 
-class YamlMemberMapper implements MemberMapperInterface
+class DummyMemberMapper implements MemberMapperInterface
 {
 	use BaseMemberMapperTrait;
-
-	private static $includeAttributes = [
-		'@include',
-		'@name'
-	];
-
-	/**
-	 * @var array $mapping
-	 */
-	private $mapping;
-
-	/**
-	 * @param array $mapping
-	 */
-	public function __construct(array $mapping)
-	{
-		$this->mapping = $mapping;
-	}
 
 	/**
 	 * {@inheritdoc}
@@ -77,11 +59,6 @@ class YamlMemberMapper implements MemberMapperInterface
 	 */
 	public function getName()
 	{
-		if (array_key_exists('@name', $this->mapping))
-		{
-			return $this->mapping['@name'];
-		}
-
 		return $this->base->getName();
 	}
 
@@ -154,27 +131,6 @@ class YamlMemberMapper implements MemberMapperInterface
 	 */
 	public function isIncluded()
 	{
-		if (array_key_exists('@ignore', $this->mapping))
-		{
-			return false;
-		}
-
-		foreach (self::$includeAttributes as $attribute)
-		{
-			if (array_key_exists($attribute, $this->mapping))
-			{
-				return true;
-			}
-		}
-
 		return $this->base->isIncluded();
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getMapping()
-	{
-		return $this->mapping;
 	}
 }
