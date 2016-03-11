@@ -23,19 +23,19 @@ class ReferencePropertyTest extends PHPUnit_Framework_TestCase
 	public function testReference()
 	{
 		$expectedJson = json_encode([
-			'@class' => ClassReferencingReferableClass::class,
-			'foo' => 'String value',
-			'bar' => 1.337,
+			'@class'    => ClassReferencingReferableClass::class,
+			'foo'       => 'String value',
+			'bar'       => 1.337,
 			'reference' => [
-				'@class' => ReferableClass::class,
-				'id' => 9001
+				'@class'    => ReferableClass::class,
+				'id'        => 9001
 			]
 		]);
 
 		$object = new ClassReferencingReferableClass();
-		$object->foo = "String value";
-		$object->bar = 1.337;
-		$object->reference = new ReferableClass(9001);
+		$object->foo        = "String value";
+		$object->bar        = 1.337;
+		$object->reference  = new ReferableClass(9001);
 
 		$serializer = new Serializer();
 		$serializer->setReferenceResolver(new ReferableClassResolver());
@@ -55,8 +55,8 @@ class ReferencePropertyTest extends PHPUnit_Framework_TestCase
 	public function testMultipleReferences()
 	{
 		$expectedJson = json_encode([
-			'@class' => ClassReferencingArray::class,
-			'references' => [
+			'@class'        => ClassReferencingArray::class,
+			'references'    => [
 				[ '@class' => ReferableClass::class, 'id' => 1 ],
 				[ '@class' => ReferableClass::class, 'id' => 2 ],
 				[ '@class' => ReferableClass::class, 'id' => 3 ]
@@ -92,10 +92,10 @@ class ReferencePropertyTest extends PHPUnit_Framework_TestCase
 		$proxyHelper = new ProxyHelper($resolver);
 
 		$expectedJson = json_encode([
-			'@class' => ClassWithLazyReference::class,
+			'@class'    => ClassWithLazyReference::class,
 			'reference' => [
-				'@class' => ReferableClass::class,
-				'id' => 9001
+				'@class'    => ReferableClass::class,
+				'id'        => 9001
 			]
 		]);
 
@@ -112,7 +112,7 @@ class ReferencePropertyTest extends PHPUnit_Framework_TestCase
 		$deserialized = $serializer->deserialize($json);
 		$this->assertNotNull($deserialized);
 		$this->assertTrue($proxyHelper->isProxy($deserialized->reference));
-		//$this->assertEquals($object->reference->getId(), $deserialized->reference->getId());
+		$this->assertEquals($object->reference->getId(), $deserialized->reference->getId());
 
 		// Serializing a proxy
 		$json = $serializer->serialize($deserialized);

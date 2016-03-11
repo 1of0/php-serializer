@@ -1,14 +1,14 @@
 '@use':
   SimpleClass:                      'OneOfZero\Json\Test\FixtureClasses\SimpleClass'
   ReferableClass:                   'OneOfZero\Json\Test\FixtureClasses\ReferableClass'
-  YamlMappedClass:                  'OneOfZero\Json\Test\FixtureClasses\YamlMappedClass'
-  YamlMappedClassUsingConverters:   'OneOfZero\Json\Test\FixtureClasses\YamlMappedClassUsingConverters'
+  UnmappedClass:                    'OneOfZero\Json\Test\FixtureClasses\UnmappedClass'
+  UnmappedClassUsingConverters:     'OneOfZero\Json\Test\FixtureClasses\UnmappedClassUsingConverters'
   DateTimeConverter:                'OneOfZero\Json\Converters\DateTimeConverter'
   ClassDependentMemberConverter:    'OneOfZero\Json\Test\FixtureClasses\Converters\ClassDependentMemberConverter'
   ContextSensitiveMemberConverter:  'OneOfZero\Json\Test\FixtureClasses\Converters\ContextSensitiveMemberConverter'
   PropertyDependentMemberConverter: 'OneOfZero\Json\Test\FixtureClasses\Converters\PropertyDependentMemberConverter'
 
-YamlMappedClass:
+UnmappedClass:
   properties:
     foo:
       name: food
@@ -17,31 +17,31 @@ YamlMappedClass:
     baz:
       ignore: true
 
-YamlMappedClassUsingConverters:
+UnmappedClassUsingConverters:
   properties:
     dateObject:
       type: DateTime
-      converters: [ DateTimeConverter ]
+      converter: DateTimeConverter
     simpleClass:
       type: SimpleClass
-      converters: [ ClassDependentMemberConverter ]
+      converter: ClassDependentMemberConverter
     referableClass:
       type: ReferableClass
-      converters: [ ClassDependentMemberConverter ]  
+      converter: ClassDependentMemberConverter
     foo:
-      converters: [ PropertyDependentMemberConverter ]
+      converter: PropertyDependentMemberConverter
     bar:
-      converters: [ PropertyDependentMemberConverter ]
+      converter: PropertyDependentMemberConverter
     contextSensitive:
-      converters: [ ContextSensitiveMemberConverter ]
+      converter: ContextSensitiveMemberConverter
 
   methods:
     getPrivateDateObject:
       getter: true
       type: DateTime
-      converters: [ DateTimeConverter ]
+      converter: DateTimeConverter
     setPrivateDateObject:
       setter: true
       type: DateTime
-      converters: [ DateTimeConverter ]
+      converter: DateTimeConverter
       

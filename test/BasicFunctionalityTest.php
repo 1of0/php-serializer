@@ -33,9 +33,9 @@ class BasicFunctionalityTest extends AbstractTest
 	public function testSimpleObject()
 	{
 		$expectedJson = json_encode([
-			'@class' => SimpleClass::class,
-			'foo' => '1234',
-			'bar' => 'abcd'
+			'@class'    => SimpleClass::class,
+			'foo'       => '1234',
+			'bar'       => 'abcd'
 		]);
 
 		$object = new SimpleClass('1234', 'abcd');
@@ -50,8 +50,8 @@ class BasicFunctionalityTest extends AbstractTest
 	public function testPrivatePropertiesObject()
 	{
 		$expectedJson = json_encode([
-			'@class' => PrivatePropertiesClass::class,
-			'foo' => '1234'
+			'@class'    => PrivatePropertiesClass::class,
+			'foo'       => '1234'
 		]);
 
 		$object = new PrivatePropertiesClass('1234', 'abcd');
@@ -82,9 +82,9 @@ class BasicFunctionalityTest extends AbstractTest
 	public function testObjectArray()
 	{
 		$expectedObject = [
-			'@class' => SimpleClass::class,
-			'foo' => '1234',
-			'bar' => 'abcd'
+			'@class'    => SimpleClass::class,
+			'foo'       => '1234',
+			'bar'       => 'abcd'
 		];
 		$expectedJson = json_encode([$expectedObject, $expectedObject]);
 

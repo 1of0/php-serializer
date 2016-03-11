@@ -17,13 +17,16 @@ class YamlMemberMapper implements MemberMapperInterface
 	const IGNORE_ATTR = 'ignore';
 	const INCLUDE_ATTR = 'include';
 	const REFERENCE_ATTR = 'reference';
+	const CONVERTER_ATTR = 'converter';
 	const CONVERTERS_ATTR = 'converters';
 	const SERIALIZABLE_ATTR = 'serializable';
 	const DESERIALIZABLE_ATTR = 'deserializable';
 	
 	private static $includeAttributes = [
 		self::INCLUDE_ATTR,
-		self::NAME_ATTR
+		self::NAME_ATTR,
+		self::GETTER_ATTR,
+		self::SETTER_ATTR,
 	];
 
 	/**
@@ -38,9 +41,15 @@ class YamlMemberMapper implements MemberMapperInterface
 	 */
 	public function hasSerializingConverter()
 	{
-		foreach ($this->getConverters() as $converterSettings)
+		if ($this->hasAttribute(self::CONVERTER_ATTR))
 		{
-			if ($converterSettings['serializes'])
+			return true;
+		}
+		
+		if ($this->hasAttribute(self::CONVERTERS_ATTR))
+		{
+			$converters = $this->readAttribute(self::CONVERTERS_ATTR);
+			if (array_key_exists('serializer', $converters))
 			{
 				return true;
 			}
@@ -56,9 +65,15 @@ class YamlMemberMapper implements MemberMapperInterface
 	 */
 	public function hasDeserializingConverter()
 	{
-		foreach ($this->getConverters() as $converterSettings)
+		if ($this->hasAttribute(self::CONVERTER_ATTR))
 		{
-			if ($converterSettings['deserializes'])
+			return true;
+		}
+
+		if ($this->hasAttribute(self::CONVERTERS_ATTR))
+		{
+			$converters = $this->readAttribute(self::CONVERTERS_ATTR);
+			if (array_key_exists('deserializer', $converters))
 			{
 				return true;
 			}
@@ -74,11 +89,17 @@ class YamlMemberMapper implements MemberMapperInterface
 	 */
 	public function getSerializingConverterType()
 	{
-		foreach ($this->getConverters() as $converterClass => $converterSettings)
+		if ($this->hasAttribute(self::CONVERTER_ATTR))
 		{
-			if ($converterSettings['serializes'])
+			return $this->resolveAlias($this->readAttribute(self::CONVERTER_ATTR));
+		}
+
+		if ($this->hasAttribute(self::CONVERTERS_ATTR))
+		{
+			$converters = $this->readAttribute(self::CONVERTERS_ATTR);
+			if (array_key_exists('serializer', $converters))
 			{
-				return $converterClass;
+				return $this->resolveAlias($converters['serializer']);
 			}
 		}
 		
@@ -92,11 +113,17 @@ class YamlMemberMapper implements MemberMapperInterface
 	 */
 	public function getDeserializingConverterType()
 	{
-		foreach ($this->getConverters() as $converterClass => $converterSettings)
+		if ($this->hasAttribute(self::CONVERTER_ATTR))
 		{
-			if ($converterSettings['deserializes'])
+			return $this->resolveAlias($this->readAttribute(self::CONVERTER_ATTR));
+		}
+		
+		if ($this->hasAttribute(self::CONVERTERS_ATTR))
+		{
+			$converters = $this->readAttribute(self::CONVERTERS_ATTR);
+			if (array_key_exists('deserializer', $converters))
 			{
-				return $converterClass;
+				return $this->resolveAlias($converters['deserializer']);
 			}
 		}
 		
@@ -298,15 +325,16 @@ class YamlMemberMapper implements MemberMapperInterface
 		{
 			if (is_string($value))
 			{
-				$class = $this->resolveAlias($value);
-				$this->converters[$class] = [ 'serializes' => true, 'deserializes' => true ];
+				$this->converters[$this->resolveAlias($value)] = [ 
+					'serializes'    => true, 
+					'deserializes'  => true 
+				];
 			}
 			else
 			{
-				$class = $this->resolveAlias($key);
-				$this->converters[$class] = [ 
-					'serializes' => in_array('serializes', $value), 
-					'deserializes' => in_array('deserializes', $value) 
+				$this->converters[$this->resolveAlias($key)] = [ 
+					'serializes'    => in_array('serializes', $value), 
+					'deserializes'  => in_array('deserializes', $value) 
 				];
 			}
 		}

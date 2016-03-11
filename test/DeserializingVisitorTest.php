@@ -55,9 +55,9 @@ class DeserializingVisitorTest extends AbstractTest
 	public function testSimpleObject()
 	{
 		$input = (object)[
-			Metadata::TYPE => SimpleClass::class,
-			'foo' => 'abc',
-			'bar' => '123',
+			Metadata::TYPE  => SimpleClass::class,
+			'foo'           => 'abc',
+			'bar'           => '123',
 		];
 
 		$output = $this->createVisitor()->visit($input);
@@ -70,12 +70,12 @@ class DeserializingVisitorTest extends AbstractTest
 	public function testObjectWithArray()
 	{
 		$input = (object)[
-			Metadata::TYPE => SimpleClass::class,
-			'foo' => [ 'foo', 'bar', 'baz' ],
-			'bar' => (object)
+			Metadata::TYPE  => SimpleClass::class,
+			'foo'           => [ 'foo', 'bar', 'baz' ],
+			'bar'           => (object)
 			[
-				Metadata::TYPE => SimpleClass::class,
-				'foo' => '123'
+				Metadata::TYPE  => SimpleClass::class,
+				'foo'           => '123'
 			]
 		];
 

@@ -2,7 +2,7 @@
 
 namespace OneOfZero\Json\Test\FixtureClasses;
 
-class YamlMappedClass
+class UnmappedClass
 {
 	/**
 	 * @var string $foo

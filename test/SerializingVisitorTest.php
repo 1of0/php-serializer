@@ -49,9 +49,9 @@ class SerializingVisitorTest extends AbstractTest
 		$input = new SimpleClass('abc', '123');
 
 		$expectedOutput = [
-			Metadata::TYPE => SimpleClass::class,
-			'foo' => 'abc',
-			'bar' => '123',
+			Metadata::TYPE  => SimpleClass::class,
+			'foo'           => 'abc',
+			'bar'           => '123',
 		];
 
 		$output = $this->createVisitor()->visit($input);
@@ -63,12 +63,11 @@ class SerializingVisitorTest extends AbstractTest
 		$input = new SimpleClass([ 'foo', 'bar', 'baz' ], new SimpleClass('123', null));
 
 		$expectedOutput = [
-			Metadata::TYPE => SimpleClass::class,
-			'foo' => [ 'foo', 'bar', 'baz' ],
-			'bar' =>
-			[
-				Metadata::TYPE => SimpleClass::class,
-				'foo' => '123'
+			Metadata::TYPE  => SimpleClass::class,
+			'foo'           => [ 'foo', 'bar', 'baz' ],
+			'bar'           => [
+				Metadata::TYPE  => SimpleClass::class,
+				'foo'           => '123'
 			]
 		];
 
