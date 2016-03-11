@@ -10,18 +10,6 @@
 namespace OneOfZero\Json\Test\FixtureClasses;
 
 use DateTime;
-use OneOfZero\Json\Annotations\Getter;
-use OneOfZero\Json\Annotations\Setter;
-use OneOfZero\Json\Annotations\Converter;
-
-use /** @noinspection PhpUnusedAliasInspection */
-	OneOfZero\Json\Converters\DateTimeConverter;
-use /** @noinspection PhpUnusedAliasInspection */
-	OneOfZero\Json\Test\FixtureClasses\Converters\ClassDependentMemberConverter;
-use /** @noinspection PhpUnusedAliasInspection */
-	OneOfZero\Json\Test\FixtureClasses\Converters\ContextSensitiveMemberConverter;
-use /** @noinspection PhpUnusedAliasInspection */
-	OneOfZero\Json\Test\FixtureClasses\Converters\PropertyDependentMemberConverter;
 
 class UnmappedClassUsingConverters
 {
@@ -31,45 +19,36 @@ class UnmappedClassUsingConverters
 	private $privateDateObject;
 
 	/**
-	 * @Converter(DateTimeConverter::class)
 	 * @var DateTime $dateObject
 	 */
 	public $dateObject;
 
 	/**
-	 * @Converter(ClassDependentMemberConverter::class)
 	 * @var SimpleClass $simpleClass
 	 */
 	public $simpleClass;
 
 	/**
-	 * @Converter(ClassDependentMemberConverter::class)
 	 * @var ReferableClass $referableClass
 	 */
 	public $referableClass;
 
 	/**
-	 * @Converter(PropertyDependentMemberConverter::class)
 	 * @var int $foo
 	 */
 	public $foo;
 
 	/**
-	 * @Converter(PropertyDependentMemberConverter::class)
 	 * @var int $bar
 	 */
 	public $bar;
 
 	/**
-	 * @Converter(ContextSensitiveMemberConverter::class)
 	 * @var int $contextSensitive
 	 */
 	public $contextSensitive;
 
 	/**
-	 * @Getter
-	 * @Converter(DateTimeConverter::class)
-	 *
 	 * @return DateTime
 	 */
 	public function getPrivateDateObject()
@@ -78,9 +57,6 @@ class UnmappedClassUsingConverters
 	}
 
 	/**
-	 * @Setter
-	 * @Converter(DateTimeConverter::class)
-	 * 
 	 * @param DateTime $dateObject
 	 */
 	public function setPrivateDateObject(DateTime $dateObject)
