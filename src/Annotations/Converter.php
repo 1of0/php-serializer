@@ -23,12 +23,12 @@ class Converter extends Annotation
 	public $value;
 
 	/**
-	 * @var bool $serialize
+	 * @var string $serializer
 	 */
-	public $serialize = true;
+	public $serializer;
 
 	/**
-	 * @var bool $deserialize
+	 * @var string $deserializer
 	 */
-	public $deserialize = true;
+	public $deserializer;
 }

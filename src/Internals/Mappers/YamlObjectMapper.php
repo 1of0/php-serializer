@@ -2,49 +2,24 @@
 
 namespace OneOfZero\Json\Internals\Mappers;
 
-class YamlObjectMapper implements ObjectMapperInterface
+class YamlObjectMapper extends YamlAbstractMapper implements ObjectMapperInterface
 {
 	use BaseObjectMapperTrait;
-	use YamlMapperTrait;
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function hasSerializingConverter()
-	{
-		return $this->base->hasSerializingConverter();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function hasDeserializingConverter()
-	{
-		return $this->base->hasDeserializingConverter();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getSerializingConverterType()
-	{
-		return $this->base->getSerializingConverterType();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getDeserializingConverterType()
-	{
-		return $this->base->getDeserializingConverterType();
-	}
-
+	const METADATA_ATTR = 'metadata';
+	const EXPLICIT_INCLUSION_ATTR = 'explicit';
+	
 	/**
 	 * {@inheritdoc}
 	 */
 	public function wantsExplicitInclusion()
 	{
-		return $this->base->wantsExplicitInclusion();
+		if ($this->hasAttribute(self::EXPLICIT_INCLUSION_ATTR))
+		{
+			return (bool)$this->readAttribute(self::EXPLICIT_INCLUSION_ATTR);
+		}
+		
+		return $this->getBase()->wantsExplicitInclusion();
 	}
 
 	/**
@@ -52,6 +27,11 @@ class YamlObjectMapper implements ObjectMapperInterface
 	 */
 	public function wantsNoMetadata()
 	{
-		return $this->base->wantsNoMetadata();
+		if ($this->hasAttribute(self::METADATA_ATTR))
+		{
+			return !((bool)$this->readAttribute(self::METADATA_ATTR));
+		}
+		
+		return $this->getBase()->wantsNoMetadata();
 	}
 }

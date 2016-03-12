@@ -27,30 +27,7 @@ use ReflectionParameter;
 class AnnotationMemberMapper implements MemberMapperInterface
 {
 	use BaseMemberMapperTrait;
-	
-	/**
-	 * @var Annotations $annotations
-	 */
-	private $annotations;
-
-	/**
-	 * @var PhpDocReader $docReader
-	 */
-	private $docReader;
-
-	/**
-	 * @var Converter[]|null $converterAnnotations
-	 */
-	private $converterAnnotations = null;
-
-	/**
-	 * @param Annotations $annotations
-	 */
-	public function __construct(Annotations $annotations)
-	{
-		$this->annotations = $annotations;
-		$this->docReader = new PhpDocReader(true);
-	}
+	use AnnotationMapperTrait;
 	
 	/**
 	 * {@inheritdoc}
@@ -228,70 +205,6 @@ class AnnotationMemberMapper implements MemberMapperInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function hasSerializingConverter()
-	{
-		foreach ($this->getConverterAnnotations() as $annotation)
-		{
-			if ($annotation->serialize)
-			{
-				return true;
-			}
-		}
-		
-		return $this->getBase()->hasSerializingConverter();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function hasDeserializingConverter()
-	{
-		foreach ($this->getConverterAnnotations() as $annotation)
-		{
-			if ($annotation->deserialize)
-			{
-				return true;
-			}
-		}
-
-		return $this->getBase()->hasDeserializingConverter();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getSerializingConverterType()
-	{
-		foreach ($this->getConverterAnnotations() as $annotation)
-		{
-			if ($annotation->serialize)
-			{
-				return $annotation->value;
-			}
-		}
-
-		return $this->getBase()->getSerializingConverterType();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getDeserializingConverterType()
-	{
-		foreach ($this->getConverterAnnotations() as $annotation)
-		{
-			if ($annotation->deserialize)
-			{
-				return $annotation->value;
-			}
-		}
-
-		return $this->getBase()->getDeserializingConverterType();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
 	public function isSerializable()
 	{
 		/** @var Property $annotation */
@@ -315,19 +228,6 @@ class AnnotationMemberMapper implements MemberMapperInterface
 		}
 
 		return $this->getBase()->isDeserializable();
-	}
-
-	/**
-	 * @return Converter[]
-	 */
-	private function getConverterAnnotations()
-	{
-		if ($this->converterAnnotations === null)
-		{
-			$this->converterAnnotations = $this->annotations->get($this->target, Converter::class, true);
-		}
-
-		return $this->converterAnnotations;
 	}
 }
 

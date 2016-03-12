@@ -10,8 +10,6 @@
 namespace OneOfZero\Json\Internals\Mappers;
 
 use Doctrine\Common\Annotations\Annotation;
-use OneOfZero\BetterAnnotations\Annotations;
-use OneOfZero\Json\Annotations\Converter;
 use OneOfZero\Json\Annotations\ExplicitInclusion;
 use OneOfZero\Json\Annotations\NoMetadata;
 
@@ -21,24 +19,7 @@ use OneOfZero\Json\Annotations\NoMetadata;
 class AnnotationObjectMapper implements ObjectMapperInterface
 {
 	use BaseObjectMapperTrait;
-	
-	/**
-	 * @var Annotations $annotations
-	 */
-	private $annotations;
-
-	/**
-	 * @var Converter[] $converterAnnotations
-	 */
-	private $converterAnnotations = null;
-
-	/**
-	 * @param Annotations $annotations
-	 */
-	public function __construct(Annotations $annotations)
-	{
-		$this->annotations = $annotations;
-	}
+	use AnnotationMapperTrait;
 
 	public function wantsExplicitInclusion()
 	{
@@ -58,82 +39,5 @@ class AnnotationObjectMapper implements ObjectMapperInterface
 		}
 		
 		return $this->getBase()->wantsNoMetadata();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function hasSerializingConverter()
-	{
-		foreach ($this->getConverterAnnotations() as $annotation)
-		{
-			if ($annotation->serialize)
-			{
-				return true;
-			}
-		}
-
-		return $this->getBase()->hasSerializingConverter();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function hasDeserializingConverter()
-	{
-		foreach ($this->getConverterAnnotations() as $annotation)
-		{
-			if ($annotation->deserialize)
-			{
-				return true;
-			}
-		}
-
-		return $this->getBase()->hasDeserializingConverter();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getSerializingConverterType()
-	{
-		foreach ($this->getConverterAnnotations() as $annotation)
-		{
-			if ($annotation->serialize)
-			{
-				return $annotation->value;
-			}
-		}
-
-		return $this->getBase()->getSerializingConverterType();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getDeserializingConverterType()
-	{
-		foreach ($this->getConverterAnnotations() as $annotation)
-		{
-			if ($annotation->deserialize)
-			{
-				return $annotation->value;
-			}
-		}
-
-		return $this->getBase()->getDeserializingConverterType();
-	}
-
-	/**
-	 * @return Converter[]
-	 */
-	private function getConverterAnnotations()
-	{
-		if ($this->converterAnnotations === null)
-		{
-			$this->converterAnnotations = $this->annotations->get($this->target, Converter::class, true);
-		}
-
-		return $this->converterAnnotations;
 	}
 }
