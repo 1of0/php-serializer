@@ -1,17 +1,23 @@
 <?php
+/**
+ * Copyright (c) 2016 Bernardo van der Wal
+ * MIT License
+ *
+ * Refer to the LICENSE file for the full copyright notice.
+ */
 
 namespace OneOfZero\Json\Test;
 
 use DateTime;
-use OneOfZero\Json\Internals\Mappers\MapperPipeline;
-use OneOfZero\Json\Internals\Mappers\ReflectionMapperFactory;
-use OneOfZero\Json\Internals\Mappers\YamlMapperFactory;
-use OneOfZero\Json\Internals\Metadata;
-use OneOfZero\Json\Internals\Visitors\SerializingVisitor;
+use OneOfZero\Json\Helpers\Metadata;
+use OneOfZero\Json\Mappers\MapperPipeline;
+use OneOfZero\Json\Mappers\ReflectionMapperFactory;
+use OneOfZero\Json\Mappers\YamlMapperFactory;
 use OneOfZero\Json\Test\FixtureClasses\ReferableClass;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
 use OneOfZero\Json\Test\FixtureClasses\UnmappedClass;
 use OneOfZero\Json\Test\FixtureClasses\UnmappedClassUsingConverters;
+use OneOfZero\Json\Visitors\SerializingVisitor;
 
 class YamlVisitorTest extends AbstractTest
 {

@@ -1,7 +1,6 @@
 <?php
-
 /**
- * Copyright (c) 2015 Bernardo van der Wal
+ * Copyright (c) 2016 Bernardo van der Wal
  * MIT License
  *
  * Refer to the LICENSE file for the full copyright notice.
@@ -9,13 +8,13 @@
 
 namespace OneOfZero\Json\Test;
 
-use OneOfZero\Json\Internals\ProxyHelper;
+use OneOfZero\Json\Helpers\ProxyHelper;
 use OneOfZero\Json\Serializer;
 use OneOfZero\Json\Test\FixtureClasses\ClassReferencingArray;
 use OneOfZero\Json\Test\FixtureClasses\ClassReferencingReferableClass;
+use OneOfZero\Json\Test\FixtureClasses\ClassWithLazyReference;
 use OneOfZero\Json\Test\FixtureClasses\ReferableClass;
 use OneOfZero\Json\Test\FixtureClasses\ReferableClassResolver;
-use OneOfZero\Json\Test\FixtureClasses\ClassWithLazyReference;
 use PHPUnit_Framework_TestCase;
 
 class ReferencePropertyTest extends PHPUnit_Framework_TestCase

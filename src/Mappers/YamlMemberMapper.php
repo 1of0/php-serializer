@@ -1,0 +1,181 @@
+<?php
+/**
+ * Copyright (c) 2016 Bernardo van der Wal
+ * MIT License
+ *
+ * Refer to the LICENSE file for the full copyright notice.
+ */
+
+namespace OneOfZero\Json\Mappers;
+
+use OneOfZero\Json\Exceptions\SerializationException;
+
+class YamlMemberMapper extends YamlAbstractMapper implements MemberMapperInterface
+{
+	use BaseMemberMapperTrait;
+	
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getValue($instance)
+	{
+		return $this->getBase()->getValue($instance);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function setValue($instance, $value)
+	{
+		$this->getBase()->setValue($instance, $value);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getName()
+	{
+		if ($this->hasAttribute(self::NAME_ATTR))
+		{
+			return $this->readAttribute(self::NAME_ATTR);
+		}
+
+		return $this->getBase()->getName();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getType()
+	{
+		if ($this->hasAttribute(self::TYPE_ATTR))
+		{
+			return $this->resolveAlias($this->readAttribute(self::TYPE_ATTR));
+		}
+		
+		return $this->getBase()->getType();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function isArray()
+	{
+		if ($this->hasAttribute(self::ARRAY_ATTR) && $this->readAttribute(self::ARRAY_ATTR))
+		{
+			return true;
+		}
+		
+		return $this->getBase()->isArray();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @throws SerializationException
+	 */
+	public function isGetter()
+	{
+		if ($this->hasAttribute(self::GETTER_ATTR) && $this->readAttribute(self::GETTER_ATTR))
+		{
+			$this->validateGetterSignature();
+			return true;
+		}
+		
+		return $this->getBase()->isGetter();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 *
+	 * @throws SerializationException
+	 */
+	public function isSetter()
+	{
+		if ($this->hasAttribute(self::SETTER_ATTR) && $this->readAttribute(self::SETTER_ATTR))
+		{
+			$this->validateSetterSignature();
+			return true;
+		}
+		
+		return $this->getBase()->isSetter();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function isReference()
+	{
+		if ($this->hasAttribute(self::REFERENCE_ATTR) && $this->readAttribute(self::REFERENCE_ATTR))
+		{
+			return true;
+		}
+		
+		return $this->getBase()->isReference();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function isReferenceLazy()
+	{
+		if ($this->hasAttribute(self::REFERENCE_ATTR) && strtolower($this->readAttribute(self::REFERENCE_ATTR)) === 'lazy')
+		{
+			return true;
+		}
+		
+		return $this->getBase()->isReferenceLazy();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function isSerializable()
+	{
+		if ($this->hasAttribute(self::SERIALIZABLE_ATTR))
+		{
+			return (bool)$this->readAttribute(self::SERIALIZABLE_ATTR);
+		}
+		
+		return $this->getBase()->isSerializable();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function isDeserializable()
+	{
+		if ($this->hasAttribute(self::DESERIALIZABLE_ATTR))
+		{
+			return (bool)$this->readAttribute(self::DESERIALIZABLE_ATTR);
+		}
+		
+		return $this->getBase()->isDeserializable();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function isIncluded()
+	{
+		if ($this->hasAttribute(self::IGNORE_ATTR))
+		{
+			return false;
+		}
+
+		foreach (self::$includeAttributes as $attribute)
+		{
+			if ($this->hasAttribute($attribute))
+			{
+				return true;
+			}
+		}
+		
+		if ($this->memberParent->wantsExplicitInclusion())
+		{
+			return false;
+		}
+
+		return $this->getBase()->isIncluded();
+	}
+}

@@ -1,10 +1,16 @@
 <?php
+/**
+ * Copyright (c) 2016 Bernardo van der Wal
+ * MIT License
+ *
+ * Refer to the LICENSE file for the full copyright notice.
+ */
 
 namespace OneOfZero\Json\Test;
 
-use OneOfZero\Json\Internals\Visitors\DeserializingVisitor;
-use OneOfZero\Json\Internals\Metadata;
+use OneOfZero\Json\Helpers\Metadata;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
+use OneOfZero\Json\Visitors\DeserializingVisitor;
 
 class DeserializingVisitorTest extends AbstractTest
 {

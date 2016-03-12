@@ -1,7 +1,6 @@
 <?php
-
 /**
- * Copyright (c) 2015 Bernardo van der Wal
+ * Copyright (c) 2016 Bernardo van der Wal
  * MIT License
  *
  * Refer to the LICENSE file for the full copyright notice.
@@ -9,8 +8,8 @@
 
 namespace OneOfZero\Json\Test\FixtureClasses\Converters;
 
-use OneOfZero\Json\AbstractObjectConverter;
-use OneOfZero\Json\Internals\Contexts\ObjectContext;
+use OneOfZero\Json\Contexts\ObjectContext;
+use OneOfZero\Json\Converters\AbstractObjectConverter;
 
 class SimpleObjectConverter extends AbstractObjectConverter
 {

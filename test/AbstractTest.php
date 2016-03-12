@@ -1,7 +1,6 @@
 <?php
-
 /**
- * Copyright (c) 2015 Bernardo van der Wal
+ * Copyright (c) 2016 Bernardo van der Wal
  * MIT License
  *
  * Refer to the LICENSE file for the full copyright notice.
@@ -11,11 +10,11 @@ namespace OneOfZero\Json\Test;
 
 use Exception;
 use OneOfZero\Json\Configuration;
-use OneOfZero\Json\Internals\Environment;
-use OneOfZero\Json\Internals\Mappers\AnnotationMapperFactory;
-use OneOfZero\Json\Internals\Mappers\MapperFactoryInterface;
-use OneOfZero\Json\Internals\Mappers\MapperPipeline;
-use OneOfZero\Json\Internals\Mappers\ReflectionMapperFactory;
+use OneOfZero\Json\Helpers\Environment;
+use OneOfZero\Json\Mappers\AnnotationMapperFactory;
+use OneOfZero\Json\Mappers\MapperFactoryInterface;
+use OneOfZero\Json\Mappers\MapperPipeline;
+use OneOfZero\Json\Mappers\ReflectionMapperFactory;
 use OneOfZero\Json\Test\FixtureClasses\EqualityInterface;
 use PHPUnit_Framework_TestCase;
 

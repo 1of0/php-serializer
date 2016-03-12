@@ -1,7 +1,6 @@
 <?php
-
 /**
- * Copyright (c) 2015 Bernardo van der Wal
+ * Copyright (c) 2016 Bernardo van der Wal
  * MIT License
  *
  * Refer to the LICENSE file for the full copyright notice.
@@ -10,13 +9,13 @@
 namespace OneOfZero\Json;
 
 use Interop\Container\ContainerInterface;
-use OneOfZero\Json\Internals\Environment;
-use OneOfZero\Json\Internals\Mappers\AnnotationMapperFactory;
-use OneOfZero\Json\Internals\Mappers\MapperFactoryInterface;
-use OneOfZero\Json\Internals\Mappers\MapperPipeline;
-use OneOfZero\Json\Internals\Mappers\ReflectionMapperFactory;
-use OneOfZero\Json\Internals\Visitors\DeserializingVisitor;
-use OneOfZero\Json\Internals\Visitors\SerializingVisitor;
+use OneOfZero\Json\Helpers\Environment;
+use OneOfZero\Json\Mappers\AnnotationMapperFactory;
+use OneOfZero\Json\Mappers\MapperFactoryInterface;
+use OneOfZero\Json\Mappers\MapperPipeline;
+use OneOfZero\Json\Mappers\ReflectionMapperFactory;
+use OneOfZero\Json\Visitors\DeserializingVisitor;
+use OneOfZero\Json\Visitors\SerializingVisitor;
 
 class Serializer
 {	
@@ -121,6 +120,46 @@ class Serializer
 	}
 
 	/**
+	 * @param mixed $data
+	 *
+	 * @return string
+	 */
+	private function jsonEncode($data)
+	{
+		$options = $this->configuration->jsonEncodeOptions;
+		if ($this->configuration->prettyPrint)
+		{
+			$options |= JSON_PRETTY_PRINT;
+		}
+		return json_encode($data, $options, $this->configuration->maxDepth);
+	}
+
+	/**
+	 * @param string $json
+	 *
+	 * @return mixed
+	 */
+	private function jsonDecode($json)
+	{
+		$options = $this->configuration->jsonEncodeOptions;
+		return json_decode($json, false, $this->configuration->maxDepth, $options);
+	}
+
+	/**
+	 * @return MapperFactoryInterface
+	 */
+	private function createDefaultPipeline()
+	{
+		return (new MapperPipeline)
+			->addFactory(new AnnotationMapperFactory(Environment::getAnnotationReader($this->container)))
+			->addFactory(new ReflectionMapperFactory())
+			->build()
+		;
+	}
+
+	#region // Generic getters and setters
+
+	/**
 	 * @return Configuration
 	 */
 	public function getConfiguration()
@@ -183,42 +222,6 @@ class Serializer
 	{
 		$this->referenceResolver = $referenceResolver;
 	}
-
-	/**
-	 * @param mixed $data
-	 *
-	 * @return string
-	 */
-	private function jsonEncode($data)
-	{
-		$options = $this->configuration->jsonEncodeOptions;
-		if ($this->configuration->prettyPrint)
-		{
-			$options |= JSON_PRETTY_PRINT;
-		}
-		return json_encode($data, $options, $this->configuration->maxDepth);
-	}
-
-	/**
-	 * @param string $json
-	 *
-	 * @return mixed
-	 */
-	private function jsonDecode($json)
-	{
-		$options = $this->configuration->jsonEncodeOptions;
-		return json_decode($json, false, $this->configuration->maxDepth, $options);
-	}
-
-	/**
-	 * @return MapperFactoryInterface
-	 */
-	private function createDefaultPipeline()
-	{
-		return (new MapperPipeline)
-			->addFactory(new AnnotationMapperFactory(Environment::getAnnotationReader($this->container)))
-			->addFactory(new ReflectionMapperFactory())
-			->build()
-		;
-	}
+	
+	#endregion
 }
