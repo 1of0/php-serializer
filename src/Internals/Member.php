@@ -24,6 +24,8 @@ use OneOfZero\Json\Configuration;
 use OneOfZero\Json\CustomMemberConverterInterface;
 use OneOfZero\Json\Exceptions\ReferenceException;
 use OneOfZero\Json\Exceptions\ResumeSerializationException;
+use OneOfZero\Json\Exceptions\SerializationException;
+use OneOfZero\Json\NameFilterInterface;
 use OneOfZero\Json\ReferableInterface;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -422,6 +424,13 @@ class Member
 			$name = $nameAnnotation->name;
 		}
 
+		// If a name filter is configured, determine the serialized name for this member
+		$nameFilter = $this->getNameFilter();
+		if ($nameFilter !== null)
+		{
+			$name = $nameFilter->getSerializedName($name);
+		}
+
 		$this->serializedMember->propertyName = $name;
 	}
 
@@ -537,6 +546,31 @@ class Member
 		}
 
 		return null;
+	}
+
+	/**
+	 * @return NameFilterInterface|null
+	 * @throws SerializationException
+	 */
+	private function getNameFilter()
+	{
+		$nameFilterClass = $this->context->getConfiguration()->nameFilterClass;
+		if ($nameFilterClass === null)
+		{
+			return null;
+		}
+
+		if (!class_exists($nameFilterClass))
+		{
+			throw new SerializationException("Class \"$nameFilterClass\" does not exist");
+		}
+
+		if (!in_array(NameFilterInterface::class, class_implements($nameFilterClass)))
+		{
+			throw new SerializationException("Class \"$nameFilterClass\" does not implement NameFilterInterface");
+		}
+
+		return new $nameFilterClass();
 	}
 
 	/**
