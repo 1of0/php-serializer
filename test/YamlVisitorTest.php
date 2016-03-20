@@ -16,7 +16,10 @@ use OneOfZero\Json\Mappers\YamlMapperFactory;
 use OneOfZero\Json\Test\FixtureClasses\ReferableClass;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
 use OneOfZero\Json\Test\FixtureClasses\UnmappedClass;
+use OneOfZero\Json\Test\FixtureClasses\UnmappedClassUsingClassLevelConverter;
 use OneOfZero\Json\Test\FixtureClasses\UnmappedClassUsingConverters;
+use OneOfZero\Json\Test\FixtureClasses\UnmappedClassUsingDifferentClassLevelConverters;
+use OneOfZero\Json\Visitors\DeserializingVisitor;
 use OneOfZero\Json\Visitors\SerializingVisitor;
 
 class YamlVisitorTest extends AbstractTest
@@ -33,7 +36,7 @@ class YamlVisitorTest extends AbstractTest
 			'bar' => '123',
 		];
 
-		$output = $this->createVisitor()->visit($input);
+		$output = $this->createSerializingVisitor()->visit($input);
 		$this->assertSequenceEquals($expectedOutput, $output);
 	}
 
@@ -51,21 +54,68 @@ class YamlVisitorTest extends AbstractTest
 		$input->setPrivateDateObject($date);
 
 		$expectedOutput = [
-			'@class'            => UnmappedClassUsingConverters::class,
-			'dateObject'        => $date->getTimestamp(),
-			'simpleClass'       => '1234|abcd',
-			'referableClass'    => 1337,
-			'foo'               => 877,
-			'bar'               => 1123,
-			'contextSensitive'  => 1337 * 2,
-			'privateDateObject' => $date->getTimestamp(),
+			'@class'                => UnmappedClassUsingConverters::class,
+			'dateObject'            => $date->getTimestamp(),
+			'simpleClass'           => '1234|abcd',
+			'referableClass'        => 1337,
+			'foo'                   => 877,
+			'bar'                   => 1123,
+			'contextSensitive'      => 1337 * 2,
+			'differentConverters'   => 'foo',
+			'privateDateObject'     => $date->getTimestamp(),
 		];
 
-		$output = $this->createVisitor()->visit($input);
-		$this->assertSequenceEquals($expectedOutput, $output);
+		$serialized = $this->createSerializingVisitor()->visit($input);
+		$this->assertSequenceEquals($expectedOutput, $serialized);
+		
+		/** @var UnmappedClassUsingConverters $deserialized */
+		$deserialized = $this->createDeserializingVisitor()->visit((object)$serialized);
+		
+		$this->assertEquals('bar', $deserialized->differentConverters);
+		$deserialized->differentConverters = null;
+		
+		$this->assertObjectEquals($input, $deserialized);
+	}
+	
+	public function testClassLevelConverter()
+	{
+		$object = new UnmappedClassUsingClassLevelConverter();
+		$object->foo = 1234;
+
+		$expectedOutput = [
+			'@class'    => UnmappedClassUsingClassLevelConverter::class,
+			'abcd'       => 1234,
+		];
+
+		$serialized = $this->createSerializingVisitor()->visit($object);
+		$this->assertSequenceEquals($expectedOutput, $serialized);
+
+		$deserialized = $this->createDeserializingVisitor()->visit((object)$serialized);
+		$this->assertObjectEquals($object, $deserialized);
+	}
+	
+	public function testDifferentClassLevelConverters()
+	{
+		$object = new UnmappedClassUsingDifferentClassLevelConverters();
+
+		$expectedOutput = [
+			'@class'    => UnmappedClassUsingDifferentClassLevelConverters::class,
+			'abcd'       => 1234,
+		];
+
+		$serialized = $this->createSerializingVisitor()->visit($object);
+		$this->assertSequenceEquals($expectedOutput, $serialized);
+
+		/** @var UnmappedClassUsingDifferentClassLevelConverters $deserialized */
+		$deserialized = $this->createDeserializingVisitor()->visit((object)$serialized);
+		
+		$this->assertEquals('bar', $deserialized->foo);
+		$deserialized->foo = null;
+		
+		$this->assertObjectEquals($object, $deserialized);
 	}
 
-	private function createVisitor()
+	private function createSerializingVisitor()
 	{
 		$pipeline = (new MapperPipeline)
 			->addFactory(new YamlMapperFactory(self::YAML_MAPPING_FILE))
@@ -73,5 +123,15 @@ class YamlVisitorTest extends AbstractTest
 			->build($this->defaultConfiguration)
 		;
 		return new SerializingVisitor(clone $this->defaultConfiguration, $pipeline);
+	}
+
+	private function createDeserializingVisitor()
+	{
+		$pipeline = (new MapperPipeline)
+			->addFactory(new YamlMapperFactory(self::YAML_MAPPING_FILE))
+			->addFactory(new ReflectionMapperFactory())
+			->build($this->defaultConfiguration)
+		;
+		return new DeserializingVisitor(clone $this->defaultConfiguration, $pipeline);
 	}
 }

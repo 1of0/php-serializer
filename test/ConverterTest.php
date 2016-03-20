@@ -12,24 +12,26 @@ use DateTime;
 use OneOfZero\Json\JsonConvert;
 use OneOfZero\Json\Test\FixtureClasses\ClassUsingClassLevelConverter;
 use OneOfZero\Json\Test\FixtureClasses\ClassUsingConverters;
+use OneOfZero\Json\Test\FixtureClasses\ClassUsingDifferentClassLevelConverters;
 use OneOfZero\Json\Test\FixtureClasses\ReferableClass;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
 
-class CustomConverterTests extends AbstractTest
+class ConverterTests extends AbstractTest
 {
-	public function testCustomConverters()
+	public function testConverters()
 	{
 		$date = new DateTime();
 
 		$expectedJson = json_encode([
-			'@class'            => ClassUsingConverters::class,
-			'dateObject'        => $date->getTimestamp(),
-			'simpleClass'       => '1234|abcd',
-			'referableClass'    => 1337,
-			'foo'               => 877,
-			'bar'               => 1123,
-			'contextSensitive'  => 1337 * 2,
-			'privateDateObject' => $date->getTimestamp(),
+			'@class'                => ClassUsingConverters::class,
+			'dateObject'            => $date->getTimestamp(),
+			'simpleClass'           => '1234|abcd',
+			'referableClass'        => 1337,
+			'foo'                   => 877,
+			'bar'                   => 1123,
+			'contextSensitive'      => 1337 * 2,
+			'differentConverters'   => 'foo',
+			'privateDateObject'     => $date->getTimestamp(),
 		]);
 
 		$object = new ClassUsingConverters();
@@ -44,18 +46,23 @@ class CustomConverterTests extends AbstractTest
 		$json = JsonConvert::toJson($object);
 		$this->assertEquals($expectedJson, $json);
 
+		/** @var ClassUsingConverters $deserialized */
 		$deserialized = JsonConvert::fromJson($json);
+		
+		$this->assertEquals('bar', $deserialized->differentConverters);
+		$deserialized->differentConverters = null;
+		
 		$this->assertObjectEquals($object, $deserialized);
 	}
 
-	public function testClassLevelCustomConverter()
+	public function testClassLevelConverter()
 	{
 		$object = new ClassUsingClassLevelConverter();
 		$object->foo = 1234;
 
 		$expectedJson = json_encode([
 			'@class'    => ClassUsingClassLevelConverter::class,
-			'abc'       => 1234,
+			'abcd'       => 1234,
 		]);
 
 		$json = JsonConvert::toJson($object);
@@ -63,5 +70,22 @@ class CustomConverterTests extends AbstractTest
 
 		$deserialized = JsonConvert::fromJson($json);
 		$this->assertObjectEquals($object, $deserialized);
+	}
+
+	public function testDifferentClassLevelConverters()
+	{
+		$object = new ClassUsingDifferentClassLevelConverters();
+		$object->foo = 1234;
+
+		$expectedJson = json_encode([
+			'@class'    => ClassUsingDifferentClassLevelConverters::class,
+			'abcd'       => 1234,
+		]);
+
+		$json = JsonConvert::toJson($object);
+		$this->assertEquals($expectedJson, $json);
+
+		$deserialized = JsonConvert::fromJson($json, ClassUsingDifferentClassLevelConverters::class);
+		$this->assertEquals('bar', $deserialized->foo);
 	}
 }

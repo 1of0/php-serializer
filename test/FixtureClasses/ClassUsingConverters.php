@@ -20,7 +20,11 @@ use /** @noinspection PhpUnusedAliasInspection */
 use /** @noinspection PhpUnusedAliasInspection */
 	OneOfZero\Json\Test\FixtureClasses\Converters\ContextSensitiveMemberConverter;
 use /** @noinspection PhpUnusedAliasInspection */
+	OneOfZero\Json\Test\FixtureClasses\Converters\DeserializingMemberConverter;
+use /** @noinspection PhpUnusedAliasInspection */
 	OneOfZero\Json\Test\FixtureClasses\Converters\PropertyDependentMemberConverter;
+use /** @noinspection PhpUnusedAliasInspection */
+	OneOfZero\Json\Test\FixtureClasses\Converters\SerializingMemberConverter;
 
 class ClassUsingConverters
 {
@@ -64,6 +68,15 @@ class ClassUsingConverters
 	 * @var int $contextSensitive
 	 */
 	public $contextSensitive;
+
+	/**
+	 * @Converter(
+	 *     serializer=SerializingMemberConverter::class,
+	 *     deserializer=DeserializingMemberConverter::class
+	 * )
+	 * @var string $differentConverters
+	 */
+	public $differentConverters;
 
 	/**
 	 * @Getter

@@ -11,24 +11,14 @@ namespace OneOfZero\Json\Test\FixtureClasses\Converters;
 use OneOfZero\Json\Contexts\ObjectContext;
 use OneOfZero\Json\Converters\AbstractObjectConverter;
 
-class SimpleObjectConverter extends AbstractObjectConverter
+class DeserializingObjectConverter extends AbstractObjectConverter
 {
-	/**
-	 * {@inheritdoc}
-	 */
-	public function serialize(ObjectContext $context)
-	{
-		return ['abcd' => $context->getInstance()->foo];
-	}
-
 	/**
 	 * {@inheritdoc}
 	 */
 	public function deserialize(ObjectContext $context)
 	{
-		$instance = $context->getReflector()->newInstance();
-		$instance->foo = $context->getSerializedMemberValue('abcd');
-		
-		return $instance;
+		$context->getInstance()->foo = 'bar';
+		return $context->getInstance();
 	}
 }

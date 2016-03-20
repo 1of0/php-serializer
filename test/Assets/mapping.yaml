@@ -1,12 +1,19 @@
 '@use':
-  SimpleClass:                      'OneOfZero\Json\Test\FixtureClasses\SimpleClass'
-  ReferableClass:                   'OneOfZero\Json\Test\FixtureClasses\ReferableClass'
-  UnmappedClass:                    'OneOfZero\Json\Test\FixtureClasses\UnmappedClass'
-  UnmappedClassUsingConverters:     'OneOfZero\Json\Test\FixtureClasses\UnmappedClassUsingConverters'
-  DateTimeConverter:                'OneOfZero\Json\Converters\DateTimeConverter'
-  ClassDependentMemberConverter:    'OneOfZero\Json\Test\FixtureClasses\Converters\ClassDependentMemberConverter'
-  ContextSensitiveMemberConverter:  'OneOfZero\Json\Test\FixtureClasses\Converters\ContextSensitiveMemberConverter'
-  PropertyDependentMemberConverter: 'OneOfZero\Json\Test\FixtureClasses\Converters\PropertyDependentMemberConverter'
+  SimpleClass:                                      'OneOfZero\Json\Test\FixtureClasses\SimpleClass'
+  ReferableClass:                                   'OneOfZero\Json\Test\FixtureClasses\ReferableClass'
+  UnmappedClass:                                    'OneOfZero\Json\Test\FixtureClasses\UnmappedClass'
+  UnmappedClassUsingConverters:                     'OneOfZero\Json\Test\FixtureClasses\UnmappedClassUsingConverters'
+  UnmappedClassUsingClassLevelConverter:            'OneOfZero\Json\Test\FixtureClasses\UnmappedClassUsingClassLevelConverter'
+  UnmappedClassUsingDifferentClassLevelConverters:  'OneOfZero\Json\Test\FixtureClasses\UnmappedClassUsingDifferentClassLevelConverters'
+  DateTimeConverter:                                'OneOfZero\Json\Converters\DateTimeConverter'
+  ClassDependentMemberConverter:                    'OneOfZero\Json\Test\FixtureClasses\Converters\ClassDependentMemberConverter'
+  ContextSensitiveMemberConverter:                  'OneOfZero\Json\Test\FixtureClasses\Converters\ContextSensitiveMemberConverter'
+  PropertyDependentMemberConverter:                 'OneOfZero\Json\Test\FixtureClasses\Converters\PropertyDependentMemberConverter'
+  SerializingMemberConverter:                       'OneOfZero\Json\Test\FixtureClasses\Converters\SerializingMemberConverter'
+  DeserializingMemberConverter:                     'OneOfZero\Json\Test\FixtureClasses\Converters\DeserializingMemberConverter'
+  SerializingObjectConverter:                       'OneOfZero\Json\Test\FixtureClasses\Converters\SerializingObjectConverter'
+  DeserializingObjectConverter:                     'OneOfZero\Json\Test\FixtureClasses\Converters\DeserializingObjectConverter'
+  SimpleObjectConverter:                            'OneOfZero\Json\Test\FixtureClasses\Converters\SimpleObjectConverter'
 
 UnmappedClass:
   properties:
@@ -34,6 +41,10 @@ UnmappedClassUsingConverters:
       converter: PropertyDependentMemberConverter
     contextSensitive:
       converter: ContextSensitiveMemberConverter
+    differentConverters:
+      converters:
+        serializer: SerializingMemberConverter
+        deserializer: DeserializingMemberConverter
 
   methods:
     getPrivateDateObject:
@@ -45,3 +56,10 @@ UnmappedClassUsingConverters:
       type: DateTime
       converter: DateTimeConverter
       
+UnmappedClassUsingClassLevelConverter:
+  converter: SimpleObjectConverter
+    
+UnmappedClassUsingDifferentClassLevelConverters:
+  converters:
+    serializer: SerializingObjectConverter
+    deserializer: DeserializingObjectConverter

@@ -48,6 +48,11 @@ class UnmappedClassUsingConverters
 	public $contextSensitive;
 
 	/**
+	 * @var string $differentConverters
+	 */
+	public $differentConverters;
+
+	/**
 	 * @return DateTime
 	 */
 	public function getPrivateDateObject()
