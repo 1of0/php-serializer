@@ -16,18 +16,18 @@ class PropertyDependentMemberConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function serialize(MemberNode $context)
+	public function serialize(MemberNode $node)
 	{
-		$memberName = $context->getReflector()->name;
+		$memberName = $node->getReflector()->name;
 		
 		if ($memberName === 'foo')
 		{
-			return 1000 - $context->getValue();
+			return 1000 - $node->getValue();
 		}
 
 		if ($memberName === 'bar')
 		{
-			return 1000 + $context->getValue();
+			return 1000 + $node->getValue();
 		}
 
 		return 0;
@@ -36,18 +36,18 @@ class PropertyDependentMemberConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function deserialize(MemberNode $context)
+	public function deserialize(MemberNode $node)
 	{
-		$memberName = $context->getReflector()->name;
+		$memberName = $node->getReflector()->name;
 		
 		if ($memberName === 'foo')
 		{
-			return 1000 - $context->getSerializedValue();
+			return 1000 - $node->getSerializedValue();
 		}
 
 		if ($memberName === 'bar')
 		{
-			return $context->getSerializedValue() - 1000;
+			return $node->getSerializedValue() - 1000;
 		}
 
 		return 0;

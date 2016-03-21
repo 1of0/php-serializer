@@ -3,6 +3,7 @@
   ReferableClass:                                   'OneOfZero\Json\Test\FixtureClasses\ReferableClass'
   UnmappedClass:                                    'OneOfZero\Json\Test\FixtureClasses\UnmappedClass'
   UnmappedClassUsingConverters:                     'OneOfZero\Json\Test\FixtureClasses\UnmappedClassUsingConverters'
+  UnmappedClassWithGetterAndSetter:                 'OneOfZero\Json\Test\FixtureClasses\UnmappedClassWithGetterAndSetter'
   UnmappedClassUsingClassLevelConverter:            'OneOfZero\Json\Test\FixtureClasses\UnmappedClassUsingClassLevelConverter'
   UnmappedClassUsingDifferentClassLevelConverters:  'OneOfZero\Json\Test\FixtureClasses\UnmappedClassUsingDifferentClassLevelConverters'
   DateTimeConverter:                                'OneOfZero\Json\Converters\DateTimeConverter'

@@ -158,6 +158,14 @@ class AnnotationMemberMapper implements MemberMapperInterface
 			return false;
 		}
 
+		if ($this->isClassMethod())
+		{
+			if ($this->isGetter() || $this->isSetter())
+			{
+				return true;
+			}
+		}
+
 		if ($this->annotations->has($this->target, AbstractName::class))
 		{
 			return true;
@@ -203,10 +211,18 @@ class AnnotationMemberMapper implements MemberMapperInterface
 	 */
 	public function isSerializable()
 	{
-		/** @var Property $annotation */
-		if ($annotation = $this->annotations->get($this->target, Property::class))
+		if ($this->isClassProperty())
 		{
-			return $annotation->serialize;
+			/** @var Property $annotation */
+			if ($annotation = $this->annotations->get($this->target, Property::class))
+			{
+				return $annotation->serialize;
+			}
+		}
+
+		if ($this->isClassMethod() && $this->isGetter())
+		{
+			return true;
 		}
 		
 		return $this->getBase()->isSerializable();
@@ -217,10 +233,18 @@ class AnnotationMemberMapper implements MemberMapperInterface
 	 */
 	public function isDeserializable()
 	{
-		/** @var Property $annotation */
-		if ($annotation = $this->annotations->get($this->target, Property::class))
+		if ($this->isClassProperty())
 		{
-			return $annotation->deserialize;
+			/** @var Property $annotation */
+			if ($annotation = $this->annotations->get($this->target, Property::class))
+			{
+				return $annotation->deserialize;
+			}
+		}
+
+		if ($this->isClassMethod() && $this->isSetter())
+		{
+			return true;
 		}
 
 		return $this->getBase()->isDeserializable();

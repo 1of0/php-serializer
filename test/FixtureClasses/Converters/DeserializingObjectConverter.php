@@ -16,9 +16,9 @@ class DeserializingObjectConverter extends AbstractObjectConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function deserialize(ObjectNode $context)
+	public function deserialize(ObjectNode $node)
 	{
-		$context->getInstance()->foo = 'bar';
-		return $context->getInstance();
+		$node->getInstance()->foo = 'bar';
+		return $node->getInstance();
 	}
 }

@@ -56,11 +56,18 @@ class Flags
 
 	/**
 	 * @param int $value
+	 * @param int $wordSize
 	 *
 	 * @return int
 	 */
-	public static function invert($value)
+	public static function invert($value, $wordSize = 8)
 	{
-		return ~$value;
+		if ($wordSize < 1)
+		{
+			return 0;
+		}
+
+		$mask = pow(2, $wordSize) - 1;
+		return (~$value) & $mask;
 	}
 }

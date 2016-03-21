@@ -16,18 +16,18 @@ class SimpleObjectConverter extends AbstractObjectConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function serialize(ObjectNode $context)
+	public function serialize(ObjectNode $node)
 	{
-		return ['abcd' => $context->getInstance()->foo];
+		return ['abcd' => $node->getInstance()->foo];
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function deserialize(ObjectNode $context)
+	public function deserialize(ObjectNode $node)
 	{
-		$instance = $context->getReflector()->newInstance();
-		$instance->foo = $context->getSerializedMemberValue('abcd');
+		$instance = $node->getReflector()->newInstance();
+		$instance->foo = $node->getSerializedMemberValue('abcd');
 		
 		return $instance;
 	}

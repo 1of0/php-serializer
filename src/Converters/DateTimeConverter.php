@@ -16,9 +16,9 @@ class DateTimeConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function serialize(MemberNode $context)
+	public function serialize(MemberNode $node)
 	{
-		$value = $context->getValue();
+		$value = $node->getValue();
 		
 		return ($value instanceof DateTime) ? $value->getTimestamp() : null;
 	}
@@ -26,12 +26,12 @@ class DateTimeConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function deserialize(MemberNode $context)
+	public function deserialize(MemberNode $node)
 	{
-		if (ctype_digit($context->getSerializedValue()))
+		if (ctype_digit($node->getSerializedValue()))
 		{
 			$date = new DateTime();
-			$date->setTimestamp($context->getSerializedValue());
+			$date->setTimestamp($node->getSerializedValue());
 			return $date;
 		}
 		

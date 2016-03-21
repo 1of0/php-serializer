@@ -8,8 +8,11 @@
 
 namespace OneOfZero\Json\Test;
 
+use OneOfZero\Json\Exceptions\SerializationException;
 use OneOfZero\Json\JsonConvert;
 use OneOfZero\Json\Serializer;
+use OneOfZero\Json\Test\FixtureClasses\ClassWithGetterAndSetter;
+use OneOfZero\Json\Test\FixtureClasses\ClassWithInvalidGetterAndSetter;
 use OneOfZero\Json\Test\FixtureClasses\PrivatePropertiesClass;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClassExtender;
@@ -17,6 +20,11 @@ use stdClass;
 
 class BasicFunctionalityTest extends AbstractTest
 {
+	public function testSanity()
+	{
+		$this->assertTrue(true);
+	}
+
 	public function testScalars()
 	{
 		$json = Serializer::get()->serialize(null);
@@ -84,6 +92,36 @@ class BasicFunctionalityTest extends AbstractTest
 		$deserialized = Serializer::get()->deserialize($json);
 		$this->assertEquals($object->getFoo(), $deserialized->getFoo());
 		$this->assertNull($deserialized->getBar());
+	}
+
+	public function testGetterAndSetter()
+	{
+		$expectedJson = json_encode([
+			'@class'    => ClassWithGetterAndSetter::class,
+			'foo'       => '1234'
+		]);
+
+		$object = new ClassWithGetterAndSetter('1234');
+
+		$json = Serializer::get()->serialize($object);
+		$this->assertEquals($expectedJson, $json);
+
+		/** @var ClassWithGetterAndSetter $deserialized */
+		$deserialized = Serializer::get()->deserialize($json);
+		$this->assertEquals($object->getFoo(), $deserialized->getFoo());
+	}
+
+	public function testInvalidGetterAndSetter()
+	{
+		$this->setExpectedException(SerializationException::class);
+		Serializer::get()->serialize(new ClassWithInvalidGetterAndSetter());
+
+		$this->setExpectedException(SerializationException::class);
+		/** @var ClassWithInvalidGetterAndSetter $deserialized */
+		Serializer::get()->deserialize(json_encode([
+			'@class'    => ClassWithInvalidGetterAndSetter::class,
+			'foo'       => '1234'
+		]));
 	}
 
 	public function testStdClass()

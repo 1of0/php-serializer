@@ -16,7 +16,7 @@ class SerializingMemberConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function serialize(MemberNode $context)
+	public function serialize(MemberNode $node)
 	{
 		return 'foo';
 	}

@@ -18,9 +18,9 @@ class ClassDependentMemberConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function serialize(MemberNode $context)
+	public function serialize(MemberNode $node)
 	{
-		$object = $context->getValue();
+		$object = $node->getValue();
 		
 		if ($object instanceof SimpleClass)
 		{
@@ -38,19 +38,19 @@ class ClassDependentMemberConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function deserialize(MemberNode $context)
+	public function deserialize(MemberNode $node)
 	{
-		$class = $context->getMapper()->getType();
+		$class = $node->getMapper()->getType();
 		
 		if ($class === SimpleClass::class)
 		{
-			list($foo, $bar) = explode('|', $context->getSerializedValue());
+			list($foo, $bar) = explode('|', $node->getSerializedValue());
 			return new SimpleClass($foo, $bar);
 		}
 
 		if ($class === ReferableClass::class)
 		{
-			return new ReferableClass($context->getSerializedValue());
+			return new ReferableClass($node->getSerializedValue());
 		}
 
 		return null;

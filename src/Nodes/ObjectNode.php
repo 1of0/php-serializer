@@ -29,17 +29,17 @@ class ObjectNode extends AbstractObjectNode
 	private $mapper;
 
 	/**
-	 * @param MemberNode $context
+	 * @param MemberNode $node
 	 *
 	 * @return self
 	 */
-	public function withInstanceMember(MemberNode $context)
+	public function withInstanceMember(MemberNode $node)
 	{
 		$new = clone $this;
 
-		if ($context->getValue() !== null)
+		if ($node->getValue() !== null)
 		{
-			$context->getMapper()->setValue($new->getInstance(), $context->getValue());
+			$node->getMapper()->setValue($new->getInstance(), $node->getValue());
 		}
 		
 		return $new;
@@ -81,6 +81,36 @@ class ObjectNode extends AbstractObjectNode
 	public function getSerializedMemberValue($name)
 	{
 		return array_key_exists($name, $this->serializedInstance) ? $this->serializedInstance[$name] : null;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isRecursiveInstance()
+	{
+		if ($this->instance === null)
+		{
+			return false;
+		}
+
+		$selfHash = spl_object_hash($this->instance);
+		$parent = $this->parent;
+
+		while ($parent !== null)
+		{
+			if ($parent instanceof ObjectNode)
+			{
+				$instance = $parent->getInstance();
+
+				if ($instance !== null && is_object($instance) && spl_object_hash($instance) !== $selfHash)
+				{
+					return true;
+				}
+			}
+			$parent = $parent->parent;
+		}
+
+		return false;
 	}
 
 	#region // Generic immutability helpers

@@ -28,13 +28,6 @@ abstract class YamlAbstractMapper implements MapperInterface
 	const SERIALIZABLE_ATTR = 'serializable';
 	const DESERIALIZABLE_ATTR = 'deserializable';
 
-	protected static $includeAttributes = [
-		self::INCLUDE_ATTR,
-		self::NAME_ATTR,
-		self::GETTER_ATTR,
-		self::SETTER_ATTR,
-	];
-	
 	/**
 	 * @var array $mapping
 	 */

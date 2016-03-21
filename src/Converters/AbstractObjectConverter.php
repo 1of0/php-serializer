@@ -6,13 +6,6 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-/**
- * Copyright (c) 2016 Bernardo van der Wal
- * MIT License
- *
- * Refer to the LICENSE file for the full copyright notice.
- */
-
 namespace OneOfZero\Json\Converters;
 
 use OneOfZero\Json\Nodes\ObjectNode;
@@ -23,7 +16,7 @@ abstract class AbstractObjectConverter implements ObjectConverterInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function serialize(ObjectNode $context)
+	public function serialize(ObjectNode $node)
 	{
 		throw new ResumeSerializationException();
 	}
@@ -31,7 +24,7 @@ abstract class AbstractObjectConverter implements ObjectConverterInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function deserialize(ObjectNode $context)
+	public function deserialize(ObjectNode $node)
 	{
 		throw new ResumeSerializationException();
 	}

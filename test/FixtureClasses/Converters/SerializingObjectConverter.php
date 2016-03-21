@@ -16,7 +16,7 @@ class SerializingObjectConverter extends AbstractObjectConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function serialize(ObjectNode $context)
+	public function serialize(ObjectNode $node)
 	{
 		return [ 'abcd' => 1234 ];
 	}

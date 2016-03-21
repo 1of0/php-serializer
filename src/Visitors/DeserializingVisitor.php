@@ -42,13 +42,13 @@ class DeserializingVisitor extends AbstractVisitor
 			if ($type === null)
 			{
 				// Type not resolved, deserialize as anonymous object
-				$objectContext = (new AnonymousObjectNode)
+				$objectNode = (new AnonymousObjectNode)
 					->withInstance(new stdClass())
 					->withSerializedInstance($serializedValue)
 					->withParent($parent)
 				;
 
-				return $this->visitAnonymousObject($objectContext)->getInstance();
+				return $this->visitAnonymousObject($objectNode)->getInstance();
 			}
 
 			$objectReflector = new ReflectionClass($type);
@@ -58,7 +58,7 @@ class DeserializingVisitor extends AbstractVisitor
 				: $objectReflector->newInstanceWithoutConstructor()
 			;
 
-			$objectContext = (new ObjectNode)
+			$objectNode = (new ObjectNode)
 				->withReflector($objectReflector)
 				->withMapper($this->mapperFactory->mapObject($objectReflector))
 				->withInstance($object)
@@ -66,70 +66,70 @@ class DeserializingVisitor extends AbstractVisitor
 				->withParent($parent)
 			;
 
-			return $this->visitObject($objectContext)->getInstance();
+			return $this->visitObject($objectNode)->getInstance();
 		}
 
 		if (is_array($serializedValue))
 		{
-			$valueContext = (new ArrayNode)
+			$valueNode = (new ArrayNode)
 				->withArray([])
 				->withSerializedArray($serializedValue)
 				->withParent($parent)
 			;
 
-			return $this->visitArray($valueContext)->getArray();
+			return $this->visitArray($valueNode)->getArray();
 		}
 
 		return $serializedValue;
 	}
 
 	/**
-	 * @param ArrayNode $context
+	 * @param ArrayNode $node
 	 *
 	 * @return ArrayNode
 	 *
 	 * @throws SerializationException
 	 */
-	protected function visitArray(ArrayNode $context)
+	protected function visitArray(ArrayNode $node)
 	{
-		foreach ($context->getSerializedArray() as $key => $value)
+		foreach ($node->getSerializedArray() as $key => $value)
 		{
 			if ($value === null)
 			{
-				$context = $context->withArrayValue(null, $key);
+				$node = $node->withArrayValue(null, $key);
 			}
 			
-			$context = $context->withArrayValue($this->visit($value), $key);
+			$node = $node->withArrayValue($this->visit($value), $key);
 		}
 
-		return $context;
+		return $node;
 	}
 	
 	/**
-	 * @param AnonymousObjectNode $context
+	 * @param AnonymousObjectNode $node
 	 *
 	 * @return AnonymousObjectNode
 	 */
-	protected function visitAnonymousObject(AnonymousObjectNode $context)
+	protected function visitAnonymousObject(AnonymousObjectNode $node)
 	{
-		foreach ($context->getSerializedInstance() as $key => $value)
+		foreach ($node->getSerializedInstance() as $key => $value)
 		{
-			$context = $context->withInstanceMember($key, $this->visit($value));
+			$node = $node->withInstanceMember($key, $this->visit($value));
 		}
 
-		return $context;
+		return $node;
 	}
 
 	/**
-	 * @param ObjectNode $context
+	 * @param ObjectNode $node
 	 *
 	 * @return ObjectNode
 	 *
 	 * @throws SerializationException
 	 */
-	protected function visitObject(ObjectNode $context)
+	protected function visitObject(ObjectNode $node)
 	{
-		$mapper = $context->getMapper();
+		$mapper = $node->getMapper();
 
 		if ($mapper->hasDeserializingConverter())
 		{
@@ -137,7 +137,7 @@ class DeserializingVisitor extends AbstractVisitor
 
 			try
 			{
-				return $context->withInstance($converter->deserialize($context));
+				return $node->withInstance($converter->deserialize($node));
 			}
 			catch (ResumeSerializationException $e)
 			{
@@ -146,35 +146,35 @@ class DeserializingVisitor extends AbstractVisitor
 
 		foreach ($mapper->getMembers() as $memberMapper)
 		{
-			$serializedValue = $context->getSerializedMemberValue($memberMapper->getName());
+			$serializedValue = $node->getSerializedMemberValue($memberMapper->getName());
 			
-			$memberContext = (new MemberNode)
+			$memberNode = (new MemberNode)
 				->withSerializedValue($serializedValue)
 				->withReflector($memberMapper->getTarget())
 				->withMapper($memberMapper)
-				->withParent($context)
+				->withParent($node)
 			;
 
-			$context = $context->withInstanceMember($this->visitObjectMember($memberContext));
+			$node = $node->withInstanceMember($this->visitObjectMember($memberNode));
 		}
 		
-		return $context;
+		return $node;
 	}
 
 	/**
-	 * @param MemberNode $context
+	 * @param MemberNode $node
 	 *
 	 * @return MemberNode|null
 	 *
 	 * @throws SerializationException
 	 */
-	protected function visitObjectMember(MemberNode $context)
+	protected function visitObjectMember(MemberNode $node)
 	{
-		$mapper = $context->getMapper();
+		$mapper = $node->getMapper();
 
 		if (!$mapper->isIncluded() || !$mapper->isDeserializable())
 		{
-			return $context;
+			return $node;
 		}
 
 		if ($mapper->hasDeserializingConverter())
@@ -183,7 +183,7 @@ class DeserializingVisitor extends AbstractVisitor
 
 			try
 			{
-				return $context->withValue($converter->deserialize($context));
+				return $node->withValue($converter->deserialize($node));
 			}
 			catch (ResumeSerializationException $e)
 			{
@@ -192,53 +192,53 @@ class DeserializingVisitor extends AbstractVisitor
 
 		if ($mapper->isReference())
 		{
-			return $context->withValue($this->resolveReference($context));
+			return $node->withValue($this->resolveReference($node));
 		}
 
-		return $context->withValue($this->visit($context->getSerializedValue(), $context, $context->getMapper()->getType()));
+		return $node->withValue($this->visit($node->getSerializedValue(), $node, $node->getMapper()->getType()));
 	}
 
 	/**
-	 * @param MemberNode $context
+	 * @param MemberNode $node
 	 *
 	 * @return ReferableInterface
 	 */
-	protected function resolveReference(MemberNode $context)
+	protected function resolveReference(MemberNode $node)
 	{
-		if (is_array($context->getSerializedValue()))
+		if (is_array($node->getSerializedValue()))
 		{
-			return $this->resolveReferenceArray($context);
+			return $this->resolveReferenceArray($node);
 		}
 
-		return $this->resolveReferenceItem($context, $context->getSerializedValue());
+		return $this->resolveReferenceItem($node, $node->getSerializedValue());
 	}
 
 	/**
-	 * @param MemberNode $context
+	 * @param MemberNode $node
 	 *
 	 * @return ReferableInterface[]
 	 */
-	protected function resolveReferenceArray(MemberNode $context)
+	protected function resolveReferenceArray(MemberNode $node)
 	{
 		$resolved = [];
 
-		foreach ($context->getSerializedValue() as $item)
+		foreach ($node->getSerializedValue() as $item)
 		{
-			$resolved[] = $this->resolveReferenceItem($context, $item);
+			$resolved[] = $this->resolveReferenceItem($node, $item);
 		}
 
 		return $resolved;
 	}
 
 	/**
-	 * @param MemberNode $context
+	 * @param MemberNode $node
 	 * @param mixed $item
 	 *
 	 * @return ReferableInterface
 	 *
 	 * @throws ReferenceException
 	 */
-	protected function resolveReferenceItem(MemberNode $context, $item)
+	protected function resolveReferenceItem(MemberNode $node, $item)
 	{
 		if (!$this->referenceResolver)
 		{
@@ -246,30 +246,30 @@ class DeserializingVisitor extends AbstractVisitor
 		}
 
 		$id = Metadata::get($item, Metadata::ID);
-		$type = $this->getType($item, $context);
+		$type = $this->getType($item, $node);
 
 		if ($type === null)
 		{
-			throw new ReferenceException("Property {$context->getReflector()->name} in class {$context->getParent()->getReflector()->name} is marked as a reference, but does not specify or imply a valid type");
+			throw new ReferenceException("Property {$node->getReflector()->name} in class {$node->getParent()->getReflector()->name} is marked as a reference, but does not specify or imply a valid type");
 		}
 
 		if ($id === null)
 		{
-			throw new ReferenceException("Property {$context->getReflector()->name} in class {$context->getParent()->getReflector()->name} is marked as a reference, but the serialized data does not contain a valid reference");
+			throw new ReferenceException("Property {$node->getReflector()->name} in class {$node->getParent()->getReflector()->name} is marked as a reference, but the serialized data does not contain a valid reference");
 		}
 
-		return $this->referenceResolver->resolve($type, $id, $context->getMapper()->isReferenceLazy());
+		return $this->referenceResolver->resolve($type, $id, $node->getMapper()->isReferenceLazy());
 	}
 
 	/**
 	 * @param stdClass $serializedValue
-	 * @param MemberNode|null $context
+	 * @param MemberNode|null $node
 	 * @param string|null $typeHint
 	 *
 	 * @return null|string
 	 * @throws MissingTypeException
 	 */
-	protected function getType($serializedValue, $context = null, $typeHint = null)
+	protected function getType($serializedValue, $node = null, $typeHint = null)
 	{
 		if ($typeHint === null && Metadata::contains($serializedValue, Metadata::TYPE))
 		{
@@ -277,9 +277,9 @@ class DeserializingVisitor extends AbstractVisitor
 			$typeHint = Metadata::get($serializedValue, Metadata::TYPE);
 		}
 
-		if ($typeHint === null && $context instanceof MemberNode)
+		if ($typeHint === null && $node instanceof MemberNode)
 		{
-			$typeHint = $context->getMapper()->getType();
+			$typeHint = $node->getMapper()->getType();
 		}
 
 		if ($typeHint !== null && !class_exists($typeHint))

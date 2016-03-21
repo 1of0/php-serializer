@@ -8,6 +8,9 @@
 
 namespace OneOfZero\Json\Visitors;
 
+use OneOfZero\Json\Enums\OnRecursion;
+use OneOfZero\Json\Exceptions\NotSupportedException;
+use OneOfZero\Json\Exceptions\RecursionException;
 use OneOfZero\Json\Nodes\AbstractNode;
 use OneOfZero\Json\Nodes\ArrayNode;
 use OneOfZero\Json\Nodes\MemberNode;
@@ -40,12 +43,12 @@ class SerializingVisitor extends AbstractVisitor
 
 		if (is_array($value))
 		{
-			$valueContext = (new ArrayNode)
+			$valueNode = (new ArrayNode)
 				->withArray($value)
 				->withParent($parent)
 			;
 
-			return $this->visitArray($valueContext)->getSerializedArray();
+			return $this->visitArray($valueNode)->getSerializedArray();
 		}
 
 		if (is_object($value))
@@ -59,60 +62,71 @@ class SerializingVisitor extends AbstractVisitor
 			
 			$valueMapper = $this->mapperFactory->mapObject(new ReflectionClass($class));
 
-			$valueContext = (new ObjectNode)
+			$valueNode = (new ObjectNode)
 				->withReflector($valueMapper->getTarget())
 				->withMapper($valueMapper)
 				->withInstance($value)
 				->withParent($parent)
 			;
 
-			return $this->visitObject($valueContext)->getSerializedInstance();
+			return $this->visitObject($valueNode)->getSerializedInstance();
 		}
 
 		return $value;
 	}
 
 	/**
-	 * @param ArrayNode $context
+	 * @param ArrayNode $node
 	 *
 	 * @return ArrayNode
 	 *
 	 * @throws SerializationException
 	 */
-	protected function visitArray(ArrayNode $context)
+	protected function visitArray(ArrayNode $node)
 	{
-		foreach ($context->getArray() as $key => $value)
+		foreach ($node->getArray() as $key => $value)
 		{
 			if ($value === null)
 			{
-				$context = $context->withSerializedArrayValue(null, $key);
+				$node = $node->withSerializedArrayValue(null, $key);
 			}
 			
-			$context = $context->withSerializedArrayValue($this->visit($value), $key);
+			$node = $node->withSerializedArrayValue($this->visit($value), $key);
 		}
 
-		return $context;
+		return $node;
 	}
 
 	/**
-	 * @param ObjectNode $context
+	 * @param ObjectNode $node
 	 *
 	 * @return ObjectNode|null
 	 *
 	 * @throws SerializationException
 	 */
-	protected function visitObject(ObjectNode $context)
+	protected function visitObject(ObjectNode $node)
 	{
-		$mapper = $context->getMapper();
+		$mapper = $node->getMapper();
 
-		if ($context->getInstance() === null)
+		if ($node->getInstance() === null)
 		{
-			return null;
+			return $node->withSerializedInstance(null);
+		}
+
+		if ($node->isRecursiveInstance())
+		{
+			try
+			{
+				return $this->handleRecursion($node);
+			}
+			catch (ResumeSerializationException $e)
+			{
+			}
 		}
 
 		if (!$mapper->wantsNoMetadata())
 		{
-			$context = $context->withMetadata(Metadata::TYPE, $context->getReflector()->name);
+			$node = $node->withMetadata(Metadata::TYPE, $node->getReflector()->name);
 		}
 
 		if ($mapper->hasSerializingConverter())
@@ -121,7 +135,7 @@ class SerializingVisitor extends AbstractVisitor
 
 			try
 			{
-				return $context->withSerializedInstance($converter->serialize($context));
+				return $node->withSerializedInstance($converter->serialize($node));
 			}
 			catch (ResumeSerializationException $e)
 			{
@@ -130,33 +144,33 @@ class SerializingVisitor extends AbstractVisitor
 
 		foreach ($mapper->getMembers() as $memberMapper)
 		{
-			$memberContext = (new MemberNode)
-				->withValue($memberMapper->getValue($context->getInstance()))
+			$memberNode = (new MemberNode)
+				->withValue($memberMapper->getValue($node->getInstance()))
 				->withReflector($memberMapper->getTarget())
 				->withMapper($memberMapper)
-				->withParent($context)
+				->withParent($node)
 			;
 
-			if ($result = $this->visitObjectMember($memberContext))
+			if ($result = $this->visitObjectMember($memberNode))
 			{
-				$context = $context->withSerializedInstanceMember($memberMapper->getName(), $result->getSerializedValue());
+				$node = $node->withSerializedInstanceMember($memberMapper->getName(), $result->getSerializedValue());
 			}
 		}
 		
-		return $context;
+		return $node;
 	}
 
 	/**
-	 * @param MemberNode $context
+	 * @param MemberNode $node
 	 *
 	 * @return MemberNode|null
 	 *
 	 * @throws SerializationException
 	 */
-	protected function visitObjectMember(MemberNode $context)
+	protected function visitObjectMember(MemberNode $node)
 	{
-		$mapper = $context->getMapper();
-		$value = $context->getValue();
+		$mapper = $node->getMapper();
+		$value = $node->getValue();
 
 		if (!$mapper->isIncluded() || !$mapper->isSerializable())
 		{
@@ -169,7 +183,7 @@ class SerializingVisitor extends AbstractVisitor
 
 			try
 			{
-				return $context->withSerializedValue($converter->serialize($context));
+				return $node->withSerializedValue($converter->serialize($node));
 			}
 			catch (ResumeSerializationException $e)
 			{
@@ -178,76 +192,107 @@ class SerializingVisitor extends AbstractVisitor
 
 		if ($value === null)
 		{
-			return $this->configuration->includeNullValues ? $context : null;
+			return $this->configuration->includeNullValues ? $node : null;
 		}
 
 		if ($mapper->isReference())
 		{
-			return $context->withSerializedValue($this->createReference($context));
+			return $node->withSerializedValue($this->createReference($node));
 		}
 
-		return $context->withSerializedValue($this->visit($value));
+		return $node->withSerializedValue($this->visit($value));
 	}
 
 	/**
-	 * @param MemberNode $context
+	 * @param ObjectNode $node
+	 *
+	 * @return ObjectNode
+	 *
+	 * @throws NotSupportedException
+	 * @throws RecursionException
+	 * @throws ReferenceException
+	 * @throws ResumeSerializationException
+	 */
+	protected function handleRecursion(ObjectNode $node)
+	{
+		switch ($this->configuration->defaultRecursionHandlingStrategy)
+		{
+			case OnRecursion::CONTINUE_MAPPING:
+				throw new ResumeSerializationException();
+
+			case OnRecursion::SET_NULL:
+				return $node->withSerializedInstance(null);
+
+			case OnRecursion::CREATE_REFERENCE:
+				return $this->createObjectReference($node);
+
+			case OnRecursion::THROW_EXCEPTION:
+				throw new RecursionException();
+				
+			default:
+				throw new NotSupportedException('The configured default recursion handling strategy is unknown or unsupported');
+		}
+	}
+
+	/**
+	 * @param MemberNode $node
 	 *
 	 * @return array|null
 	 *
 	 * @throws ReferenceException
 	 */
-	protected function createReference(MemberNode $context)
+	protected function createReference(MemberNode $node)
 	{
-		if ($context->getMapper()->isArray())
+		if ($node->getMapper()->isArray())
 		{
-			return $this->createReferenceArray($context);
+			return $this->createReferenceArray($node);
 		}
 
-		return $this->createReferenceItem($context, $context->getValue());
+		return $this->createReferenceItem($node, $node->getValue());
 	}
 
 	/**
-	 * @param MemberNode $context
+	 * @param MemberNode $node
 	 *
 	 * @return array
 	 *
 	 * @throws ReferenceException
 	 */
-	protected function createReferenceArray(MemberNode $context)
+	protected function createReferenceArray(MemberNode $node)
 	{
-		if (!is_array($context->getValue()))
+		if (!is_array($node->getValue()))
 		{
-			throw new ReferenceException("Property {$context->getReflector()->name} in class {$context->getParent()->getReflector()->name} is marked as an array, but does not hold an array");
+			throw new ReferenceException("Property {$node->getReflector()->name} in class {$node->getParent()->getReflector()->name} is marked as an array, but does not hold an array");
 		}
 
 		$references = [];
-		foreach ($context->getValue() as $item)
+		foreach ($node->getValue() as $item)
 		{
-			$references[] = $this->createReferenceItem($context, $item);
+			$references[] = $this->createReferenceItem($node, $item);
 		}
 		return $references;
 	}
 
 	/**
-	 * @param MemberNode $context
+	 * @param MemberNode $node
 	 * @param mixed $value
 	 *
 	 * @return array|null
 	 *
 	 * @throws ReferenceException
 	 */
-	protected function createReferenceItem(MemberNode $context, $value)
+	protected function createReferenceItem(MemberNode $node, $value)
 	{
-		$type = $this->getType($context, $value);
+		$type = $this->getType($value, $node);
 
 		if (!($value instanceof ReferableInterface))
 		{
-			throw new ReferenceException("Property {$context->getReflector()->name} in class {$context->getParent()->getReflector()->name} is marked as a reference, but does not implement ReferableInterface");
+			throw new ReferenceException("Property {$node->getReflector()->name} in class {$node->getParent()->getReflector()->name} is marked as a reference, but does not implement ReferableInterface");
 		}
 
 		if ($type === null)
 		{
-			throw new ReferenceException("Property {$context->getReflector()->name} in class {$context->getParent()->getReflector()->name} is marked as a reference, but does not specify or imply a valid type");
+			throw new ReferenceException("Property {$node->getReflector()->name} in class {$node->getParent()->getReflector()->name} is marked as a reference, but does not specify or imply a valid type");
 		}
 
 		$reference = [];
@@ -257,16 +302,44 @@ class SerializingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * @param MemberNode $context
+	 * @param ObjectNode $node
+	 *
+	 * @return ObjectNode
+	 *
+	 * @throws ReferenceException
+	 */
+	protected function createObjectReference(ObjectNode $node)
+	{
+		if ($node->getInstance() === null)
+		{
+			return $node->withSerializedInstance(null);
+		}
+
+		$type = get_class($node->getInstance());
+
+		if (!($node->getInstance() instanceof ReferableInterface))
+		{
+			throw new ReferenceException("An instance of {$node->getReflector()->name} exists as a recursively used instance. The configuration specifies to create references of recursive objects, but {$node->getReflector()->name} does not implement ReferableInterface");
+		}
+
+		$reference = [];
+		Metadata::set($reference, Metadata::TYPE, $type);
+		Metadata::set($reference, Metadata::ID, $node->getInstance()->getId());
+
+		return $node->withSerializedInstance($reference);
+	}
+
+	/**
 	 * @param mixed $value
+	 * @param MemberNode $node
 	 *
 	 * @return null|string
 	 */
-	protected function getType(MemberNode $context, $value)
+	protected function getType($value, MemberNode $node)
 	{
-		if ($context->getMapper()->getType() !== null)
+		if ($node->getMapper()->getType() !== null)
 		{
-			return $context->getMapper()->getType();
+			return $node->getMapper()->getType();
 		}
 		elseif (is_object($value))
 		{

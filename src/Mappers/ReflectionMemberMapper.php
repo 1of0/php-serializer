@@ -9,6 +9,7 @@
 namespace OneOfZero\Json\Mappers;
 
 use OneOfZero\Json\Configuration;
+use OneOfZero\Json\Enums\IncludeStrategy;
 use OneOfZero\Json\Helpers\Flags;
 use ReflectionParameter;
 
@@ -31,7 +32,7 @@ class ReflectionMemberMapper implements MemberMapperInterface
 			return $this->target->getValue($instance);
 		}
 
-		if ($this->isClassMethod() && $this->isGetter())
+		if ($this->isGetter(true))
 		{
 			return $this->target->invoke($instance);
 		}
@@ -52,7 +53,7 @@ class ReflectionMemberMapper implements MemberMapperInterface
 			return;
 		}
 
-		if ($this->isClassMethod() && $this->isSetter())
+		if ($this->isSetter(true))
 		{
 			$this->target->invoke($instance, $value);
 			return;
@@ -129,8 +130,10 @@ class ReflectionMemberMapper implements MemberMapperInterface
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @param bool $testSignatureOnly
 	 */
-	public function isGetter()
+	public function isGetter($testSignatureOnly = false)
 	{
 		if (!$this->isClassMethod() || !preg_match(self::$GETTER_REGEX, $this->target->name))
 		{
@@ -143,13 +146,32 @@ class ReflectionMemberMapper implements MemberMapperInterface
 			return false;
 		}
 
-		return true;
+		if ($testSignatureOnly)
+		{
+			return true;
+		}
+
+		$strategy = $this->getConfiguration()->defaultMemberInclusionStrategy;
+
+		if ($this->target->isPublic() && Flags::has($strategy, IncludeStrategy::PUBLIC_GETTERS))
+		{
+			return true;
+		}
+
+		if (!$this->target->isPublic() && Flags::has($strategy, IncludeStrategy::NON_PUBLIC_GETTERS))
+		{
+			return true;
+		}
+
+		return $this->getBase()->isGetter();
 	}
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @param bool $testSignatureOnly
 	 */
-	public function isSetter()
+	public function isSetter($testSignatureOnly = false)
 	{
 		if (!$this->isClassMethod() || !preg_match(self::$SETTER_REGEX, $this->target->name))
 		{
@@ -162,7 +184,24 @@ class ReflectionMemberMapper implements MemberMapperInterface
 			return false;
 		}
 
-		return true;
+		if ($testSignatureOnly)
+		{
+			return true;
+		}
+
+		$strategy = $this->getConfiguration()->defaultMemberInclusionStrategy;
+
+		if ($this->target->isPublic() && Flags::has($strategy, IncludeStrategy::PUBLIC_SETTERS))
+		{
+			return true;
+		}
+
+		if (!$this->target->isPublic() && Flags::has($strategy, IncludeStrategy::NON_PUBLIC_SETTERS))
+		{
+			return true;
+		}
+
+		return $this->getBase()->isSetter();
 	}
 
 	/**
@@ -248,12 +287,12 @@ class ReflectionMemberMapper implements MemberMapperInterface
 
 		if ($this->isClassProperty())
 		{
-			if ($this->target->isPublic() && Flags::has($strategy, Configuration::INCLUDE_PUBLIC_PROPERTIES))
+			if ($this->target->isPublic() && Flags::has($strategy, IncludeStrategy::PUBLIC_PROPERTIES))
 			{
 				return true;
 			}
 
-			if (!$this->target->isPublic() && Flags::has($strategy, Configuration::INCLUDE_NON_PUBLIC_PROPERTIES))
+			if (!$this->target->isPublic() && Flags::has($strategy, IncludeStrategy::NON_PUBLIC_PROPERTIES))
 			{
 				return true;
 			}
@@ -261,12 +300,12 @@ class ReflectionMemberMapper implements MemberMapperInterface
 
 		if ($this->isGetter())
 		{
-			if ($this->target->isPublic() && Flags::has($strategy, Configuration::INCLUDE_PUBLIC_GETTERS))
+			if ($this->target->isPublic() && Flags::has($strategy, IncludeStrategy::PUBLIC_GETTERS))
 			{
 				return true;
 			}
 
-			if (!$this->target->isPublic() && Flags::has($strategy, Configuration::INCLUDE_NON_PUBLIC_GETTERS))
+			if (!$this->target->isPublic() && Flags::has($strategy, IncludeStrategy::NON_PUBLIC_GETTERS))
 			{
 				return true;
 			}
@@ -274,12 +313,12 @@ class ReflectionMemberMapper implements MemberMapperInterface
 
 		if ($this->isSetter())
 		{
-			if ($this->target->isPublic() && Flags::has($strategy, Configuration::INCLUDE_PUBLIC_SETTERS))
+			if ($this->target->isPublic() && Flags::has($strategy, IncludeStrategy::PUBLIC_SETTERS))
 			{
 				return true;
 			}
 
-			if (!$this->target->isPublic() && Flags::has($strategy, Configuration::INCLUDE_NON_PUBLIC_SETTERS))
+			if (!$this->target->isPublic() && Flags::has($strategy, IncludeStrategy::NON_PUBLIC_SETTERS))
 			{
 				return true;
 			}

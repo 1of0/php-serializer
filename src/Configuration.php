@@ -8,30 +8,12 @@
 
 namespace OneOfZero\Json;
 
+use OneOfZero\Json\Enums\IncludeStrategy;
+use OneOfZero\Json\Enums\OnRecursion;
+use OneOfZero\Json\Enums\ReferenceResolutionStrategy;
+
 class Configuration
 {
-	const RESOLVE_LAZY = 0;
-	const RESOLVE_EAGER = 1;
-
-	const INCLUDE_PUBLIC_PROPERTIES     = 0b00000001;
-	const INCLUDE_PUBLIC_GETTERS        = 0b00000010;
-	const INCLUDE_PUBLIC_SETTERS        = 0b00000100;
-	const INCLUDE_NON_PUBLIC_PROPERTIES = 0b00001000;
-	const INCLUDE_NON_PUBLIC_GETTERS    = 0b00010000;
-	const INCLUDE_NON_PUBLIC_SETTERS    = 0b00100000;
-	
-	const INCLUDE_ALL_PUBLIC            = 0b00000111;
-	const INCLUDE_ALL_NON_PUBLIC        = 0b00111000;
-
-	/**
-	 * Specifies one or more kinds of members that will be automatically included during serialization.
-	 *
-	 * The value uses bit flags, so you may use the bitwise OR (|) to specify multiple member kinds.
-	 *
-	 * @var int $defaultMemberInclusionStrategy
-	 */
-	public $defaultMemberInclusionStrategy = self::INCLUDE_PUBLIC_PROPERTIES;
-
 	/**
 	 * When enabled, a MissingTypeException will be thrown if the provided type hint or embedded type cannot be found.
 	 * Otherwise the type information will be disregarded.
@@ -73,5 +55,21 @@ class Configuration
 	 * 
 	 * @var int $defaultReferenceResolutionStrategy
 	 */
-	public $defaultReferenceResolutionStrategy = self::RESOLVE_LAZY;
+	public $defaultReferenceResolutionStrategy = ReferenceResolutionStrategy::LAZY;
+
+	/**
+	 * Specifies one or more kinds of members that will be automatically included during serialization.
+	 *
+	 * The value uses bit flags, so you may use the bitwise OR (|) to specify multiple member kinds.
+	 *
+	 * @var int $defaultMemberInclusionStrategy
+	 */
+	public $defaultMemberInclusionStrategy = IncludeStrategy::PUBLIC_PROPERTIES;
+
+	/**
+	 * Specifies the default handling strategy that will be used when recursion is detected during serializiation.
+	 * 
+	 * @var int $defaultRecursionHandlingStrategy
+	 */
+	public $defaultRecursionHandlingStrategy = OnRecursion::THROW_EXCEPTION;
 }

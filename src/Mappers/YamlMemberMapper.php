@@ -163,12 +163,19 @@ class YamlMemberMapper extends YamlAbstractMapper implements MemberMapperInterfa
 			return false;
 		}
 
-		foreach (self::$includeAttributes as $attribute)
+		if ($this->isGetter() || $this->isSetter())
 		{
-			if ($this->hasAttribute($attribute))
-			{
-				return true;
-			}
+			return true;
+		}
+
+		if ($this->hasAttribute(self::INCLUDE_ATTR) && $this->readAttribute(self::INCLUDE_ATTR))
+		{
+			return true;
+		}
+
+		if ($this->hasAttribute(self::NAME_ATTR) && $this->readAttribute(self::INCLUDE_ATTR) !== '')
+		{
+			return true;
 		}
 		
 		if ($this->memberParent->wantsExplicitInclusion())

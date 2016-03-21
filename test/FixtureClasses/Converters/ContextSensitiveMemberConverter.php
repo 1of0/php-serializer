@@ -17,22 +17,22 @@ class ContextSensitiveMemberConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function serialize(MemberNode $context)
+	public function serialize(MemberNode $node)
 	{
 		/** @var ClassUsingConverters $parentInstance */
-		$parentInstance = $context->getParent()->getInstance();
+		$parentInstance = $node->getParent()->getInstance();
 
-		return intval($context->getValue()) * intval($parentInstance->referableClass->getId());
+		return intval($node->getValue()) * intval($parentInstance->referableClass->getId());
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function deserialize(MemberNode $context)
+	public function deserialize(MemberNode $node)
 	{
 		/** @var ClassUsingConverters $deserializedParent */
-		$deserializedParent = $context->getParent()->getInstance();
+		$deserializedParent = $node->getParent()->getInstance();
 
-		return intval($context->getSerializedValue()) / intval($deserializedParent->referableClass->getId());
+		return intval($node->getSerializedValue()) / intval($deserializedParent->referableClass->getId());
 	}
 }
