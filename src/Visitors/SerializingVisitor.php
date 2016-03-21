@@ -8,10 +8,10 @@
 
 namespace OneOfZero\Json\Visitors;
 
-use OneOfZero\Json\Contexts\AbstractContext;
-use OneOfZero\Json\Contexts\ArrayContext;
-use OneOfZero\Json\Contexts\MemberContext;
-use OneOfZero\Json\Contexts\ObjectContext;
+use OneOfZero\Json\Nodes\AbstractNode;
+use OneOfZero\Json\Nodes\ArrayNode;
+use OneOfZero\Json\Nodes\MemberNode;
+use OneOfZero\Json\Nodes\ObjectNode;
 use OneOfZero\Json\Exceptions\ReferenceException;
 use OneOfZero\Json\Exceptions\ResumeSerializationException;
 use OneOfZero\Json\Exceptions\SerializationException;
@@ -24,13 +24,13 @@ class SerializingVisitor extends AbstractVisitor
 {
 	/**
 	 * @param mixed $value
-	 * @param AbstractContext|null $parent
+	 * @param AbstractNode|null $parent
 	 *
 	 * @return mixed
 	 *
 	 * @throws SerializationException
 	 */
-	public function visit($value, AbstractContext $parent = null)
+	public function visit($value, AbstractNode $parent = null)
 	{
 		if (is_object($value) && $value instanceof stdClass)
 		{
@@ -40,7 +40,7 @@ class SerializingVisitor extends AbstractVisitor
 
 		if (is_array($value))
 		{
-			$valueContext = (new ArrayContext)
+			$valueContext = (new ArrayNode)
 				->withArray($value)
 				->withParent($parent)
 			;
@@ -59,7 +59,7 @@ class SerializingVisitor extends AbstractVisitor
 			
 			$valueMapper = $this->mapperFactory->mapObject(new ReflectionClass($class));
 
-			$valueContext = (new ObjectContext)
+			$valueContext = (new ObjectNode)
 				->withReflector($valueMapper->getTarget())
 				->withMapper($valueMapper)
 				->withInstance($value)
@@ -73,13 +73,13 @@ class SerializingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * @param ArrayContext $context
+	 * @param ArrayNode $context
 	 *
-	 * @return ArrayContext
+	 * @return ArrayNode
 	 *
 	 * @throws SerializationException
 	 */
-	protected function visitArray(ArrayContext $context)
+	protected function visitArray(ArrayNode $context)
 	{
 		foreach ($context->getArray() as $key => $value)
 		{
@@ -95,13 +95,13 @@ class SerializingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * @param ObjectContext $context
+	 * @param ObjectNode $context
 	 *
-	 * @return ObjectContext|null
+	 * @return ObjectNode|null
 	 *
 	 * @throws SerializationException
 	 */
-	protected function visitObject(ObjectContext $context)
+	protected function visitObject(ObjectNode $context)
 	{
 		$mapper = $context->getMapper();
 
@@ -130,7 +130,7 @@ class SerializingVisitor extends AbstractVisitor
 
 		foreach ($mapper->getMembers() as $memberMapper)
 		{
-			$memberContext = (new MemberContext)
+			$memberContext = (new MemberNode)
 				->withValue($memberMapper->getValue($context->getInstance()))
 				->withReflector($memberMapper->getTarget())
 				->withMapper($memberMapper)
@@ -147,13 +147,13 @@ class SerializingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * @param MemberContext $context
+	 * @param MemberNode $context
 	 *
-	 * @return MemberContext|null
+	 * @return MemberNode|null
 	 *
 	 * @throws SerializationException
 	 */
-	protected function visitObjectMember(MemberContext $context)
+	protected function visitObjectMember(MemberNode $context)
 	{
 		$mapper = $context->getMapper();
 		$value = $context->getValue();
@@ -190,13 +190,13 @@ class SerializingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * @param MemberContext $context
+	 * @param MemberNode $context
 	 *
 	 * @return array|null
 	 *
 	 * @throws ReferenceException
 	 */
-	protected function createReference(MemberContext $context)
+	protected function createReference(MemberNode $context)
 	{
 		if ($context->getMapper()->isArray())
 		{
@@ -207,13 +207,13 @@ class SerializingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * @param MemberContext $context
+	 * @param MemberNode $context
 	 *
 	 * @return array
 	 *
 	 * @throws ReferenceException
 	 */
-	protected function createReferenceArray(MemberContext $context)
+	protected function createReferenceArray(MemberNode $context)
 	{
 		if (!is_array($context->getValue()))
 		{
@@ -229,14 +229,14 @@ class SerializingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * @param MemberContext $context
+	 * @param MemberNode $context
 	 * @param mixed $value
 	 *
 	 * @return array|null
 	 *
 	 * @throws ReferenceException
 	 */
-	protected function createReferenceItem(MemberContext $context, $value)
+	protected function createReferenceItem(MemberNode $context, $value)
 	{
 		$type = $this->getType($context, $value);
 
@@ -257,12 +257,12 @@ class SerializingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * @param MemberContext $context
+	 * @param MemberNode $context
 	 * @param mixed $value
 	 *
 	 * @return null|string
 	 */
-	protected function getType(MemberContext $context, $value)
+	protected function getType(MemberNode $context, $value)
 	{
 		if ($context->getMapper()->getType() !== null)
 		{

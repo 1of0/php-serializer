@@ -17,6 +17,29 @@ use stdClass;
 
 class BasicFunctionalityTest extends AbstractTest
 {
+	public function testScalars()
+	{
+		$json = Serializer::get()->serialize(null);
+		$deserialized = Serializer::get()->deserialize($json);
+		$this->assertEquals('null', $json);
+		$this->assertSame(null, $deserialized);
+
+		$json = Serializer::get()->serialize('foo');
+		$deserialized = Serializer::get()->deserialize($json);
+		$this->assertEquals('"foo"', $json);
+		$this->assertSame('foo', $deserialized);
+
+		$json = Serializer::get()->serialize(1.234);
+		$deserialized = Serializer::get()->deserialize($json);
+		$this->assertEquals('1.234', $json);
+		$this->assertSame(1.234, $deserialized);
+
+		$json = Serializer::get()->serialize(true);
+		$deserialized = Serializer::get()->deserialize($json);
+		$this->assertEquals('true', $json);
+		$this->assertSame(true, $deserialized);
+	}
+
 	public function testNumericArray()
 	{
 		$expectedJson = '[1,2,3,4]';

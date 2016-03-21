@@ -8,15 +8,15 @@
 
 namespace OneOfZero\Json\Test\FixtureClasses\Converters;
 
-use OneOfZero\Json\Contexts\ObjectContext;
 use OneOfZero\Json\Converters\AbstractObjectConverter;
+use OneOfZero\Json\Nodes\ObjectNode;
 
 class SerializingObjectConverter extends AbstractObjectConverter
 {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function serialize(ObjectContext $context)
+	public function serialize(ObjectNode $context)
 	{
 		return [ 'abcd' => 1234 ];
 	}

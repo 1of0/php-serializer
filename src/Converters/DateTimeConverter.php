@@ -9,14 +9,14 @@
 namespace OneOfZero\Json\Converters;
 
 use DateTime;
-use OneOfZero\Json\Contexts\MemberContext;
+use OneOfZero\Json\Nodes\MemberNode;
 
 class DateTimeConverter extends AbstractMemberConverter
 {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function serialize(MemberContext $context)
+	public function serialize(MemberNode $context)
 	{
 		$value = $context->getValue();
 		
@@ -26,7 +26,7 @@ class DateTimeConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function deserialize(MemberContext $context)
+	public function deserialize(MemberNode $context)
 	{
 		if (ctype_digit($context->getSerializedValue()))
 		{

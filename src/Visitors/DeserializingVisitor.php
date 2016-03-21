@@ -8,11 +8,11 @@
 
 namespace OneOfZero\Json\Visitors;
 
-use OneOfZero\Json\Contexts\AbstractContext;
-use OneOfZero\Json\Contexts\AnonymousObjectContext;
-use OneOfZero\Json\Contexts\ArrayContext;
-use OneOfZero\Json\Contexts\MemberContext;
-use OneOfZero\Json\Contexts\ObjectContext;
+use OneOfZero\Json\Nodes\AbstractNode;
+use OneOfZero\Json\Nodes\AnonymousObjectNode;
+use OneOfZero\Json\Nodes\ArrayNode;
+use OneOfZero\Json\Nodes\MemberNode;
+use OneOfZero\Json\Nodes\ObjectNode;
 use OneOfZero\Json\Exceptions\MissingTypeException;
 use OneOfZero\Json\Exceptions\ReferenceException;
 use OneOfZero\Json\Exceptions\ResumeSerializationException;
@@ -26,14 +26,14 @@ class DeserializingVisitor extends AbstractVisitor
 {
 	/**
 	 * @param mixed $serializedValue
-	 * @param AbstractContext|null $parent
+	 * @param AbstractNode|null $parent
 	 * @param string|null $typeHint
 	 *
 	 * @return mixed
 	 *
 	 * @throws SerializationException
 	 */
-	public function visit($serializedValue, AbstractContext $parent = null, $typeHint = null)
+	public function visit($serializedValue, AbstractNode $parent = null, $typeHint = null)
 	{
 		if (is_object($serializedValue))
 		{
@@ -42,7 +42,7 @@ class DeserializingVisitor extends AbstractVisitor
 			if ($type === null)
 			{
 				// Type not resolved, deserialize as anonymous object
-				$objectContext = (new AnonymousObjectContext)
+				$objectContext = (new AnonymousObjectNode)
 					->withInstance(new stdClass())
 					->withSerializedInstance($serializedValue)
 					->withParent($parent)
@@ -58,7 +58,7 @@ class DeserializingVisitor extends AbstractVisitor
 				: $objectReflector->newInstanceWithoutConstructor()
 			;
 
-			$objectContext = (new ObjectContext)
+			$objectContext = (new ObjectNode)
 				->withReflector($objectReflector)
 				->withMapper($this->mapperFactory->mapObject($objectReflector))
 				->withInstance($object)
@@ -71,7 +71,7 @@ class DeserializingVisitor extends AbstractVisitor
 
 		if (is_array($serializedValue))
 		{
-			$valueContext = (new ArrayContext)
+			$valueContext = (new ArrayNode)
 				->withArray([])
 				->withSerializedArray($serializedValue)
 				->withParent($parent)
@@ -84,13 +84,13 @@ class DeserializingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * @param ArrayContext $context
+	 * @param ArrayNode $context
 	 *
-	 * @return ArrayContext
+	 * @return ArrayNode
 	 *
 	 * @throws SerializationException
 	 */
-	protected function visitArray(ArrayContext $context)
+	protected function visitArray(ArrayNode $context)
 	{
 		foreach ($context->getSerializedArray() as $key => $value)
 		{
@@ -106,11 +106,11 @@ class DeserializingVisitor extends AbstractVisitor
 	}
 	
 	/**
-	 * @param AnonymousObjectContext $context
+	 * @param AnonymousObjectNode $context
 	 *
-	 * @return AnonymousObjectContext
+	 * @return AnonymousObjectNode
 	 */
-	protected function visitAnonymousObject(AnonymousObjectContext $context)
+	protected function visitAnonymousObject(AnonymousObjectNode $context)
 	{
 		foreach ($context->getSerializedInstance() as $key => $value)
 		{
@@ -121,13 +121,13 @@ class DeserializingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * @param ObjectContext $context
+	 * @param ObjectNode $context
 	 *
-	 * @return ObjectContext
+	 * @return ObjectNode
 	 *
 	 * @throws SerializationException
 	 */
-	protected function visitObject(ObjectContext $context)
+	protected function visitObject(ObjectNode $context)
 	{
 		$mapper = $context->getMapper();
 
@@ -148,7 +148,7 @@ class DeserializingVisitor extends AbstractVisitor
 		{
 			$serializedValue = $context->getSerializedMemberValue($memberMapper->getName());
 			
-			$memberContext = (new MemberContext)
+			$memberContext = (new MemberNode)
 				->withSerializedValue($serializedValue)
 				->withReflector($memberMapper->getTarget())
 				->withMapper($memberMapper)
@@ -162,13 +162,13 @@ class DeserializingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * @param MemberContext $context
+	 * @param MemberNode $context
 	 *
-	 * @return MemberContext|null
+	 * @return MemberNode|null
 	 *
 	 * @throws SerializationException
 	 */
-	protected function visitObjectMember(MemberContext $context)
+	protected function visitObjectMember(MemberNode $context)
 	{
 		$mapper = $context->getMapper();
 
@@ -199,11 +199,11 @@ class DeserializingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * @param MemberContext $context
+	 * @param MemberNode $context
 	 *
 	 * @return ReferableInterface
 	 */
-	protected function resolveReference(MemberContext $context)
+	protected function resolveReference(MemberNode $context)
 	{
 		if (is_array($context->getSerializedValue()))
 		{
@@ -214,11 +214,11 @@ class DeserializingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * @param MemberContext $context
+	 * @param MemberNode $context
 	 *
 	 * @return ReferableInterface[]
 	 */
-	protected function resolveReferenceArray(MemberContext $context)
+	protected function resolveReferenceArray(MemberNode $context)
 	{
 		$resolved = [];
 
@@ -231,14 +231,14 @@ class DeserializingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * @param MemberContext $context
+	 * @param MemberNode $context
 	 * @param mixed $item
 	 *
 	 * @return ReferableInterface
 	 *
 	 * @throws ReferenceException
 	 */
-	protected function resolveReferenceItem(MemberContext $context, $item)
+	protected function resolveReferenceItem(MemberNode $context, $item)
 	{
 		if (!$this->referenceResolver)
 		{
@@ -263,7 +263,7 @@ class DeserializingVisitor extends AbstractVisitor
 
 	/**
 	 * @param stdClass $serializedValue
-	 * @param MemberContext|null $context
+	 * @param MemberNode|null $context
 	 * @param string|null $typeHint
 	 *
 	 * @return null|string
@@ -277,7 +277,7 @@ class DeserializingVisitor extends AbstractVisitor
 			$typeHint = Metadata::get($serializedValue, Metadata::TYPE);
 		}
 
-		if ($typeHint === null && $context instanceof MemberContext)
+		if ($typeHint === null && $context instanceof MemberNode)
 		{
 			$typeHint = $context->getMapper()->getType();
 		}

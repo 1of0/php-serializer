@@ -8,7 +8,7 @@
 
 namespace OneOfZero\Json\Test\FixtureClasses\Converters;
 
-use OneOfZero\Json\Contexts\MemberContext;
+use OneOfZero\Json\Nodes\MemberNode;
 use OneOfZero\Json\Converters\AbstractMemberConverter;
 use OneOfZero\Json\Test\FixtureClasses\ReferableClass;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
@@ -18,7 +18,7 @@ class ClassDependentMemberConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function serialize(MemberContext $context)
+	public function serialize(MemberNode $context)
 	{
 		$object = $context->getValue();
 		
@@ -38,7 +38,7 @@ class ClassDependentMemberConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function deserialize(MemberContext $context)
+	public function deserialize(MemberNode $context)
 	{
 		$class = $context->getMapper()->getType();
 		

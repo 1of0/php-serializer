@@ -8,7 +8,7 @@
 
 namespace OneOfZero\Json\Test\FixtureClasses\Converters;
 
-use OneOfZero\Json\Contexts\MemberContext;
+use OneOfZero\Json\Nodes\MemberNode;
 use OneOfZero\Json\Converters\AbstractMemberConverter;
 use OneOfZero\Json\Test\FixtureClasses\ClassUsingConverters;
 
@@ -17,7 +17,7 @@ class ContextSensitiveMemberConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function serialize(MemberContext $context)
+	public function serialize(MemberNode $context)
 	{
 		/** @var ClassUsingConverters $parentInstance */
 		$parentInstance = $context->getParent()->getInstance();
@@ -28,7 +28,7 @@ class ContextSensitiveMemberConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function deserialize(MemberContext $context)
+	public function deserialize(MemberNode $context)
 	{
 		/** @var ClassUsingConverters $deserializedParent */
 		$deserializedParent = $context->getParent()->getInstance();

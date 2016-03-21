@@ -8,15 +8,15 @@
 
 namespace OneOfZero\Json\Test\FixtureClasses\Converters;
 
-use OneOfZero\Json\Contexts\MemberContext;
 use OneOfZero\Json\Converters\AbstractMemberConverter;
+use OneOfZero\Json\Nodes\MemberNode;
 
 class DeserializingMemberConverter extends AbstractMemberConverter
 {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function deserialize(MemberContext $context)
+	public function deserialize(MemberNode $context)
 	{
 		return 'bar';
 	}

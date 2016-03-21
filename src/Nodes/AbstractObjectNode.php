@@ -6,12 +6,12 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Contexts;
+namespace OneOfZero\Json\Nodes;
 
 use RuntimeException;
 use stdClass;
 
-class AbstractObjectContext extends AbstractContext
+class AbstractObjectNode extends AbstractNode
 {
 	/**
 	 * @var mixed $instance

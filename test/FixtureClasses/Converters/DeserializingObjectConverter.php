@@ -8,15 +8,15 @@
 
 namespace OneOfZero\Json\Test\FixtureClasses\Converters;
 
-use OneOfZero\Json\Contexts\ObjectContext;
 use OneOfZero\Json\Converters\AbstractObjectConverter;
+use OneOfZero\Json\Nodes\ObjectNode;
 
 class DeserializingObjectConverter extends AbstractObjectConverter
 {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function deserialize(ObjectContext $context)
+	public function deserialize(ObjectNode $context)
 	{
 		$context->getInstance()->foo = 'bar';
 		return $context->getInstance();

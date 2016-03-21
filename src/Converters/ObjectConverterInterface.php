@@ -15,7 +15,7 @@
 
 namespace OneOfZero\Json\Converters;
 
-use OneOfZero\Json\Contexts\ObjectContext;
+use OneOfZero\Json\Nodes\ObjectNode;
 use OneOfZero\Json\Exceptions\ResumeSerializationException;
 
 interface ObjectConverterInterface
@@ -25,24 +25,24 @@ interface ObjectConverterInterface
 	 *
 	 * The return value should be a type or structure that is serializable by json_encode().
 	 *
-	 * @param ObjectContext $context
+	 * @param ObjectNode $context
 	 *
 	 * @return mixed
 	 *
 	 * @throws ResumeSerializationException May be thrown to indicate that the serializer should resume with the regular
 	 *                                      serialization strategy. This can be useful to avoid recursion.
 	 */
-	public function serialize(ObjectContext $context);
+	public function serialize(ObjectNode $context);
 
 	/**
 	 * Should return a deserialized representation of the serialized instance in the provided object context.
 	 *
-	 * @param ObjectContext $context
+	 * @param ObjectNode $context
 	 *
 	 * @return mixed
 	 *
 	 * @throws ResumeSerializationException May be thrown to indicate that the serializer should resume with the regular
 	 *                                      deserialization strategy. This can be useful to avoid recursion.
 	 */
-	public function deserialize(ObjectContext $context);
+	public function deserialize(ObjectNode $context);
 }

@@ -6,9 +6,9 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Contexts;
+namespace OneOfZero\Json\Nodes;
 
-class ArrayContext extends AbstractContext
+class ArrayNode extends AbstractNode
 {
 	/**
 	 * @var array $array

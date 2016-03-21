@@ -6,13 +6,13 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Contexts;
+namespace OneOfZero\Json\Nodes;
 
 use OneOfZero\Json\Mappers\MemberMapperInterface;
 use ReflectionMethod;
 use ReflectionProperty;
 
-class MemberContext extends AbstractContext
+class MemberNode extends AbstractNode
 {
 	/**
 	 * @var mixed $value
@@ -35,7 +35,7 @@ class MemberContext extends AbstractContext
 	private $mapper;
 
 	/**
-	 * @return ObjectContext
+	 * @return ObjectNode
 	 */
 	public function getParent()
 	{

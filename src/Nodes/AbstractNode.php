@@ -6,17 +6,17 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Contexts;
+namespace OneOfZero\Json\Nodes;
 
-abstract class AbstractContext
+abstract class AbstractNode
 {
 	/**
-	 * @var AbstractContext|null $parent
+	 * @var AbstractNode|null $parent
 	 */
 	protected $parent;
 
 	/**
-	 * @param AbstractContext|null $parent
+	 * @param AbstractNode|null $parent
 	 *
 	 * @return self
 	 */
@@ -28,7 +28,7 @@ abstract class AbstractContext
 	}
 
 	/**
-	 * @return AbstractContext|null
+	 * @return AbstractNode|null
 	 */
 	public function getParent()
 	{

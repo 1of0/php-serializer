@@ -6,12 +6,12 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Contexts;
+namespace OneOfZero\Json\Nodes;
 
 use OneOfZero\Json\Mappers\ObjectMapperInterface;
 use ReflectionClass;
 
-class ObjectContext extends AbstractObjectContext
+class ObjectNode extends AbstractObjectNode
 {
 	/**
 	 * @var array $metadata
@@ -29,11 +29,11 @@ class ObjectContext extends AbstractObjectContext
 	private $mapper;
 
 	/**
-	 * @param MemberContext $context
+	 * @param MemberNode $context
 	 *
 	 * @return self
 	 */
-	public function withInstanceMember(MemberContext $context)
+	public function withInstanceMember(MemberNode $context)
 	{
 		$new = clone $this;
 
