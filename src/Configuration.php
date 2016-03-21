@@ -67,7 +67,7 @@ class Configuration
 	public $defaultMemberInclusionStrategy = IncludeStrategy::PUBLIC_PROPERTIES;
 
 	/**
-	 * Specifies the default handling strategy that will be used when recursion is detected during serializiation.
+	 * Specifies the default handling strategy that will be used when recursion is detected during serialization.
 	 * 
 	 * @var int $defaultRecursionHandlingStrategy
 	 */

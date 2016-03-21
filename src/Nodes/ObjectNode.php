@@ -102,7 +102,7 @@ class ObjectNode extends AbstractObjectNode
 			{
 				$instance = $parent->getInstance();
 
-				if ($instance !== null && is_object($instance) && spl_object_hash($instance) !== $selfHash)
+				if ($instance !== null && is_object($instance) && spl_object_hash($instance) === $selfHash)
 				{
 					return true;
 				}

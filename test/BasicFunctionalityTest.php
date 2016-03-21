@@ -8,11 +8,8 @@
 
 namespace OneOfZero\Json\Test;
 
-use OneOfZero\Json\Exceptions\SerializationException;
 use OneOfZero\Json\JsonConvert;
 use OneOfZero\Json\Serializer;
-use OneOfZero\Json\Test\FixtureClasses\ClassWithGetterAndSetter;
-use OneOfZero\Json\Test\FixtureClasses\ClassWithInvalidGetterAndSetter;
 use OneOfZero\Json\Test\FixtureClasses\PrivatePropertiesClass;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClassExtender;
@@ -65,10 +62,11 @@ class BasicFunctionalityTest extends AbstractTest
 		$expectedJson = json_encode([
 			'@class'    => SimpleClass::class,
 			'foo'       => '1234',
-			'bar'       => 'abcd'
+			'bar'       => 'abcd',
+			'baz'       => '5678',
 		]);
 
-		$object = new SimpleClass('1234', 'abcd');
+		$object = new SimpleClass('1234', 'abcd', '5678');
 
 		$json = Serializer::get()->serialize($object);
 		$this->assertEquals($expectedJson, $json);
@@ -94,36 +92,6 @@ class BasicFunctionalityTest extends AbstractTest
 		$this->assertNull($deserialized->getBar());
 	}
 
-	public function testGetterAndSetter()
-	{
-		$expectedJson = json_encode([
-			'@class'    => ClassWithGetterAndSetter::class,
-			'foo'       => '1234'
-		]);
-
-		$object = new ClassWithGetterAndSetter('1234');
-
-		$json = Serializer::get()->serialize($object);
-		$this->assertEquals($expectedJson, $json);
-
-		/** @var ClassWithGetterAndSetter $deserialized */
-		$deserialized = Serializer::get()->deserialize($json);
-		$this->assertEquals($object->getFoo(), $deserialized->getFoo());
-	}
-
-	public function testInvalidGetterAndSetter()
-	{
-		$this->setExpectedException(SerializationException::class);
-		Serializer::get()->serialize(new ClassWithInvalidGetterAndSetter());
-
-		$this->setExpectedException(SerializationException::class);
-		/** @var ClassWithInvalidGetterAndSetter $deserialized */
-		Serializer::get()->deserialize(json_encode([
-			'@class'    => ClassWithInvalidGetterAndSetter::class,
-			'foo'       => '1234'
-		]));
-	}
-
 	public function testStdClass()
 	{
 		$object = new stdClass();
@@ -144,11 +112,12 @@ class BasicFunctionalityTest extends AbstractTest
 		$expectedObject = [
 			'@class'    => SimpleClass::class,
 			'foo'       => '1234',
-			'bar'       => 'abcd'
+			'bar'       => 'abcd',
+			'baz'       => '5678',
 		];
 		$expectedJson = json_encode([$expectedObject, $expectedObject]);
 
-		$object = new SimpleClass('1234', 'abcd');
+		$object = new SimpleClass('1234', 'abcd', '5678');
 		$array = [$object, $object];
 
 		$json = Serializer::get()->serialize($array);
@@ -160,8 +129,8 @@ class BasicFunctionalityTest extends AbstractTest
 
 	public function testCast()
 	{
-		$object = new SimpleClassExtender('1234', 'abcd', '1337');
-		$expected = new SimpleClass('1234', 'abcd');
+		$object = new SimpleClassExtender('1234', 'abcd', '5678', '1337');
+		$expected = new SimpleClass('1234', 'abcd', '5678');
 
 		$cast = JsonConvert::cast($object, SimpleClass::class);
 		$this->assertObjectEquals($expected, $cast);

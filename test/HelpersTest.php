@@ -8,7 +8,10 @@
 
 namespace OneOfZero\Json\Test;
 
+use InvalidArgumentException;
 use OneOfZero\Json\Helpers\Flags;
+use OneOfZero\Json\Helpers\Metadata;
+use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
 
 class HelpersTest extends AbstractTest
 {
@@ -23,5 +26,33 @@ class HelpersTest extends AbstractTest
 		$this->assertEquals(0b0011, Flags::invert(0b1100, 4));
 		$this->assertEquals(0b1, Flags::invert(0b0, 1));
 		$this->assertEquals(0, Flags::invert(0b0, 0));
+	}
+	
+	public function testMetadataHelper()
+	{
+		$input = (object)[ 'foo' => 'bar' ];
+		
+		$this->assertEquals(null, Metadata::get($input, 'bar'));
+		$this->assertEquals('bar', Metadata::get($input, 'foo'));
+		
+		Metadata::set($input, 'bar', 'baz');
+
+		$this->assertEquals('baz', Metadata::get($input, 'bar'));
+	}
+	
+	public function testMetadataHelperNullTarget()
+	{
+		$this->setExpectedException(InvalidArgumentException::class);
+		
+		$input = null;
+		Metadata::set($input, 'foo', 'bar');
+	}
+	
+	public function testMetadataHelperInvalidTarget()
+	{
+		$this->setExpectedException(InvalidArgumentException::class);
+		
+		$input = new SimpleClass('foo', 'bar', 'baz');
+		Metadata::set($input, 'foo', 'bar');
 	}
 }

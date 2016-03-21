@@ -25,7 +25,7 @@ class ConverterTests extends AbstractTest
 		$expectedJson = json_encode([
 			'@class'                => ClassUsingConverters::class,
 			'dateObject'            => $date->getTimestamp(),
-			'simpleClass'           => '1234|abcd',
+			'simpleClass'           => '1234|abcd|5678',
 			'referableClass'        => 1337,
 			'foo'                   => 877,
 			'bar'                   => 1123,
@@ -36,7 +36,7 @@ class ConverterTests extends AbstractTest
 
 		$object = new ClassUsingConverters();
 		$object->dateObject         = $date;
-		$object->simpleClass        = new SimpleClass('1234', 'abcd');
+		$object->simpleClass        = new SimpleClass('1234', 'abcd', '5678');
 		$object->referableClass     = new ReferableClass(1337);
 		$object->foo                = 123;
 		$object->bar                = 123;

@@ -24,7 +24,7 @@ class ClassDependentMemberConverter extends AbstractMemberConverter
 		
 		if ($object instanceof SimpleClass)
 		{
-			return implode('|', [$object->foo, $object->bar]);
+			return implode('|', [ $object->foo, $object->bar, $object->baz ]);
 		}
 
 		if ($object instanceof ReferableClass)
@@ -44,8 +44,8 @@ class ClassDependentMemberConverter extends AbstractMemberConverter
 		
 		if ($class === SimpleClass::class)
 		{
-			list($foo, $bar) = explode('|', $node->getSerializedValue());
-			return new SimpleClass($foo, $bar);
+			list($foo, $bar, $baz) = explode('|', $node->getSerializedValue());
+			return new SimpleClass($foo, $bar, $baz);
 		}
 
 		if ($class === ReferableClass::class)

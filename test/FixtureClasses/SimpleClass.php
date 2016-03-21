@@ -14,9 +14,12 @@ class SimpleClass
 
 	public $bar;
 
-	public function __construct($foo, $bar)
+	public $baz;
+
+	public function __construct($foo, $bar, $baz)
 	{
 		$this->foo = $foo;
 		$this->bar = $bar;
+		$this->baz = $baz;
 	}
 }

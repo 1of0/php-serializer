@@ -34,36 +34,4 @@ interface ObjectMapperInterface extends MapperInterface
 	 * @return MemberMapperInterface[]
 	 */
 	public function getMembers();
-
-	/**
-	 * Returns member mappers for all class properties.
-	 *
-	 * @return MemberMapperInterface[]
-	 */
-	public function getProperties();
-
-	/**
-	 * Returns a member mapper for the property with the provided name.
-	 *
-	 * @param string $name
-	 *
-	 * @return MemberMapperInterface|null
-	 */
-	public function getProperty($name);
-
-	/**
-	 * Returns member mappers for all class methods.
-	 *
-	 * @return MemberMapperInterface[]
-	 */
-	public function getMethods();
-
-	/**
-	 * Returns a member mapper for the method with the provided name.
-	 *
-	 * @param string $name
-	 *
-	 * @return MemberMapperInterface|null
-	 */
-	public function getMethod($name);
 }

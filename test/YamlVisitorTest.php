@@ -9,16 +9,19 @@
 namespace OneOfZero\Json\Test;
 
 use DateTime;
+use OneOfZero\Json\Exceptions\SerializationException;
 use OneOfZero\Json\Helpers\Metadata;
 use OneOfZero\Json\Mappers\MapperPipeline;
 use OneOfZero\Json\Mappers\ReflectionMapperFactory;
 use OneOfZero\Json\Mappers\YamlMapperFactory;
+use OneOfZero\Json\Test\FixtureClasses\ClassWithGetterAndSetter;
+use OneOfZero\Json\Test\FixtureClasses\ClassWithGetterAndSetterOnProperty;
+use OneOfZero\Json\Test\FixtureClasses\ClassWithInvalidGetterAndSetter;
 use OneOfZero\Json\Test\FixtureClasses\ReferableClass;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
-use OneOfZero\Json\Test\FixtureClasses\UnmappedClass;
-use OneOfZero\Json\Test\FixtureClasses\UnmappedClassUsingClassLevelConverter;
-use OneOfZero\Json\Test\FixtureClasses\UnmappedClassUsingConverters;
-use OneOfZero\Json\Test\FixtureClasses\UnmappedClassUsingDifferentClassLevelConverters;
+use OneOfZero\Json\Test\FixtureClasses\ClassUsingClassLevelConverter;
+use OneOfZero\Json\Test\FixtureClasses\ClassUsingConverters;
+use OneOfZero\Json\Test\FixtureClasses\ClassUsingDifferentClassLevelConverters;
 use OneOfZero\Json\Visitors\DeserializingVisitor;
 use OneOfZero\Json\Visitors\SerializingVisitor;
 
@@ -28,10 +31,10 @@ class YamlVisitorTest extends AbstractTest
 
 	public function testSerialization()
 	{
-		$input = new UnmappedClass('abc', '123', 'def');
+		$input = new SimpleClass('abc', '123', 'def');
 
 		$expectedOutput = [
-			Metadata::TYPE => UnmappedClass::class,
+			Metadata::TYPE => SimpleClass::class,
 			'food' => 'abc',
 			'bar' => '123',
 		];
@@ -44,9 +47,9 @@ class YamlVisitorTest extends AbstractTest
 	{
 		$date = new DateTime();
 		
-		$input = new UnmappedClassUsingConverters();
+		$input = new ClassUsingConverters();
 		$input->dateObject          = $date;
-		$input->simpleClass         = new SimpleClass('1234', 'abcd');
+		$input->simpleClass         = new SimpleClass('1234', 'abcd', '5678');
 		$input->referableClass      = new ReferableClass(1337);
 		$input->foo                 = 123;
 		$input->bar                 = 123;
@@ -54,9 +57,9 @@ class YamlVisitorTest extends AbstractTest
 		$input->setPrivateDateObject($date);
 
 		$expectedOutput = [
-			'@class'                => UnmappedClassUsingConverters::class,
+			'@class'                => ClassUsingConverters::class,
 			'dateObject'            => $date->getTimestamp(),
-			'simpleClass'           => '1234|abcd',
+			'simpleClass'           => '1234|abcd|5678',
 			'referableClass'        => 1337,
 			'foo'                   => 877,
 			'bar'                   => 1123,
@@ -68,7 +71,7 @@ class YamlVisitorTest extends AbstractTest
 		$serialized = $this->createSerializingVisitor()->visit($input);
 		$this->assertSequenceEquals($expectedOutput, $serialized);
 		
-		/** @var UnmappedClassUsingConverters $deserialized */
+		/** @var ClassUsingConverters $deserialized */
 		$deserialized = $this->createDeserializingVisitor()->visit((object)$serialized);
 		
 		$this->assertEquals('bar', $deserialized->differentConverters);
@@ -79,12 +82,12 @@ class YamlVisitorTest extends AbstractTest
 	
 	public function testClassLevelConverter()
 	{
-		$object = new UnmappedClassUsingClassLevelConverter();
+		$object = new ClassUsingClassLevelConverter();
 		$object->foo = 1234;
 
 		$expectedOutput = [
-			'@class'    => UnmappedClassUsingClassLevelConverter::class,
-			'abcd'       => 1234,
+			'@class'    => ClassUsingClassLevelConverter::class,
+			'abcd'      => 1234,
 		];
 
 		$serialized = $this->createSerializingVisitor()->visit($object);
@@ -96,23 +99,75 @@ class YamlVisitorTest extends AbstractTest
 	
 	public function testDifferentClassLevelConverters()
 	{
-		$object = new UnmappedClassUsingDifferentClassLevelConverters();
+		$object = new ClassUsingDifferentClassLevelConverters();
 
 		$expectedOutput = [
-			'@class'    => UnmappedClassUsingDifferentClassLevelConverters::class,
-			'abcd'       => 1234,
+			'@class'    => ClassUsingDifferentClassLevelConverters::class,
+			'abcd'      => 1234,
 		];
 
 		$serialized = $this->createSerializingVisitor()->visit($object);
 		$this->assertSequenceEquals($expectedOutput, $serialized);
 
-		/** @var UnmappedClassUsingDifferentClassLevelConverters $deserialized */
+		/** @var ClassUsingDifferentClassLevelConverters $deserialized */
 		$deserialized = $this->createDeserializingVisitor()->visit((object)$serialized);
 		
 		$this->assertEquals('bar', $deserialized->foo);
 		$deserialized->foo = null;
 		
 		$this->assertObjectEquals($object, $deserialized);
+	}
+	
+	public function testGetterSetter()
+	{
+		$object = new ClassWithGetterAndSetter('bar');
+
+		$expectedOutput = [
+			'@class'    => ClassWithGetterAndSetter::class,
+			'foo'       => 'bar',
+		];
+		
+		$serialized = $this->createSerializingVisitor()->visit($object);
+		$this->assertSequenceEquals($expectedOutput, $serialized);
+
+		$deserialized = $this->createDeserializingVisitor()->visit((object)$serialized);
+		$this->assertObjectEquals($object, $deserialized);
+	}
+	
+	public function testInvalidGetter()
+	{
+		$this->setExpectedException(SerializationException::class);
+		$this->createSerializingVisitor()->visit(new ClassWithInvalidGetterAndSetter('bar'));
+	}
+
+	public function testInvalidSetter()
+	{
+		$this->setExpectedException(SerializationException::class);
+
+		$input = (object)[
+			'@class'    => ClassWithInvalidGetterAndSetter::class,
+			'foo'       => 'bar',
+		];
+		
+		$this->createDeserializingVisitor()->visit($input);
+	}
+	
+	public function testGetterOnProperty()
+	{
+		$this->setExpectedException(SerializationException::class);
+		$this->createSerializingVisitor()->visit(new ClassWithGetterAndSetterOnProperty('bar'));
+	}
+	
+	public function testSetterOnProperty()
+	{
+		$this->setExpectedException(SerializationException::class);
+		
+		$input = (object)[
+			'@class'    => ClassWithInvalidGetterAndSetter::class,
+			'foo'       => 'bar',
+		];
+		
+		$this->createDeserializingVisitor()->visit($input);
 	}
 
 	private function createSerializingVisitor()

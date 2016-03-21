@@ -10,11 +10,11 @@ namespace OneOfZero\Json\Test\FixtureClasses;
 
 class SimpleClassExtender extends SimpleClass
 {
-	public $baz;
+	public $extension;
 
-	public function __construct($foo, $bar, $baz)
+	public function __construct($foo, $bar, $baz, $extension)
 	{
-		parent::__construct($foo, $bar);
-		$this->baz = $baz;
+		parent::__construct($foo, $bar, $baz);
+		$this->extension = $extension;
 	}
 }

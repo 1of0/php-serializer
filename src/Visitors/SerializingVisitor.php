@@ -200,7 +200,7 @@ class SerializingVisitor extends AbstractVisitor
 			return $node->withSerializedValue($this->createReference($node));
 		}
 
-		return $node->withSerializedValue($this->visit($value));
+		return $node->withSerializedValue($this->visit($value, $node));
 	}
 
 	/**

@@ -8,7 +8,6 @@
 
 namespace OneOfZero\Json\Mappers;
 
-use OneOfZero\Json\Configuration;
 use OneOfZero\Json\Enums\IncludeStrategy;
 use OneOfZero\Json\Helpers\Flags;
 use ReflectionParameter;
@@ -32,7 +31,7 @@ class ReflectionMemberMapper implements MemberMapperInterface
 			return $this->target->getValue($instance);
 		}
 
-		if ($this->isGetter(true))
+		if ($this->hasGetterSignature())
 		{
 			return $this->target->invoke($instance);
 		}
@@ -53,7 +52,7 @@ class ReflectionMemberMapper implements MemberMapperInterface
 			return;
 		}
 
-		if ($this->isSetter(true))
+		if ($this->hasSetterSignature())
 		{
 			$this->target->invoke($instance, $value);
 			return;
@@ -130,10 +129,8 @@ class ReflectionMemberMapper implements MemberMapperInterface
 
 	/**
 	 * {@inheritdoc}
-	 *
-	 * @param bool $testSignatureOnly
 	 */
-	public function isGetter($testSignatureOnly = false)
+	public function isGetter()
 	{
 		if (!$this->isClassMethod() || !preg_match(self::$GETTER_REGEX, $this->target->name))
 		{
@@ -144,11 +141,6 @@ class ReflectionMemberMapper implements MemberMapperInterface
 		{
 			// Valid getters must have no required parameters
 			return false;
-		}
-
-		if ($testSignatureOnly)
-		{
-			return true;
 		}
 
 		$strategy = $this->getConfiguration()->defaultMemberInclusionStrategy;
@@ -168,10 +160,8 @@ class ReflectionMemberMapper implements MemberMapperInterface
 
 	/**
 	 * {@inheritdoc}
-	 *
-	 * @param bool $testSignatureOnly
 	 */
-	public function isSetter($testSignatureOnly = false)
+	public function isSetter()
 	{
 		if (!$this->isClassMethod() || !preg_match(self::$SETTER_REGEX, $this->target->name))
 		{
@@ -183,12 +173,7 @@ class ReflectionMemberMapper implements MemberMapperInterface
 			// Valid setters must have at least one parameter, and at most one required parameter
 			return false;
 		}
-
-		if ($testSignatureOnly)
-		{
-			return true;
-		}
-
+		
 		$strategy = $this->getConfiguration()->defaultMemberInclusionStrategy;
 
 		if ($this->target->isPublic() && Flags::has($strategy, IncludeStrategy::PUBLIC_SETTERS))

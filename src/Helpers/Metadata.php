@@ -30,7 +30,7 @@ class Metadata
 
 		if ($target instanceof stdClass)
 		{
-			$target->$metaType = $metaValue;
+			$target->{$metaType} = $metaValue;
 			return;
 		}
 

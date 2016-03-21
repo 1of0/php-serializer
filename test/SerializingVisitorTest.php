@@ -24,7 +24,11 @@ class SerializingVisitorTest extends AbstractTest
 	
 	public function testObjectArray()
 	{
-		$input = [ new SimpleClass('foo', null), new SimpleClass('bar', null), new SimpleClass('baz', null) ];
+		$input = [
+			new SimpleClass('foo', null, null), 
+			new SimpleClass('bar', null, null), 
+			new SimpleClass('baz', null, null) 
+		];
 
 		$expectedOutput = [
 			[ Metadata::TYPE => SimpleClass::class, 'foo' => 'foo' ],
@@ -38,7 +42,11 @@ class SerializingVisitorTest extends AbstractTest
 
 	public function testMixedArray()
 	{
-		$input = [ 'abc', 123, new SimpleClass('baz', null) ];
+		$input = [
+			'abc', 
+			123, 
+			new SimpleClass('baz', null, null) 
+		];
 
 		$expectedOutput = [
 			'abc',
@@ -52,12 +60,13 @@ class SerializingVisitorTest extends AbstractTest
 
 	public function testSimpleObject()
 	{
-		$input = new SimpleClass('abc', '123');
+		$input = new SimpleClass('abc', '123', '456');
 
 		$expectedOutput = [
 			Metadata::TYPE  => SimpleClass::class,
 			'foo'           => 'abc',
 			'bar'           => '123',
+			'baz'           => '456',
 		];
 
 		$output = $this->createVisitor()->visit($input);
@@ -66,7 +75,7 @@ class SerializingVisitorTest extends AbstractTest
 
 	public function testObjectWithArray()
 	{
-		$input = new SimpleClass([ 'foo', 'bar', 'baz' ], new SimpleClass('123', null));
+		$input = new SimpleClass([ 'foo', 'bar', 'baz' ], new SimpleClass('123', null, null), null);
 
 		$expectedOutput = [
 			Metadata::TYPE  => SimpleClass::class,

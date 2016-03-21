@@ -56,6 +56,27 @@ trait BaseMemberMapperTrait
 	}
 
 	/**
+	 * @return bool
+	 */
+	protected final function hasGetterSignature()
+	{
+		return $this->isClassMethod() 
+		    && $this->target->getNumberOfRequiredParameters() === 0
+		;
+	}
+
+	/**
+	 * @return bool
+	 */
+	protected final function hasSetterSignature()
+	{
+		return $this->isClassMethod() 
+		    && $this->target->getNumberOfParameters() > 0 
+		    && $this->target->getNumberOfRequiredParameters() <= 1
+		;
+	}
+
+	/**
 	 * @throws SerializationException
 	 */
 	protected final function validateGetterSignature()
@@ -85,7 +106,6 @@ trait BaseMemberMapperTrait
 		
 		if ($this->target->getNumberOfParameters() === 0)
 		{
-			// Valid setters must have at least one parameter, and at most one required parameter
 			throw new SerializationException("Field {$this->target->name} has no parameters. Fields marked as setters must have at least one parameter.");
 		}
 

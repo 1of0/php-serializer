@@ -1,9 +1,14 @@
 <?php
+/**
+ * Copyright (c) 2016 Bernardo van der Wal
+ * MIT License
+ *
+ * Refer to the LICENSE file for the full copyright notice.
+ */
 
 namespace OneOfZero\Json\Test\FixtureClasses;
 
 use OneOfZero\Json\Annotations\Getter;
-use OneOfZero\Json\Annotations\Ignore;
 use OneOfZero\Json\Annotations\Setter;
 
 class ClassWithInvalidGetterAndSetter
@@ -14,7 +19,7 @@ class ClassWithInvalidGetterAndSetter
 	private $foo;
 
 	/**
-	 * @param string $foo
+	 * @param string|null $foo
 	 */
 	public function __construct($foo = null)
 	{
@@ -40,24 +45,4 @@ class ClassWithInvalidGetterAndSetter
 	{
 		$this->foo = $value;
 	}
-
-	/**
-	 * @Ignore
-	 * @return string
-	 */
-	public function _getFoo()
-	{
-		return $this->foo;
-	}
-
-	/**
-	 * @Ignore
-	 * @param string $value
-	 */
-	public function _setFoo($value)
-	{
-		$this->foo = $value;
-	}
-
-
 }

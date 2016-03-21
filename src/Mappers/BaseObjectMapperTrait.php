@@ -18,81 +18,23 @@ trait BaseObjectMapperTrait
 	/**
 	 * Holds cached field mappers for the class properties.
 	 *
-	 * @var ReflectionMemberMapper[]|null $properties
+	 * @var ReflectionMemberMapper[]|null $members
 	 */
-	protected $properties = null;
+	protected $members = null;
 
-	/**
-	 * Holds cached field mappers for the class methods.
-	 *
-	 * @var ReflectionMemberMapper[]|null $methods
-	 */
-	protected $methods = null;
-	
 	/**
 	 * {@inheritdoc}
 	 */
 	public final function getMembers()
 	{
-		return array_merge($this->getProperties(), $this->getMethods());
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public final function getProperties()
-	{
-		if ($this->properties === null)
+		if ($this->members === null)
 		{
-			$this->properties = $this->mapMembers($this->target->getProperties());
+			$this->members = array_merge(
+				$this->mapMembers($this->target->getProperties()),
+				$this->mapMembers($this->target->getMethods(), true)
+			);
 		}
-		return $this->properties;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public final function getProperty($name)
-	{
-		/** @var ObjectMapperInterface $this */
-		
-		$property = $this->getTarget()->getProperty($name);
-
-		if ($property !== null)
-		{
-			return $this->getFactory()->mapMember($property, $this);
-		}
-
-		return null;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public final function getMethods()
-	{
-		if ($this->methods === null)
-		{
-			$this->methods = $this->mapMembers($this->target->getMethods(), true);
-		}
-		return $this->methods;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public final function getMethod($name)
-	{
-		/** @var ObjectMapperInterface $this */
-		
-		$method = $this->getTarget()->getMethod($name);
-
-		if ($method !== null)
-		{
-			return $this->getFactory()->mapMember($method, $this);
-		}
-
-		return null;
+		return $this->members;
 	}
 
 	/**

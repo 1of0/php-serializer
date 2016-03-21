@@ -137,6 +137,11 @@ class YamlMemberMapper extends YamlAbstractMapper implements MemberMapperInterfa
 			return (bool)$this->readAttribute(self::SERIALIZABLE_ATTR);
 		}
 		
+		if ($this->isClassMethod() && $this->isGetter())
+		{
+			return true;
+		}
+		
 		return $this->getBase()->isSerializable();
 	}
 
@@ -148,6 +153,11 @@ class YamlMemberMapper extends YamlAbstractMapper implements MemberMapperInterfa
 		if ($this->hasAttribute(self::DESERIALIZABLE_ATTR))
 		{
 			return (bool)$this->readAttribute(self::DESERIALIZABLE_ATTR);
+		}
+
+		if ($this->isClassMethod() && $this->isGetter())
+		{
+			return false;
 		}
 		
 		return $this->getBase()->isDeserializable();
