@@ -24,17 +24,6 @@ class AbstractObjectNode extends AbstractNode
 	protected $serializedInstance;
 
 	/**
-	 *
-	 */
-	public function __clone()
-	{
-		if ($this->instance !== null)
-		{
-			$this->instance = clone $this->instance;
-		}
-	}
-
-	/**
 	 * @param object $instance
 	 *
 	 * @return self

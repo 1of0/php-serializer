@@ -15,7 +15,7 @@ class ReferableClass implements ReferableInterface
 	/**
 	 * @var int $id
 	 */
-	private $id;
+	public $id;
 
 	/**
 	 * ReferableClass constructor.

@@ -34,6 +34,8 @@ class Environment
 
 	/**
 	 * @return string
+	 * 
+	 * @codeCoverageIgnore Environment-specific
 	 */
 	public static function getVendorPath()
 	{
@@ -58,6 +60,8 @@ class Environment
 
 	/**
 	 * @return string
+	 *
+	 * @codeCoverageIgnore Environment-specific
 	 */
 	public static function getAutoloadFile()
 	{

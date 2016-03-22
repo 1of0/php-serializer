@@ -24,23 +24,7 @@ class AnnotationMemberMapper implements MemberMapperInterface
 {
 	use BaseMemberMapperTrait;
 	use AnnotationMapperTrait;
-	
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getValue($instance)
-	{
-		return $this->getBase()->getValue($instance);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setValue($instance, $value)
-	{
-		$this->getBase()->setValue($instance, $value);
-	}
-	
+		
 	/**
 	 * {@inheritdoc}
 	 */

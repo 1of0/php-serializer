@@ -9,9 +9,11 @@
 namespace OneOfZero\Json\Test;
 
 use OneOfZero\Json\Configuration;
+use OneOfZero\Json\Mappers\MapperPipeline;
+use OneOfZero\Json\Mappers\ReflectionMapperFactory;
 use OneOfZero\Json\Serializer;
 
-class MemberInclusionStrategyTest extends AbstractMemberInclusionStrategyTest
+class ReflectionMemberInclusionStrategyTest extends AbstractMemberInclusionStrategyTest
 {
 	/**
 	 * {@inheritdoc}
@@ -20,7 +22,11 @@ class MemberInclusionStrategyTest extends AbstractMemberInclusionStrategyTest
 	{
 		$configuration = new Configuration();
 		$configuration->defaultMemberInclusionStrategy = $strategy;
+		
+		$pipeline = (new MapperPipeline)
+			->addFactory(new ReflectionMapperFactory())
+			->build($configuration);
 
-		return new Serializer($configuration);
+		return new Serializer($configuration, null, $pipeline);
 	}
 }

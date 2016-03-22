@@ -22,48 +22,6 @@ class ReflectionMemberMapper implements MemberMapperInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getValue($instance)
-	{
-		$this->target->setAccessible(true);
-
-		if ($this->isClassProperty())
-		{
-			return $this->target->getValue($instance);
-		}
-
-		if ($this->hasGetterSignature())
-		{
-			return $this->target->invoke($instance);
-		}
-
-		return $this->getBase()->getValue($instance);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setValue($instance, $value)
-	{
-		$this->target->setAccessible(true);
-
-		if ($this->isClassProperty())
-		{
-			$this->target->setValue($instance, $value);
-			return;
-		}
-
-		if ($this->hasSetterSignature())
-		{
-			$this->target->invoke($instance, $value);
-			return;
-		}
-
-		$this->getBase()->setValue($instance, $value);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
 	public function getName()
 	{
 		// By default assume the target member's name
@@ -137,9 +95,8 @@ class ReflectionMemberMapper implements MemberMapperInterface
 			return false;
 		}
 
-		if ($this->target->getNumberOfRequiredParameters() > 0)
+		if (!$this->hasGetterSignature())
 		{
-			// Valid getters must have no required parameters
 			return false;
 		}
 
@@ -168,9 +125,8 @@ class ReflectionMemberMapper implements MemberMapperInterface
 			return false;
 		}
 
-		if ($this->target->getNumberOfParameters() === 0 || $this->target->getNumberOfRequiredParameters() > 1)
+		if (!$this->hasSetterSignature())
 		{
-			// Valid setters must have at least one parameter, and at most one required parameter
 			return false;
 		}
 		
@@ -223,6 +179,8 @@ class ReflectionMemberMapper implements MemberMapperInterface
 
 	/**
 	 * {@inheritdoc}
+	 * 
+	 * @codeCoverageIgnore
 	 */
 	public function getSerializingConverterType()
 	{
@@ -231,6 +189,8 @@ class ReflectionMemberMapper implements MemberMapperInterface
 
 	/**
 	 * {@inheritdoc}
+	 * 
+	 * @codeCoverageIgnore
 	 */
 	public function getDeserializingConverterType()
 	{

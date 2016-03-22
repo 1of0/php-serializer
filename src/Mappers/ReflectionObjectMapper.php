@@ -49,6 +49,8 @@ class ReflectionObjectMapper implements ObjectMapperInterface
 
 	/**
 	 * {@inheritdoc}
+	 * 
+	 * @codeCoverageIgnore
 	 */
 	public function getSerializingConverterType()
 	{
@@ -57,6 +59,8 @@ class ReflectionObjectMapper implements ObjectMapperInterface
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function getDeserializingConverterType()
 	{

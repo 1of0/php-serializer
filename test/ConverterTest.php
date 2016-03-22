@@ -9,10 +9,16 @@
 namespace OneOfZero\Json\Test;
 
 use DateTime;
+use OneOfZero\Json\Exceptions\ConverterException;
 use OneOfZero\Json\JsonConvert;
 use OneOfZero\Json\Test\FixtureClasses\ClassUsingClassLevelConverter;
 use OneOfZero\Json\Test\FixtureClasses\ClassUsingConverters;
 use OneOfZero\Json\Test\FixtureClasses\ClassUsingDifferentClassLevelConverters;
+use OneOfZero\Json\Test\FixtureClasses\ClassUsingInvalidConverterDefinition;
+use OneOfZero\Json\Test\FixtureClasses\ClassUsingInvalidTypeForMemberConverter;
+use OneOfZero\Json\Test\FixtureClasses\ClassUsingInvalidTypeForObjectConverter;
+use OneOfZero\Json\Test\FixtureClasses\ClassUsingNullMemberConverter;
+use OneOfZero\Json\Test\FixtureClasses\ClassUsingNullObjectConverter;
 use OneOfZero\Json\Test\FixtureClasses\ReferableClass;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
 
@@ -87,5 +93,57 @@ class ConverterTests extends AbstractTest
 
 		$deserialized = JsonConvert::fromJson($json, ClassUsingDifferentClassLevelConverters::class);
 		$this->assertEquals('bar', $deserialized->foo);
+	}
+	
+	public function testNullObjectConverter()
+	{
+		$object = new ClassUsingNullObjectConverter('abcd', '1234');
+		
+		$expectedJson = json_encode([
+			'@class'    => ClassUsingNullObjectConverter::class,
+			'foo'       => 'abcd',
+			'bar'       => '1234',
+		]);
+		
+		$json = JsonConvert::toJson($object);
+		$this->assertEquals($expectedJson, $json);
+
+		$deserialized = JsonConvert::fromJson($json);
+		$this->assertObjectEquals($object, $deserialized);
+	}
+	
+	public function testNullMemberConverter()
+	{
+		$object = new ClassUsingNullMemberConverter('abcd', '1234');
+		
+		$expectedJson = json_encode([
+			'@class'    => ClassUsingNullMemberConverter::class,
+			'foo'       => 'abcd',
+			'bar'       => '1234',
+		]);
+		
+		$json = JsonConvert::toJson($object);
+		$this->assertEquals($expectedJson, $json);
+
+		$deserialized = JsonConvert::fromJson($json);
+		$this->assertObjectEquals($object, $deserialized);
+	}
+	
+	public function testInvalidConverterDefinition()
+	{
+		$this->setExpectedException(ConverterException::class);
+		JsonConvert::toJson(new ClassUsingInvalidConverterDefinition());
+	}
+	
+	public function testInvalidTypeForObjectConverter()
+	{
+		$this->setExpectedException(ConverterException::class);
+		JsonConvert::toJson(new ClassUsingInvalidTypeForObjectConverter());
+	}
+	
+	public function testInvalidTypeForMemberConverter()
+	{
+		$this->setExpectedException(ConverterException::class);
+		JsonConvert::toJson(new ClassUsingInvalidTypeForMemberConverter());
 	}
 }

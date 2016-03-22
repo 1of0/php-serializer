@@ -63,6 +63,8 @@ class ProxyHelper
 	/**
 	 * @param $instance
 	 * @return object
+	 * 
+	 * @codeCoverageIgnore Feel free to submit a PR to cover this
 	 */
 	public function unproxy($instance)
 	{

@@ -17,22 +17,6 @@ class YamlMemberMapper extends YamlAbstractMapper implements MemberMapperInterfa
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getValue($instance)
-	{
-		return $this->getBase()->getValue($instance);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setValue($instance, $value)
-	{
-		$this->getBase()->setValue($instance, $value);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
 	public function getName()
 	{
 		if ($this->hasAttribute(self::NAME_ATTR))

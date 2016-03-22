@@ -8,6 +8,9 @@
 
 namespace OneOfZero\Json\Mappers;
 
+/**
+ * @codeCoverageIgnore Not much to test here...
+ */
 class NullObjectMapper implements ObjectMapperInterface
 {
 	use BaseObjectMapperTrait;

@@ -9,8 +9,10 @@
 namespace OneOfZero\Json\Visitors;
 
 use OneOfZero\Json\Enums\OnRecursion;
+use OneOfZero\Json\Exceptions\ConverterException;
 use OneOfZero\Json\Exceptions\NotSupportedException;
 use OneOfZero\Json\Exceptions\RecursionException;
+use OneOfZero\Json\Exceptions\SkipMemberException;
 use OneOfZero\Json\Nodes\AbstractNode;
 use OneOfZero\Json\Nodes\ArrayNode;
 use OneOfZero\Json\Nodes\MemberNode;
@@ -123,6 +125,11 @@ class SerializingVisitor extends AbstractVisitor
 			{
 			}
 		}
+		
+		if ($node->getDepth() >= $this->configuration->maxDepth)
+		{
+			return $this->handleMaxDepth($node);
+		}
 
 		if (!$mapper->wantsNoMetadata())
 		{
@@ -151,9 +158,17 @@ class SerializingVisitor extends AbstractVisitor
 				->withParent($node)
 			;
 
-			if ($result = $this->visitObjectMember($memberNode))
+			try
 			{
-				$node = $node->withSerializedInstanceMember($memberMapper->getName(), $result->getSerializedValue());
+				$serializedValue = $this->visitObjectMember($memberNode)->getSerializedValue();
+
+				if ($serializedValue !== null || $this->configuration->includeNullValues)
+				{
+					$node = $node->withSerializedInstanceMember($memberMapper->getName(), $serializedValue);
+				}
+			}
+			catch (SkipMemberException $e)
+			{
 			}
 		}
 		
@@ -162,19 +177,19 @@ class SerializingVisitor extends AbstractVisitor
 
 	/**
 	 * @param MemberNode $node
-	 *
-	 * @return MemberNode|null
-	 *
-	 * @throws SerializationException
+	 * 
+	 * @return MemberNode
+	 * 
+	 * @throws SkipMemberException
+	 * @throws ConverterException
 	 */
 	protected function visitObjectMember(MemberNode $node)
 	{
 		$mapper = $node->getMapper();
-		$value = $node->getValue();
 
 		if (!$mapper->isIncluded() || !$mapper->isSerializable())
 		{
-			return null;
+			throw new SkipMemberException();
 		}
 
 		if ($mapper->hasSerializingConverter())
@@ -190,17 +205,19 @@ class SerializingVisitor extends AbstractVisitor
 			}
 		}
 
-		if ($value === null)
+		if ($node->getValue() !== null)
 		{
-			return $this->configuration->includeNullValues ? $node : null;
+			if ($mapper->isReference())
+			{
+				$node = $node->withSerializedValue($this->createReference($node));
+			}
+			else
+			{
+				$node = $node->withSerializedValue($this->visit($node->getValue(), $node));
+			}
 		}
-
-		if ($mapper->isReference())
-		{
-			return $node->withSerializedValue($this->createReference($node));
-		}
-
-		return $node->withSerializedValue($this->visit($value, $node));
+		
+		return $node;
 	}
 
 	/**
@@ -227,13 +244,36 @@ class SerializingVisitor extends AbstractVisitor
 				return $this->createObjectReference($node);
 
 			case OnRecursion::THROW_EXCEPTION:
-				throw new RecursionException();
+				throw new RecursionException("Infinite recursion detected for class {$node->getReflector()->name}");
 				
 			default:
 				throw new NotSupportedException('The configured default recursion handling strategy is unknown or unsupported');
 		}
 	}
 
+	/**
+	 * @param ObjectNode $node
+	 * 
+	 * @return ObjectNode
+	 * 
+	 * @throws NotSupportedException
+	 * @throws RecursionException
+	 */
+	protected function handleMaxDepth(ObjectNode $node)
+	{
+		switch ($this->configuration->defaultMaxDepthHandlingStrategy)
+		{
+			case OnRecursion::SET_NULL:
+				return $node->withSerializedInstance(null);
+
+			case OnRecursion::THROW_EXCEPTION:
+				throw new RecursionException('Hit maximum configured recursion depth');
+
+			default:
+				throw new NotSupportedException('The configured default handling strategy for maximum depth is unknown or unsupported');
+		}
+	}
+	
 	/**
 	 * @param MemberNode $node
 	 *

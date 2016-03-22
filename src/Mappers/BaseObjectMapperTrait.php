@@ -31,7 +31,7 @@ trait BaseObjectMapperTrait
 		{
 			$this->members = array_merge(
 				$this->mapMembers($this->target->getProperties()),
-				$this->mapMembers($this->target->getMethods(), true)
+				$this->mapMembers($this->target->getMethods())
 			);
 		}
 		return $this->members;
@@ -43,11 +43,10 @@ trait BaseObjectMapperTrait
 	 * The filterMagic parameter can be used to filter out magic methods and properties.
 	 *
 	 * @param ReflectionProperty[]|ReflectionMethod[] $fields
-	 * @param bool $filterMagic
 	 *
 	 * @return MemberMapperInterface[]
 	 */
-	protected function mapMembers($fields, $filterMagic = false)
+	protected function mapMembers($fields)
 	{
 		/** @var ObjectMapperInterface $this */
 		
@@ -56,7 +55,7 @@ trait BaseObjectMapperTrait
 		foreach ($fields as $field)
 		{
 			// Skip magic properties/methods
-			if ($filterMagic && strpos($field->name, '__') === 0)
+			if (strpos($field->name, '__') === 0)
 			{
 				continue;
 			}

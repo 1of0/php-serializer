@@ -22,22 +22,19 @@ class DifferentVisibilityClass
 	private $privateProperty;
 
 	/**
-	 * @Ignore
-	 * @var string $_publicValue
+	 * @var string $__publicValue
 	 */
-	private $_publicValue;
+	private $__publicValue;
 
 	/**
-	 * @Ignore
-	 * @var string $_protectedValue
+	 * @var string $__protectedValue
 	 */
-	private $_protectedValue;
+	private $__protectedValue;
 
 	/**
-	 * @Ignore
-	 * @var string $_privateValue
+	 * @var string $__privateValue
 	 */
-	private $_privateValue;
+	private $__privateValue;
 
 	/**
 	 * @param string $publicProperty
@@ -58,9 +55,9 @@ class DifferentVisibilityClass
 		$this->publicProperty = $publicProperty;
 		$this->protectedProperty = $protectedProperty;
 		$this->privateProperty = $privateProperty;
-		$this->_publicValue = $_publicValue;
-		$this->_protectedValue = $_protectedValue;
-		$this->_privateValue = $_privateValue;
+		$this->__publicValue = $_publicValue;
+		$this->__protectedValue = $_protectedValue;
+		$this->__privateValue = $_privateValue;
 	}
 
 	/**
@@ -68,7 +65,7 @@ class DifferentVisibilityClass
 	 */
 	public function getPublicMethod()
 	{
-		return $this->_publicValue;
+		return $this->__publicValue;
 	}
 
 	/**
@@ -76,7 +73,7 @@ class DifferentVisibilityClass
 	 */
 	protected function getProtectedMethod()
 	{
-		return $this->_protectedValue;
+		return $this->__protectedValue;
 	}
 
 	/**
@@ -84,7 +81,7 @@ class DifferentVisibilityClass
 	 */
 	private function getPrivateMethod()
 	{
-		return $this->_privateValue;
+		return $this->__privateValue;
 	}
 
 	/**
@@ -92,7 +89,7 @@ class DifferentVisibilityClass
 	 */
 	public function setPublicMethod($value)
 	{
-		$this->_publicValue = $value;
+		$this->__publicValue = $value;
 	}
 
 	/**
@@ -100,7 +97,7 @@ class DifferentVisibilityClass
 	 */
 	protected function setProtectedMethod($value)
 	{
-		$this->_protectedValue = $value;
+		$this->__protectedValue = $value;
 	}
 
 	/**
@@ -108,32 +105,29 @@ class DifferentVisibilityClass
 	 */
 	private function setPrivateMethod($value)
 	{
-		$this->_privateValue = $value;
+		$this->__privateValue = $value;
 	}
 
 	/**
-	 * @Ignore
 	 * @return string
 	 */
-	public function getPublicProperty()
+	public function __getPublicProperty()
 	{
 		return $this->publicProperty;
 	}
 
 	/**
-	 * @Ignore
 	 * @return string
 	 */
-	public function getProtectedProperty()
+	public function __getProtectedProperty()
 	{
 		return $this->protectedProperty;
 	}
 
 	/**
-	 * @Ignore
 	 * @return string
 	 */
-	public function getPrivateProperty()
+	public function __getPrivateProperty()
 	{
 		return $this->privateProperty;
 	}
@@ -142,7 +136,7 @@ class DifferentVisibilityClass
 	 * @Ignore
 	 * @return string
 	 */
-	public function _getPublicMethod()
+	public function __getPublicMethod()
 	{
 		return $this->getPublicMethod();
 	}
@@ -151,7 +145,7 @@ class DifferentVisibilityClass
 	 * @Ignore
 	 * @return string
 	 */
-	public function _getProtectedMethod()
+	public function __getProtectedMethod()
 	{
 		return $this->getProtectedMethod();
 	}
@@ -160,7 +154,7 @@ class DifferentVisibilityClass
 	 * @Ignore
 	 * @return string
 	 */
-	public function _getPrivateMethod()
+	public function __getPrivateMethod()
 	{
 		return $this->getPrivateMethod();
 	}
@@ -169,7 +163,7 @@ class DifferentVisibilityClass
 	 * @Ignore
 	 * @param string $value
 	 */
-	public function _setPublicMethod($value)
+	public function __setPublicMethod($value)
 	{
 		$this->setPublicMethod($value);
 	}
@@ -178,7 +172,7 @@ class DifferentVisibilityClass
 	 * @Ignore
 	 * @param string $value
 	 */
-	public function _setProtectedMethod($value)
+	public function __setProtectedMethod($value)
 	{
 		$this->setProtectedMethod($value);
 	}
@@ -187,7 +181,7 @@ class DifferentVisibilityClass
 	 * @Ignore
 	 * @param string $value
 	 */
-	public function _setPrivateMethod($value)
+	public function __setPrivateMethod($value)
 	{
 		$this->setPrivateMethod($value);
 	}

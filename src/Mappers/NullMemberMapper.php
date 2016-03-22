@@ -8,24 +8,12 @@
 
 namespace OneOfZero\Json\Mappers;
 
+/**
+ * @codeCoverageIgnore Not much to test here...
+ */
 class NullMemberMapper implements MemberMapperInterface
 {
 	use BaseMemberMapperTrait;
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getValue($instance)
-	{
-		return null;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setValue($instance, $value)
-	{
-	}
 
 	/**
 	 * {@inheritdoc}

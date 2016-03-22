@@ -161,6 +161,8 @@ class Serializer
 
 	/**
 	 * @return Configuration
+	 * 
+	 * @codeCoverageIgnore
 	 */
 	public function getConfiguration()
 	{
@@ -169,6 +171,8 @@ class Serializer
 
 	/**
 	 * @param Configuration $configuration
+	 * 
+	 * @codeCoverageIgnore
 	 */
 	public function setConfiguration(Configuration $configuration)
 	{
@@ -177,6 +181,8 @@ class Serializer
 
 	/**
 	 * @return ContainerInterface
+	 * 
+	 * @codeCoverageIgnore
 	 */
 	public function getContainer()
 	{
@@ -185,6 +191,8 @@ class Serializer
 
 	/**
 	 * @param ContainerInterface $container
+	 * 
+	 * @codeCoverageIgnore
 	 */
 	public function setContainer(ContainerInterface $container)
 	{
@@ -193,6 +201,8 @@ class Serializer
 
 	/**
 	 * @return MapperFactoryInterface
+	 * 
+	 * @codeCoverageIgnore
 	 */
 	public function getMapperFactory()
 	{
@@ -201,6 +211,8 @@ class Serializer
 
 	/**
 	 * @param MapperFactoryInterface $mapperFactory
+	 * 
+	 * @codeCoverageIgnore
 	 */
 	public function setMapperFactory(MapperFactoryInterface $mapperFactory)
 	{
@@ -209,6 +221,8 @@ class Serializer
 
 	/**
 	 * @return ReferenceResolverInterface
+	 * 
+	 * @codeCoverageIgnore
 	 */
 	public function getReferenceResolver()
 	{
@@ -217,6 +231,8 @@ class Serializer
 
 	/**
 	 * @param ReferenceResolverInterface $referenceResolver
+	 * 
+	 * @codeCoverageIgnore
 	 */
 	public function setReferenceResolver(ReferenceResolverInterface $referenceResolver)
 	{

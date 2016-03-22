@@ -93,16 +93,15 @@ class ObjectNode extends AbstractObjectNode
 			return false;
 		}
 
-		$selfHash = spl_object_hash($this->instance);
 		$parent = $this->parent;
 
 		while ($parent !== null)
 		{
 			if ($parent instanceof ObjectNode)
 			{
-				$instance = $parent->getInstance();
+				$parentInstance = $parent->getInstance();
 
-				if ($instance !== null && is_object($instance) && spl_object_hash($instance) === $selfHash)
+				if ($parentInstance !== null && is_object($parentInstance) && $parentInstance === $this->instance)
 				{
 					return true;
 				}
@@ -111,6 +110,31 @@ class ObjectNode extends AbstractObjectNode
 		}
 
 		return false;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getDepth()
+	{
+		if ($this->instance === null)
+		{
+			return 0;
+		}
+
+		$count = 0;
+		$parent = $this->parent;
+		
+		while ($parent !== null)
+		{
+			if ($parent instanceof ObjectNode)
+			{
+				$count++;
+			}
+			$parent = $parent->parent;
+		}
+
+		return $count;
 	}
 
 	#region // Generic immutability helpers

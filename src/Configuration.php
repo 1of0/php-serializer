@@ -9,6 +9,7 @@
 namespace OneOfZero\Json;
 
 use OneOfZero\Json\Enums\IncludeStrategy;
+use OneOfZero\Json\Enums\OnMaxDepth;
 use OneOfZero\Json\Enums\OnRecursion;
 use OneOfZero\Json\Enums\ReferenceResolutionStrategy;
 
@@ -72,4 +73,11 @@ class Configuration
 	 * @var int $defaultRecursionHandlingStrategy
 	 */
 	public $defaultRecursionHandlingStrategy = OnRecursion::THROW_EXCEPTION;
+	
+	/**
+	 * Specifies the default handling strategy that will be used when the maximum depth is reached.
+	 * 
+	 * @var int $defaultMaxDepthHandlingStrategy
+	 */
+	public $defaultMaxDepthHandlingStrategy = OnMaxDepth::THROW_EXCEPTION;
 }

@@ -8,6 +8,9 @@
 
 namespace OneOfZero\Json\Mappers;
 
+/**
+ * @codeCoverageIgnore
+ */
 class DummyMemberMapper implements MemberMapperInterface
 {
 	use BaseMemberMapperTrait;
@@ -42,22 +45,6 @@ class DummyMemberMapper implements MemberMapperInterface
 	public function getDeserializingConverterType()
 	{
 		return $this->base->getDeserializingConverterType();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getValue($instance)
-	{
-		return $this->base->getValue($instance);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setValue($instance, $value)
-	{
-		$this->base->setValue($instance, $value);
 	}
 
 	/**

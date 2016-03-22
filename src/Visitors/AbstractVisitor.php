@@ -12,10 +12,13 @@ use Interop\Container\ContainerInterface;
 use OneOfZero\Json\Configuration;
 use OneOfZero\Json\Converters\AbstractMemberConverter;
 use OneOfZero\Json\Converters\AbstractObjectConverter;
+use OneOfZero\Json\Converters\MemberConverterInterface;
+use OneOfZero\Json\Converters\ObjectConverterInterface;
 use OneOfZero\Json\Exceptions\ConverterException;
 use OneOfZero\Json\Helpers\ProxyHelper;
 use OneOfZero\Json\Mappers\MapperFactoryInterface;
 use OneOfZero\Json\ReferenceResolverInterface;
+use ReflectionClass;
 
 abstract class AbstractVisitor
 {
@@ -66,7 +69,7 @@ abstract class AbstractVisitor
 	/**
 	 * @param string $converterClass
 	 *
-	 * @return \OneOfZero\Json\Converters\AbstractObjectConverter|null
+	 * @return ObjectConverterInterface|null
 	 *
 	 * @throws ConverterException
 	 */
@@ -74,18 +77,18 @@ abstract class AbstractVisitor
 	{
 		$instance = $this->resolveConverter($converterClass);
 
-		if ($instance instanceof AbstractObjectConverter)
+		if ($instance instanceof ObjectConverterInterface)
 		{
 			return $instance;
 		}
 
-		throw new ConverterException('Converters for class members must extend the AbstractObjectConverter class');
+		throw new ConverterException('Converters for objects must implement ObjectConverterInterface');
 	}
 
 	/**
 	 * @param string $converterClass
 	 *
-	 * @return \OneOfZero\Json\Converters\AbstractMemberConverter|null
+	 * @return MemberConverterInterface|null
 	 *
 	 * @throws ConverterException
 	 */
@@ -93,12 +96,12 @@ abstract class AbstractVisitor
 	{
 		$instance = $this->resolveConverter($converterClass);
 
-		if ($instance instanceof AbstractMemberConverter)
+		if ($instance instanceof MemberConverterInterface)
 		{
 			return $instance;
 		}
 
-		throw new ConverterException('Converters for class members must extend the AbstractMemberConverter class');
+		throw new ConverterException('Converters for class members must implement MemberConverterInterface');
 	}
 
 	/**
@@ -124,8 +127,10 @@ abstract class AbstractVisitor
 		{
 			return $this->containerGet($converterClass);
 		}
-
-		return new $converterClass();
+		
+		$reflector = new ReflectionClass($converterClass);
+		
+		return $reflector->newInstanceWithoutConstructor();
 	}
 
 	/**
