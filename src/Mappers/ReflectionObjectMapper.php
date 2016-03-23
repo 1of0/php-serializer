@@ -18,17 +18,17 @@ class ReflectionObjectMapper implements ObjectMapperInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function wantsExplicitInclusion()
+	public function isExplicitInclusionEnabled()
 	{
-		return $this->getBase()->wantsExplicitInclusion();
+		return $this->getBase()->isExplicitInclusionEnabled();
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function wantsNoMetadata()
+	public function isMetadataDisabled()
 	{
-		return $this->getBase()->wantsNoMetadata();
+		return $this->getBase()->isMetadataDisabled();
 	}
 
 	/**

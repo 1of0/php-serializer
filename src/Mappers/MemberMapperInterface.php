@@ -52,6 +52,14 @@ interface MemberMapperInterface extends MapperInterface
 	public function getType();
 
 	/**
+	 * Should return a boolean value indicating whether or not the field is included in serialization and
+	 * deserialization.
+	 *
+	 * @return bool
+	 */
+	public function isIncluded();
+
+	/**
 	 * Should return a boolean value indicating whether or not the field is an array.
 	 *
 	 * @return bool
@@ -99,12 +107,4 @@ interface MemberMapperInterface extends MapperInterface
 	 * @return bool
 	 */
 	public function isDeserializable();
-
-	/**
-	 * Should return a boolean value indicating whether or not the field is included in serialization and
-	 * deserialization.
-	 *
-	 * @return bool
-	 */
-	public function isIncluded();
 }

@@ -14,21 +14,21 @@ namespace OneOfZero\Json\Mappers;
 class DummyObjectMapper implements ObjectMapperInterface
 {
 	use BaseObjectMapperTrait;
-
+	
 	/**
 	 * {@inheritdoc}
 	 */
-	public function hasSerializingConverter()
+	public function isExplicitInclusionEnabled()
 	{
-		return $this->base->hasSerializingConverter();
+		return $this->getBase()->isExplicitInclusionEnabled();
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function hasDeserializingConverter()
+	public function isMetadataDisabled()
 	{
-		return $this->base->hasDeserializingConverter();
+		return $this->getBase()->isMetadataDisabled();
 	}
 
 	/**
@@ -36,7 +36,7 @@ class DummyObjectMapper implements ObjectMapperInterface
 	 */
 	public function getSerializingConverterType()
 	{
-		return $this->base->getSerializingConverterType();
+		return $this->getBase()->getSerializingConverterType();
 	}
 
 	/**
@@ -44,22 +44,22 @@ class DummyObjectMapper implements ObjectMapperInterface
 	 */
 	public function getDeserializingConverterType()
 	{
-		return $this->base->getDeserializingConverterType();
+		return $this->getBase()->getDeserializingConverterType();
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function wantsExplicitInclusion()
+	public function hasSerializingConverter()
 	{
-		return $this->base->wantsExplicitInclusion();
+		return $this->getBase()->hasSerializingConverter();
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function wantsNoMetadata()
+	public function hasDeserializingConverter()
 	{
-		return $this->base->wantsNoMetadata();
+		return $this->getBase()->hasDeserializingConverter();
 	}
 }

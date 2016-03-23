@@ -8,18 +8,36 @@
 
 namespace OneOfZero\Json\Nodes;
 
+use OneOfZero\Json\Mappers\AnonymousObjectMapper;
+use stdClass;
+
 class AnonymousObjectNode extends AbstractObjectNode
 {
 	/**
-	 * @param string $name
-	 * @param mixed $value
-	 *
-	 * @return self
+	 * @param stdClass $instance
+	 * 
+	 * @return static
 	 */
-	public function withInstanceMember($name, $value)
+	public static function fromInstance($instance)
 	{
-		$new = clone $this;
-		$new->instance->{$name} = $value;
-		return $new;
+		return (new AnonymousObjectNode)
+			->withInstance($instance)
+			->withSerializedInstance(new stdClass())
+			->withMapper(new AnonymousObjectMapper($instance))
+		;
+	}
+
+	/**
+	 * @param stdClass $instance
+	 * 
+	 * @return static
+	 */
+	public static function fromSerializedInstance($instance)
+	{
+		return (new AnonymousObjectNode)
+			->withInstance(new stdClass())
+			->withSerializedInstance($instance)
+			->withMapper(new AnonymousObjectMapper($instance))
+		;
 	}
 }

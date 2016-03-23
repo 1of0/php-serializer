@@ -10,13 +10,17 @@ namespace OneOfZero\Json\Visitors;
 
 use Interop\Container\ContainerInterface;
 use OneOfZero\Json\Configuration;
-use OneOfZero\Json\Converters\AbstractMemberConverter;
-use OneOfZero\Json\Converters\AbstractObjectConverter;
+use OneOfZero\Json\ContractResolvers\ContractResolverInterface;
 use OneOfZero\Json\Converters\MemberConverterInterface;
 use OneOfZero\Json\Converters\ObjectConverterInterface;
 use OneOfZero\Json\Exceptions\ConverterException;
+use OneOfZero\Json\Exceptions\NotSupportedException;
 use OneOfZero\Json\Helpers\ProxyHelper;
 use OneOfZero\Json\Mappers\MapperFactoryInterface;
+use OneOfZero\Json\Mappers\MemberMapperInterface;
+use OneOfZero\Json\Mappers\ObjectMapperInterface;
+use OneOfZero\Json\Nodes\AbstractObjectNode;
+use OneOfZero\Json\Nodes\MemberNode;
 use OneOfZero\Json\ReferenceResolverInterface;
 use ReflectionClass;
 
@@ -48,6 +52,11 @@ abstract class AbstractVisitor
 	protected $proxyHelper;
 
 	/**
+	 * @var bool $hasContractResolver
+	 */
+	protected $hasContractResolver;
+
+	/**
 	 * @param Configuration $configuration
 	 * @param MapperFactoryInterface $mapperFactory
 	 * @param ContainerInterface|null $container
@@ -63,9 +72,59 @@ abstract class AbstractVisitor
 		$this->mapperFactory = $mapperFactory;
 		$this->container = $container;
 		$this->referenceResolver = $referenceResolver;
+		
 		$this->proxyHelper = new ProxyHelper($referenceResolver);
+		$this->hasContractResolver = $this->detectContractResolver();
 	}
 
+	/**
+	 * @return bool
+	 * 
+	 * @throws NotSupportedException
+	 */
+	private function detectContractResolver()
+	{
+		if ($this->configuration->contractResolver === null)
+		{
+			return false;
+		}
+		
+		if ($this->configuration->contractResolver instanceof ContractResolverInterface)
+		{
+			return true;
+		}
+		
+		throw new NotSupportedException('A contract resolver must implement ContractResolverInterface');
+	}
+
+	/**
+	 * @param AbstractObjectNode $node
+	 * 
+	 * @return ObjectMapperInterface
+	 */
+	protected function createContractObjectMapper(AbstractObjectNode $node)
+	{
+		$mapper = $this->configuration->contractResolver->createObjectContract($node);
+		$mapper->setBase($node->getMapper());
+		$mapper->setTarget($node->getMapper()->getTarget());
+		return $mapper;
+	}
+
+	/**
+	 * @param MemberNode $node
+	 * 
+	 * @return MemberMapperInterface
+	 */
+	protected function createContractMemberMapper(MemberNode $node)
+	{
+		$mapper = $this->configuration->contractResolver->createMemberContract($node);
+		$mapper->setBase($node->getMapper());
+		$mapper->setTarget($node->getMapper()->getTarget());
+		$mapper->setMemberParent($this->createContractObjectMapper($node->getParent()));
+		
+		return $mapper;
+	}
+	
 	/**
 	 * @param string $converterClass
 	 *

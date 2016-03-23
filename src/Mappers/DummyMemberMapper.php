@@ -18,41 +18,9 @@ class DummyMemberMapper implements MemberMapperInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function hasSerializingConverter()
-	{
-		return $this->base->hasSerializingConverter();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function hasDeserializingConverter()
-	{
-		return $this->base->hasDeserializingConverter();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getSerializingConverterType()
-	{
-		return $this->base->getSerializingConverterType();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getDeserializingConverterType()
-	{
-		return $this->base->getDeserializingConverterType();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
 	public function getName()
 	{
-		return $this->base->getName();
+		return $this->getBase()->getName();
 	}
 
 	/**
@@ -60,63 +28,7 @@ class DummyMemberMapper implements MemberMapperInterface
 	 */
 	public function getType()
 	{
-		return $this->base->getType();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function isArray()
-	{
-		return $this->base->isArray();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function isGetter()
-	{
-		return $this->base->isGetter();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function isSetter()
-	{
-		return $this->base->isSetter();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function isReference()
-	{
-		return $this->base->isReference();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function isReferenceLazy()
-	{
-		return $this->base->isReferenceLazy();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function isSerializable()
-	{
-		return $this->base->isSerializable();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function isDeserializable()
-	{
-		return $this->base->isDeserializable();
+		return $this->getBase()->getType();
 	}
 
 	/**
@@ -124,6 +36,94 @@ class DummyMemberMapper implements MemberMapperInterface
 	 */
 	public function isIncluded()
 	{
-		return $this->base->isIncluded();
+		return $this->getBase()->isIncluded();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function isGetter()
+	{
+		return $this->getBase()->isGetter();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function isSetter()
+	{
+		return $this->getBase()->isSetter();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function isArray()
+	{
+		return $this->getBase()->isArray();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function isReference()
+	{
+		return $this->getBase()->isReference();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function isReferenceLazy()
+	{
+		return $this->getBase()->isReferenceLazy();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function isSerializable()
+	{
+		return $this->getBase()->isSerializable();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function isDeserializable()
+	{
+		return $this->getBase()->isDeserializable();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getSerializingConverterType()
+	{
+		return $this->getBase()->getSerializingConverterType();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getDeserializingConverterType()
+	{
+		return $this->getBase()->getDeserializingConverterType();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function hasSerializingConverter()
+	{
+		return $this->getBase()->hasSerializingConverter();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function hasDeserializingConverter()
+	{
+		return $this->getBase()->hasDeserializingConverter();
 	}
 }

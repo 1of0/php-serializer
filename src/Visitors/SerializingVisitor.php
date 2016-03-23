@@ -14,6 +14,8 @@ use OneOfZero\Json\Exceptions\NotSupportedException;
 use OneOfZero\Json\Exceptions\RecursionException;
 use OneOfZero\Json\Exceptions\SkipMemberException;
 use OneOfZero\Json\Nodes\AbstractNode;
+use OneOfZero\Json\Nodes\AbstractObjectNode;
+use OneOfZero\Json\Nodes\AnonymousObjectNode;
 use OneOfZero\Json\Nodes\ArrayNode;
 use OneOfZero\Json\Nodes\MemberNode;
 use OneOfZero\Json\Nodes\ObjectNode;
@@ -37,12 +39,6 @@ class SerializingVisitor extends AbstractVisitor
 	 */
 	public function visit($value, AbstractNode $parent = null)
 	{
-		if (is_object($value) && $value instanceof stdClass)
-		{
-			// stdClass objects are weirdos
-			$value = (array)$value;
-		}
-
 		if (is_array($value))
 		{
 			$valueNode = (new ArrayNode)
@@ -51,6 +47,16 @@ class SerializingVisitor extends AbstractVisitor
 			;
 
 			return $this->visitArray($valueNode)->getSerializedArray();
+		}
+		
+		if (is_object($value) && $value instanceof stdClass)
+		{
+			$objectNode = AnonymousObjectNode
+				::fromInstance($value)
+				->withParent($parent)
+			;
+
+			return $this->visitObject($objectNode)->getSerializedInstance();
 		}
 
 		if (is_object($value))
@@ -100,38 +106,25 @@ class SerializingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * @param ObjectNode $node
+	 * @param AbstractObjectNode $node
 	 *
-	 * @return ObjectNode|null
+	 * @return AbstractObjectNode|null
 	 *
 	 * @throws SerializationException
 	 */
-	protected function visitObject(ObjectNode $node)
+	protected function visitObject(AbstractObjectNode $node)
 	{
-		$mapper = $node->getMapper();
-
-		if ($node->getInstance() === null)
+		/** @var ObjectNode $node */
+		
+		if ($this->hasContractResolver)
 		{
-			return $node->withSerializedInstance(null);
-		}
-
-		if ($node->isRecursiveInstance())
-		{
-			try
-			{
-				return $this->handleRecursion($node);
-			}
-			catch (ResumeSerializationException $e)
-			{
-			}
+			$node = $node->withMapper($this->createContractObjectMapper($node));
 		}
 		
-		if ($node->getDepth() >= $this->configuration->maxDepth)
-		{
-			return $this->handleMaxDepth($node);
-		}
+		$mapper = $node->getMapper();
 
-		if (!$mapper->wantsNoMetadata())
+
+		if ($node instanceof ObjectNode && !$mapper->isMetadataDisabled())
 		{
 			$node = $node->withMetadata(Metadata::TYPE, $node->getReflector()->name);
 		}
@@ -149,7 +142,28 @@ class SerializingVisitor extends AbstractVisitor
 			}
 		}
 
-		foreach ($mapper->getMembers() as $memberMapper)
+		if ($node->getInstance() === null)
+		{
+			return $node->withSerializedInstance(null);
+		}
+
+		if ($node->isRecursiveInstance())
+		{
+			try
+			{
+				return $this->handleRecursion($node);
+			}
+			catch (ResumeSerializationException $e)
+			{
+			}
+		}
+
+		if ($node->getDepth() >= $this->configuration->maxDepth)
+		{
+			return $this->handleMaxDepth($node);
+		}
+
+		foreach ($node->getMapper()->getMembers() as $memberMapper)
 		{
 			$memberNode = (new MemberNode)
 				->withValue($memberMapper->getValue($node->getInstance()))
@@ -160,11 +174,14 @@ class SerializingVisitor extends AbstractVisitor
 
 			try
 			{
-				$serializedValue = $this->visitObjectMember($memberNode)->getSerializedValue();
+				$memberNode = $this->visitObjectMember($memberNode);
+				
+				$memberName = $memberNode->getMapper()->getName();
+				$memberValue = $memberNode->getSerializedValue();
 
-				if ($serializedValue !== null || $this->configuration->includeNullValues)
+				if ($memberValue !== null || $this->configuration->includeNullValues)
 				{
-					$node = $node->withSerializedInstanceMember($memberMapper->getName(), $serializedValue);
+					$node = $node->withSerializedInstanceMember($memberName, $memberValue);
 				}
 			}
 			catch (SkipMemberException $e)
@@ -185,6 +202,13 @@ class SerializingVisitor extends AbstractVisitor
 	 */
 	protected function visitObjectMember(MemberNode $node)
 	{
+		/** @var MemberNode $node */
+		
+		if ($this->hasContractResolver)
+		{
+			$node = $node->withMapper($this->createContractMemberMapper($node));
+		}
+		
 		$mapper = $node->getMapper();
 
 		if (!$mapper->isIncluded() || !$mapper->isSerializable())
@@ -221,16 +245,16 @@ class SerializingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * @param ObjectNode $node
+	 * @param AbstractObjectNode $node
 	 *
-	 * @return ObjectNode
+	 * @return AbstractObjectNode
 	 *
 	 * @throws NotSupportedException
 	 * @throws RecursionException
 	 * @throws ReferenceException
 	 * @throws ResumeSerializationException
 	 */
-	protected function handleRecursion(ObjectNode $node)
+	protected function handleRecursion(AbstractObjectNode $node)
 	{
 		switch ($this->configuration->defaultRecursionHandlingStrategy)
 		{
@@ -244,7 +268,8 @@ class SerializingVisitor extends AbstractVisitor
 				return $this->createObjectReference($node);
 
 			case OnRecursion::THROW_EXCEPTION:
-				throw new RecursionException("Infinite recursion detected for class {$node->getReflector()->name}");
+				$type = ($node instanceof ObjectNode) ? $node->getReflector()->name : 'stdClass';
+				throw new RecursionException("Infinite recursion detected for class {$type}");
 				
 			default:
 				throw new NotSupportedException('The configured default recursion handling strategy is unknown or unsupported');
@@ -342,13 +367,13 @@ class SerializingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * @param ObjectNode $node
+	 * @param AbstractObjectNode $node
 	 *
-	 * @return ObjectNode
+	 * @return AbstractObjectNode
 	 *
 	 * @throws ReferenceException
 	 */
-	protected function createObjectReference(ObjectNode $node)
+	protected function createObjectReference(AbstractObjectNode $node)
 	{
 		if ($node->getInstance() === null)
 		{
@@ -359,7 +384,7 @@ class SerializingVisitor extends AbstractVisitor
 
 		if (!($node->getInstance() instanceof ReferableInterface))
 		{
-			throw new ReferenceException("An instance of {$node->getReflector()->name} exists as a recursively used instance. The configuration specifies to create references of recursive objects, but {$node->getReflector()->name} does not implement ReferableInterface");
+			throw new ReferenceException("An instance of {$type} exists as a recursively used instance. The configuration specifies to create references of recursive objects, but {$type} does not implement ReferableInterface");
 		}
 
 		$reference = [];

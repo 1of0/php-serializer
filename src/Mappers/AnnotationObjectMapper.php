@@ -20,23 +20,23 @@ class AnnotationObjectMapper implements ObjectMapperInterface
 	use BaseObjectMapperTrait;
 	use AnnotationMapperTrait;
 
-	public function wantsExplicitInclusion()
+	public function isExplicitInclusionEnabled()
 	{
 		if ($this->annotations->has($this->target, ExplicitInclusion::class))
 		{
 			return true;
 		}
 		
-		return $this->getBase()->wantsExplicitInclusion();
+		return $this->getBase()->isExplicitInclusionEnabled();
 	}
 
-	public function wantsNoMetadata()
+	public function isMetadataDisabled()
 	{
 		if ($this->annotations->has($this->target, NoMetadata::class))
 		{
 			return true;
 		}
 		
-		return $this->getBase()->wantsNoMetadata();
+		return $this->getBase()->isMetadataDisabled();
 	}
 }

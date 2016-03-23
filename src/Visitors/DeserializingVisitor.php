@@ -9,6 +9,7 @@
 namespace OneOfZero\Json\Visitors;
 
 use OneOfZero\Json\Nodes\AbstractNode;
+use OneOfZero\Json\Nodes\AbstractObjectNode;
 use OneOfZero\Json\Nodes\AnonymousObjectNode;
 use OneOfZero\Json\Nodes\ArrayNode;
 use OneOfZero\Json\Nodes\MemberNode;
@@ -42,13 +43,12 @@ class DeserializingVisitor extends AbstractVisitor
 			if ($type === null)
 			{
 				// Type not resolved, deserialize as anonymous object
-				$objectNode = (new AnonymousObjectNode)
-					->withInstance(new stdClass())
-					->withSerializedInstance($serializedValue)
+				$objectNode = AnonymousObjectNode
+					::fromSerializedInstance($serializedValue)
 					->withParent($parent)
 				;
 
-				return $this->visitAnonymousObject($objectNode)->getInstance();
+				return $this->visitObject($objectNode)->getInstance();
 			}
 
 			$objectReflector = new ReflectionClass($type);
@@ -104,31 +104,23 @@ class DeserializingVisitor extends AbstractVisitor
 
 		return $node;
 	}
-	
-	/**
-	 * @param AnonymousObjectNode $node
-	 *
-	 * @return AnonymousObjectNode
-	 */
-	protected function visitAnonymousObject(AnonymousObjectNode $node)
-	{
-		foreach ($node->getSerializedInstance() as $key => $value)
-		{
-			$node = $node->withInstanceMember($key, $this->visit($value));
-		}
-
-		return $node;
-	}
 
 	/**
-	 * @param ObjectNode $node
+	 * @param AbstractObjectNode $node
 	 *
-	 * @return ObjectNode
+	 * @return AbstractObjectNode
 	 *
 	 * @throws SerializationException
 	 */
-	protected function visitObject(ObjectNode $node)
+	protected function visitObject(AbstractObjectNode $node)
 	{
+		/** @var ObjectNode $node */
+		
+		if ($this->hasContractResolver)
+		{
+			$node = $node->withMapper($this->createContractObjectMapper($node));
+		}
+		
 		$mapper = $node->getMapper();
 
 		if ($mapper->hasDeserializingConverter())
@@ -170,6 +162,16 @@ class DeserializingVisitor extends AbstractVisitor
 	 */
 	protected function visitObjectMember(MemberNode $node)
 	{
+		/** @var MemberNode $node */
+
+		if ($this->hasContractResolver)
+		{
+			$node = $node->withMapper($this->createContractMemberMapper($node));
+			
+			// Refresh serialized value with possibly different name from contract mapper
+			$node = $node->withSerializedValue($node->getParent()->getSerializedMemberValue($node->getMapper()->getName()));
+		}
+		
 		$mapper = $node->getMapper();
 
 		if (!$mapper->isIncluded() || !$mapper->isDeserializable())

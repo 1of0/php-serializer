@@ -172,7 +172,7 @@ class YamlMemberMapper extends YamlAbstractMapper implements MemberMapperInterfa
 			return true;
 		}
 		
-		if ($this->memberParent->wantsExplicitInclusion())
+		if ($this->memberParent->isExplicitInclusionEnabled())
 		{
 			return false;
 		}

@@ -18,26 +18,26 @@ class YamlObjectMapper extends YamlAbstractMapper implements ObjectMapperInterfa
 	/**
 	 * {@inheritdoc}
 	 */
-	public function wantsExplicitInclusion()
+	public function isExplicitInclusionEnabled()
 	{
 		if ($this->hasAttribute(self::EXPLICIT_INCLUSION_ATTR))
 		{
 			return (bool)$this->readAttribute(self::EXPLICIT_INCLUSION_ATTR);
 		}
 		
-		return $this->getBase()->wantsExplicitInclusion();
+		return $this->getBase()->isExplicitInclusionEnabled();
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function wantsNoMetadata()
+	public function isMetadataDisabled()
 	{
 		if ($this->hasAttribute(self::METADATA_ATTR))
 		{
-			return !((bool)$this->readAttribute(self::METADATA_ATTR));
+			return ((bool)$this->readAttribute(self::METADATA_ATTR)) === false;
 		}
 		
-		return $this->getBase()->wantsNoMetadata();
+		return $this->getBase()->isMetadataDisabled();
 	}
 }

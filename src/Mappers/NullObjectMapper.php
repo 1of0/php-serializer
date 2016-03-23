@@ -18,7 +18,7 @@ class NullObjectMapper implements ObjectMapperInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function wantsExplicitInclusion()
+	public function isExplicitInclusionEnabled()
 	{
 		return false;
 	}
@@ -26,7 +26,7 @@ class NullObjectMapper implements ObjectMapperInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function wantsNoMetadata()
+	public function isMetadataDisabled()
 	{
 		return false;
 	}

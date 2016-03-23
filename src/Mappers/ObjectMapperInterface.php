@@ -18,7 +18,7 @@ interface ObjectMapperInterface extends MapperInterface
 	 *
 	 * @return bool
 	 */
-	public function wantsExplicitInclusion();
+	public function isExplicitInclusionEnabled();
 
 	/**
 	 * Should return a boolean value indicating whether or not the serialized representation of the class should bear
@@ -26,7 +26,7 @@ interface ObjectMapperInterface extends MapperInterface
 	 *
 	 * @return bool
 	 */
-	public function wantsNoMetadata();
+	public function isMetadataDisabled();
 
 	/**
 	 * Returns member mappers for all class properties and methods.

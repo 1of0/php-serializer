@@ -8,6 +8,7 @@
 
 namespace OneOfZero\Json;
 
+use OneOfZero\Json\ContractResolvers\ContractResolverInterface;
 use OneOfZero\Json\Enums\IncludeStrategy;
 use OneOfZero\Json\Enums\OnMaxDepth;
 use OneOfZero\Json\Enums\OnRecursion;
@@ -80,4 +81,11 @@ class Configuration
 	 * @var int $defaultMaxDepthHandlingStrategy
 	 */
 	public $defaultMaxDepthHandlingStrategy = OnMaxDepth::THROW_EXCEPTION;
+
+	/**
+	 * Configures the contract resolver to use during serialization and deserialization.
+	 * 
+	 * @var ContractResolverInterface|null $contractResolver
+	 */
+	public $contractResolver = null;
 }

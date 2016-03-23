@@ -16,6 +16,7 @@ use OneOfZero\Json\Exceptions\RecursionException;
 use OneOfZero\Json\Serializer;
 use OneOfZero\Json\Test\FixtureClasses\RecursiveReferableClass;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
+use stdClass;
 
 class RecursionTest extends AbstractTest
 {
@@ -139,6 +140,21 @@ class RecursionTest extends AbstractTest
 		$config->defaultMaxDepthHandlingStrategy = 1337;
 
 		$input = new SimpleClass(null, 'bar', 'baz');
+		$input->foo = $input;
+
+		$serializer = new Serializer($config);
+		$serializer->serialize($input);
+	}
+	
+	public function testRecursiveStdClass()
+	{
+		//$this->markTestSkipped('TODO: Test recursive stdClass usage');
+		$this->setExpectedExceptionRegExp(RecursionException::class, '/.*Infinite.*/');
+
+		$config = new Configuration();
+		$config->defaultRecursionHandlingStrategy = OnRecursion::THROW_EXCEPTION;
+
+		$input = new stdClass();
 		$input->foo = $input;
 
 		$serializer = new Serializer($config);

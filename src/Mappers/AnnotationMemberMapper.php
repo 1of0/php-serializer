@@ -155,7 +155,7 @@ class AnnotationMemberMapper implements MemberMapperInterface
 			return true;
 		}
 
-		if ($this->memberParent->wantsExplicitInclusion()/* && !$this->annotations->has($this->target, AbstractName::class) */)
+		if ($this->memberParent->isExplicitInclusionEnabled()/* && !$this->annotations->has($this->target, AbstractName::class) */)
 		{
 			return false;
 		}
