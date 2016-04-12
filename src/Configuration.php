@@ -15,6 +15,11 @@ class Configuration
 	const RESOLVE_EAGER = 1;
 
 	/**
+	 * @var string|null $nameFilterClass
+	 */
+	public $nameFilterClass = null;
+	
+	/**
 	 * @var bool $prettyPrint
 	 */
 	public $prettyPrint = false;

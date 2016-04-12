@@ -14,7 +14,7 @@ use OneOfZero\Json\Internals\MemberWalker;
 use OneOfZero\Json\Internals\ProxyHelper;
 use OneOfZero\Json\Internals\SerializerContext;
 
-class Serializer
+class Serializer implements SerializerInterface
 {
 	/**
 	 * @var Serializer $instance
