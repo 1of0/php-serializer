@@ -15,6 +15,7 @@ use OneOfZero\Json\Mappers\AnnotationMapperFactory;
 use OneOfZero\Json\Mappers\MapperFactoryInterface;
 use OneOfZero\Json\Mappers\MapperPipeline;
 use OneOfZero\Json\Mappers\ReflectionMapperFactory;
+use OneOfZero\Json\Serializer;
 use OneOfZero\Json\Test\FixtureClasses\EqualityInterface;
 use PHPUnit_Framework_TestCase;
 
@@ -36,11 +37,16 @@ abstract class AbstractTest extends PHPUnit_Framework_TestCase
 	protected function setUp()
 	{
 		$this->defaultConfiguration = new Configuration();
+
 		$this->defaultPipeline = (new MapperPipeline)
 			->addFactory(new AnnotationMapperFactory(Environment::getAnnotationReader()))
 			->addFactory(new ReflectionMapperFactory())
 			->build($this->defaultConfiguration)
 		;
+
+		$this->defaultConfiguration->metaHintWhitelist->allowClassesInNamespace('OneOfZero\\Json\\Test\\FixtureClasses');
+
+		Serializer::get()->setConfiguration($this->defaultConfiguration);
 	}
 	
 	/**

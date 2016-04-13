@@ -18,7 +18,7 @@ class ContractTest extends AbstractTest
 {
 	public function testPascalCaseContract()
 	{
-		$config = new Configuration();
+		$config = $this->defaultConfiguration;
 		$config->contractResolver = new PropertyNameContractResolver();
 		$serializer = new Serializer($config);
 

@@ -15,9 +15,8 @@ use OneOfZero\Json\Test\FixtureClasses\ClassReferencingReferableClass;
 use OneOfZero\Json\Test\FixtureClasses\ClassWithLazyReference;
 use OneOfZero\Json\Test\FixtureClasses\ReferableClass;
 use OneOfZero\Json\Test\FixtureClasses\ReferableClassResolver;
-use PHPUnit_Framework_TestCase;
 
-class ReferencePropertyTest extends PHPUnit_Framework_TestCase
+class ReferencePropertyTest extends AbstractTest
 {
 	public function testReference()
 	{
@@ -36,7 +35,7 @@ class ReferencePropertyTest extends PHPUnit_Framework_TestCase
 		$object->bar        = 1.337;
 		$object->reference  = new ReferableClass(9001);
 
-		$serializer = new Serializer();
+		$serializer = new Serializer($this->defaultConfiguration);
 		$serializer->setReferenceResolver(new ReferableClassResolver());
 
 		$json = $serializer->serialize($object);
@@ -69,7 +68,7 @@ class ReferencePropertyTest extends PHPUnit_Framework_TestCase
 			new ReferableClass(3)
 		];
 
-		$serializer = new Serializer();
+		$serializer = new Serializer($this->defaultConfiguration);
 		$serializer->setReferenceResolver(new ReferableClassResolver());
 
 		$json = $serializer->serialize($object);
@@ -101,7 +100,7 @@ class ReferencePropertyTest extends PHPUnit_Framework_TestCase
 		$object = new ClassWithLazyReference();
 		$object->reference = new ReferableClass(9001);
 
-		$serializer = new Serializer();
+		$serializer = new Serializer($this->defaultConfiguration);
 		$serializer->setReferenceResolver($resolver);
 
 		$json = $serializer->serialize($object);

@@ -20,7 +20,7 @@ class ReflectionMemberInclusionStrategyTest extends AbstractMemberInclusionStrat
 	 */
 	protected function createSerializer($strategy)
 	{
-		$configuration = new Configuration();
+		$configuration = $this->defaultConfiguration;
 		$configuration->defaultMemberInclusionStrategy = $strategy;
 		
 		$pipeline = (new MapperPipeline)

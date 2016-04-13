@@ -306,7 +306,13 @@ class DeserializingVisitor extends AbstractVisitor
 		if ($typeHint === null && Metadata::contains($serializedValue, Metadata::TYPE))
 		{
 			// Type hint is not explicitly provided, try to retrieve it from the serialized value's metadata
-			$typeHint = Metadata::get($serializedValue, Metadata::TYPE);
+			$metaHint = Metadata::get($serializedValue, Metadata::TYPE);
+
+			// Check meta hints with the whitelist
+			if ($this->configuration->metaHintWhitelist->isWhitelisted($metaHint))
+			{
+				$typeHint = $metaHint;
+			}
 		}
 
 		if ($typeHint === null && $node instanceof MemberNode)

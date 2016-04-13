@@ -88,4 +88,17 @@ class Configuration
 	 * @var ContractResolverInterface|null $contractResolver
 	 */
 	public $contractResolver = null;
+
+	/**
+	 * Configures the whitelist that should be used to determine which classes may be used as meta type hints during
+	 * deserialization.
+	 *
+	 * @var MetaHintWhitelist $metaHintWhitelist
+	 */
+	public $metaHintWhitelist;
+
+	public function __construct()
+	{
+		$this->metaHintWhitelist = new MetaHintWhitelist();
+	}
 }
