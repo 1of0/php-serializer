@@ -24,11 +24,13 @@
 		"symfony/yaml": "^2.7.0 || ^3.0.0",
 		"php-di/php-di": "^5.1.0",
 		"ocramius/proxy-manager": "^1.0.0",
-		"phpunit/phpunit": "^4.8.0"
+		"phpunit/phpunit": "^4.8.0",
+		"danielstjules/stringy": "^2.0.0"
 	},
 	"suggest":
 	{
-		"symfony/yaml": "Required for yaml mapper support"
+		"symfony/yaml": "Required for yaml mapper support",
+		"danielstjules/stringy": "Required for PascalCaseContractResolver"
 	},
 	"autoload":
 	{

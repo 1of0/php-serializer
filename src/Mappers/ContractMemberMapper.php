@@ -19,9 +19,14 @@ class ContractMemberMapper implements MemberMapperInterface
 	}
 
 	/**
-	 * @var string|null $name
+	 * @var string|null $deserializedName
 	 */
-	private $name;
+	private $deserializedName;
+
+	/**
+	 * @var string|null $serializedName
+	 */
+	private $serializedName;
 
 	/**
 	 * @var string|null $type
@@ -79,7 +84,8 @@ class ContractMemberMapper implements MemberMapperInterface
 	private $deserializingConverter;
 
 	/**
-	 * @param null|string $name
+	 * @param null|string $deserializedName
+	 * @param null|string $serializedName
 	 * @param null|string $type
 	 * @param bool|null $isIncluded
 	 * @param bool|null $isGetter
@@ -93,7 +99,8 @@ class ContractMemberMapper implements MemberMapperInterface
 	 * @param null|string $deserializingConverter
 	 */
 	public function __construct(
-		$name = null,
+		$deserializedName = null,
+		$serializedName = null,
 		$type = null,
 		$isIncluded = null,
 		$isGetter = null,
@@ -106,7 +113,8 @@ class ContractMemberMapper implements MemberMapperInterface
 		$serializingConverter = null,
 		$deserializingConverter = null
 	) {
-		$this->name = $name;
+		$this->deserializedName = $deserializedName;
+		$this->serializedName = $serializedName;
 		$this->type = $type;
 		$this->isIncluded = $isIncluded;
 		$this->isGetter = $isGetter;
@@ -127,7 +135,7 @@ class ContractMemberMapper implements MemberMapperInterface
 	{
 		if ($instance instanceof stdClass)
 		{
-			return $instance->{$this->getName()};
+			return $instance->{$this->getDeserializedName()};
 		}
 		
 		return $this->baseGetValue($instance);
@@ -140,7 +148,7 @@ class ContractMemberMapper implements MemberMapperInterface
 	{
 		if ($instance instanceof stdClass)
 		{
-			$instance->{$this->getName()} = $value;
+			$instance->{$this->getDeserializedName()} = $value;
 			return;
 		}
 
@@ -152,9 +160,17 @@ class ContractMemberMapper implements MemberMapperInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getName()
+	public function getDeserializedName()
 	{
-		return ($this->name !== null) ? $this->name : $this->getBase()->getName();
+		return ($this->deserializedName !== null) ? $this->deserializedName : $this->getBase()->getDeserializedName();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getSerializedName()
+	{
+		return ($this->serializedName !== null) ? $this->serializedName : $this->getBase()->getSerializedName();
 	}
 
 	/**
@@ -266,12 +282,12 @@ class ContractMemberMapper implements MemberMapperInterface
 	#region // Setters
 	
 	/**
-	 * @param string|null $name
+	 * @param string|null $serializedName
 	 * @return self
 	 */
-	public function setName($name)
+	public function setSerializedName($serializedName)
 	{
-		$this->name = $name;
+		$this->serializedName = $serializedName;
 		return $this;
 	}
 

@@ -34,6 +34,14 @@ trait BaseMemberMapperTrait
 	{
 		$this->memberParent = $memberParent;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getDeserializedName()
+	{
+		return $this->target->name;
+	}
 	
 	/**
 	 * {@inheritdoc}

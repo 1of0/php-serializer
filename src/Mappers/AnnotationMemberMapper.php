@@ -28,7 +28,7 @@ class AnnotationMemberMapper implements MemberMapperInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getName()
+	public function getSerializedName()
 	{
 		/** @var AbstractName $nameAnnotation */
 		$nameAnnotation = $this->annotations->get($this->target, AbstractName::class);
@@ -38,7 +38,7 @@ class AnnotationMemberMapper implements MemberMapperInterface
 			return $nameAnnotation->name;
 		}
 		
-		return $this->getBase()->getName();
+		return $this->getBase()->getSerializedName();
 	}
 
 	/**

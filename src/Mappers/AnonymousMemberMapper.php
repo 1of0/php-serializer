@@ -45,9 +45,25 @@ class AnonymousMemberMapper implements MemberMapperInterface
 	/**
 	 * {@inheritdoc}
 	 */
+	public function getDeserializedName()
+	{
+		return $this->name;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getSerializedName()
+	{
+		return $this->name;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function getValue($instance)
 	{
-		return $instance->{$this->name};
+		return $instance->{$this->getDeserializedName()};
 	}
 
 	/**
@@ -55,15 +71,7 @@ class AnonymousMemberMapper implements MemberMapperInterface
 	 */
 	public function setValue($instance, $value)
 	{
-		$instance->{$this->name} = $value;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getName()
-	{
-		return $this->name;
+		$instance->{$this->getDeserializedName()} = $value;
 	}
 
 	#region // Null getters

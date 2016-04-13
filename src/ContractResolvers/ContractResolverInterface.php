@@ -22,12 +22,26 @@ interface ContractResolverInterface
 	 * 
 	 * @return ObjectMapperInterface|ContractObjectMapper
 	 */
-	public function createObjectContract(AbstractObjectNode $object);
+	public function createSerializingObjectContract(AbstractObjectNode $object);
+
+	/**
+	 * @param AbstractObjectNode $object
+	 *
+	 * @return ObjectMapperInterface|ContractObjectMapper
+	 */
+	public function createDeserializingObjectContract(AbstractObjectNode $object);
 
 	/**
 	 * @param MemberNode $member
 	 * 
 	 * @return MemberMapperInterface|ContractMemberMapper
 	 */
-	public function createMemberContract(MemberNode $member);
+	public function createSerializingMemberContract(MemberNode $member);
+
+	/**
+	 * @param MemberNode $member
+	 *
+	 * @return MemberMapperInterface|ContractMemberMapper
+	 */
+	public function createDeserializingMemberContract(MemberNode $member);
 }

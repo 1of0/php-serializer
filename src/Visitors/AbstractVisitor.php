@@ -98,34 +98,6 @@ abstract class AbstractVisitor
 	}
 
 	/**
-	 * @param AbstractObjectNode $node
-	 * 
-	 * @return ObjectMapperInterface
-	 */
-	protected function createContractObjectMapper(AbstractObjectNode $node)
-	{
-		$mapper = $this->configuration->contractResolver->createObjectContract($node);
-		$mapper->setBase($node->getMapper());
-		$mapper->setTarget($node->getMapper()->getTarget());
-		return $mapper;
-	}
-
-	/**
-	 * @param MemberNode $node
-	 * 
-	 * @return MemberMapperInterface
-	 */
-	protected function createContractMemberMapper(MemberNode $node)
-	{
-		$mapper = $this->configuration->contractResolver->createMemberContract($node);
-		$mapper->setBase($node->getMapper());
-		$mapper->setTarget($node->getMapper()->getTarget());
-		$mapper->setMemberParent($this->createContractObjectMapper($node->getParent()));
-		
-		return $mapper;
-	}
-	
-	/**
 	 * @param string $converterClass
 	 *
 	 * @return ObjectConverterInterface|null

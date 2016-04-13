@@ -18,9 +18,9 @@ class DummyMemberMapper implements MemberMapperInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getName()
+	public function getSerializedName()
 	{
-		return $this->getBase()->getName();
+		return $this->getBase()->getSerializedName();
 	}
 
 	/**

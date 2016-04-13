@@ -17,14 +17,14 @@ class YamlMemberMapper extends YamlAbstractMapper implements MemberMapperInterfa
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getName()
+	public function getSerializedName()
 	{
 		if ($this->hasAttribute(self::NAME_ATTR))
 		{
 			return $this->readAttribute(self::NAME_ATTR);
 		}
 
-		return $this->getBase()->getName();
+		return $this->getBase()->getSerializedName();
 	}
 
 	/**

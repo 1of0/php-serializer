@@ -9,7 +9,7 @@
 namespace OneOfZero\Json\Test;
 
 use OneOfZero\Json\Configuration;
-use OneOfZero\Json\ContractResolvers\PascalCaseContractResolver;
+use OneOfZero\Json\ContractResolvers\PropertyNameContractResolver;
 use OneOfZero\Json\Serializer;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClassExtender;
 use stdClass;
@@ -19,7 +19,7 @@ class ContractTest extends AbstractTest
 	public function testPascalCaseContract()
 	{
 		$config = new Configuration();
-		$config->contractResolver = new PascalCaseContractResolver();
+		$config->contractResolver = new PropertyNameContractResolver();
 		$serializer = new Serializer($config);
 
 		$input = new SimpleClassExtender('abcd', '1234', 'efgh', '5678');
@@ -41,10 +41,8 @@ class ContractTest extends AbstractTest
 	
 	public function testAnonymousObjectContract()
 	{
-		$this->markTestSkipped('FIXME: Will probably not work since there is nothing to map back to; perhaps needs individual createSerializingContract and createDeserializingContract');
-		
 		$config = new Configuration();
-		$config->contractResolver = new PascalCaseContractResolver();
+		$config->contractResolver = new PropertyNameContractResolver();
 		$serializer = new Serializer($config);
 
 		$input = new stdClass();

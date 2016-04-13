@@ -22,7 +22,7 @@ class ReflectionMemberMapper implements MemberMapperInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getName()
+	public function getSerializedName()
 	{
 		// By default assume the target member's name
 		$name = $this->target->name;

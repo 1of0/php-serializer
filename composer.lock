@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "7e6c20d547d4c3116bbce06ee451805d",
-    "content-hash": "8a74378ffd0580ea6e0cc6f318629afe",
+    "hash": "34f142bd0f28803ef5b93bae349da954",
+    "content-hash": "1cc2096cedc4dd5ec51e0f1336b4e4fe",
     "packages": [
         {
             "name": "1of0/better-annotations",
@@ -235,6 +235,62 @@
         }
     ],
     "packages-dev": [
+        {
+            "name": "danielstjules/stringy",
+            "version": "2.3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/danielstjules/Stringy.git",
+                "reference": "bd90918858ae079e34192710946449ed6c0bf795"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/danielstjules/Stringy/zipball/bd90918858ae079e34192710946449ed6c0bf795",
+                "reference": "bd90918858ae079e34192710946449ed6c0bf795",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0",
+                "symfony/polyfill-mbstring": "~1.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Stringy\\": "src/"
+                },
+                "files": [
+                    "src/Create.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Daniel St. Jules",
+                    "email": "danielst.jules@gmail.com",
+                    "homepage": "http://www.danielstjules.com"
+                }
+            ],
+            "description": "A string manipulation library with multibyte support",
+            "homepage": "https://github.com/danielstjules/Stringy",
+            "keywords": [
+                "UTF",
+                "helpers",
+                "manipulation",
+                "methods",
+                "multibyte",
+                "string",
+                "utf-8",
+                "utility",
+                "utils"
+            ],
+            "time": "2016-03-21 20:26:21"
+        },
         {
             "name": "doctrine/instantiator",
             "version": "1.0.5",
@@ -1340,17 +1396,76 @@
             "time": "2015-06-21 13:59:46"
         },
         {
-            "name": "symfony/yaml",
-            "version": "v3.0.3",
+            "name": "symfony/polyfill-mbstring",
+            "version": "v1.1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/yaml.git",
-                "reference": "b5ba64cd67ecd6887f63868fa781ca094bd1377c"
+                "url": "https://github.com/symfony/polyfill-mbstring.git",
+                "reference": "1289d16209491b584839022f29257ad859b8532d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/b5ba64cd67ecd6887f63868fa781ca094bd1377c",
-                "reference": "b5ba64cd67ecd6887f63868fa781ca094bd1377c",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/1289d16209491b584839022f29257ad859b8532d",
+                "reference": "1289d16209491b584839022f29257ad859b8532d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "suggest": {
+                "ext-mbstring": "For best performance"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Polyfill\\Mbstring\\": ""
+                },
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill for the Mbstring extension",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "mbstring",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "time": "2016-01-20 09:13:37"
+        },
+        {
+            "name": "symfony/yaml",
+            "version": "v3.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/yaml.git",
+                "reference": "0047c8366744a16de7516622c5b7355336afae96"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/0047c8366744a16de7516622c5b7355336afae96",
+                "reference": "0047c8366744a16de7516622c5b7355336afae96",
                 "shasum": ""
             },
             "require": {
@@ -1386,7 +1501,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2016-02-23 15:16:06"
+            "time": "2016-03-04 07:55:57"
         },
         {
             "name": "zendframework/zend-code",

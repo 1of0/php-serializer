@@ -18,7 +18,7 @@ class NullMemberMapper implements MemberMapperInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getName()
+	public function getSerializedName()
 	{
 		return null;
 	}

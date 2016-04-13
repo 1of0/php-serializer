@@ -18,7 +18,7 @@ abstract class AbstractContractResolver implements ContractResolverInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function createObjectContract(AbstractObjectNode $object)
+	public function createSerializingObjectContract(AbstractObjectNode $object)
 	{
 		return new ContractObjectMapper();
 	}
@@ -26,9 +26,24 @@ abstract class AbstractContractResolver implements ContractResolverInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function createMemberContract(MemberNode $member)
+	public function createDeserializingObjectContract(AbstractObjectNode $object)
+	{
+		return new ContractObjectMapper();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function createSerializingMemberContract(MemberNode $member)
 	{
 		return new ContractMemberMapper();
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
+	public function createDeserializingMemberContract(MemberNode $member)
+	{
+		return new ContractMemberMapper();
+	}
 }

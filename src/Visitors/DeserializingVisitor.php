@@ -8,6 +8,8 @@
 
 namespace OneOfZero\Json\Visitors;
 
+use OneOfZero\Json\Mappers\MemberMapperInterface;
+use OneOfZero\Json\Mappers\ObjectMapperInterface;
 use OneOfZero\Json\Nodes\AbstractNode;
 use OneOfZero\Json\Nodes\AbstractObjectNode;
 use OneOfZero\Json\Nodes\AnonymousObjectNode;
@@ -138,7 +140,7 @@ class DeserializingVisitor extends AbstractVisitor
 
 		foreach ($mapper->getMembers() as $memberMapper)
 		{
-			$serializedValue = $node->getSerializedMemberValue($memberMapper->getName());
+			$serializedValue = $node->getSerializedMemberValue($memberMapper->getSerializedName());
 			
 			$memberNode = (new MemberNode)
 				->withSerializedValue($serializedValue)
@@ -169,7 +171,7 @@ class DeserializingVisitor extends AbstractVisitor
 			$node = $node->withMapper($this->createContractMemberMapper($node));
 			
 			// Refresh serialized value with possibly different name from contract mapper
-			$node = $node->withSerializedValue($node->getParent()->getSerializedMemberValue($node->getMapper()->getName()));
+			$node = $node->withSerializedValue($node->getParent()->getSerializedMemberValue($node->getMapper()->getSerializedName()));
 		}
 		
 		$mapper = $node->getMapper();
@@ -198,6 +200,34 @@ class DeserializingVisitor extends AbstractVisitor
 		}
 
 		return $node->withValue($this->visit($node->getSerializedValue(), $node, $node->getMapper()->getType()));
+	}
+
+	/**
+	 * @param AbstractObjectNode $node
+	 *
+	 * @return ObjectMapperInterface
+	 */
+	protected function createContractObjectMapper(AbstractObjectNode $node)
+	{
+		$mapper = $this->configuration->contractResolver->createDeserializingObjectContract($node);
+		$mapper->setBase($node->getMapper());
+		$mapper->setTarget($node->getMapper()->getTarget());
+		return $mapper;
+	}
+
+	/**
+	 * @param MemberNode $node
+	 *
+	 * @return MemberMapperInterface
+	 */
+	protected function createContractMemberMapper(MemberNode $node)
+	{
+		$mapper = $this->configuration->contractResolver->createDeserializingMemberContract($node);
+		$mapper->setBase($node->getMapper());
+		$mapper->setTarget($node->getMapper()->getTarget());
+		$mapper->setMemberParent($this->createContractObjectMapper($node->getParent()));
+
+		return $mapper;
 	}
 
 	/**

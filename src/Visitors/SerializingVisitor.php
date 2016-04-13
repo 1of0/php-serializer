@@ -13,6 +13,8 @@ use OneOfZero\Json\Exceptions\ConverterException;
 use OneOfZero\Json\Exceptions\NotSupportedException;
 use OneOfZero\Json\Exceptions\RecursionException;
 use OneOfZero\Json\Exceptions\SkipMemberException;
+use OneOfZero\Json\Mappers\MemberMapperInterface;
+use OneOfZero\Json\Mappers\ObjectMapperInterface;
 use OneOfZero\Json\Nodes\AbstractNode;
 use OneOfZero\Json\Nodes\AbstractObjectNode;
 use OneOfZero\Json\Nodes\AnonymousObjectNode;
@@ -176,7 +178,7 @@ class SerializingVisitor extends AbstractVisitor
 			{
 				$memberNode = $this->visitObjectMember($memberNode);
 				
-				$memberName = $memberNode->getMapper()->getName();
+				$memberName = $memberNode->getMapper()->getSerializedName();
 				$memberValue = $memberNode->getSerializedValue();
 
 				if ($memberValue !== null || $this->configuration->includeNullValues)
@@ -242,6 +244,34 @@ class SerializingVisitor extends AbstractVisitor
 		}
 		
 		return $node;
+	}
+
+	/**
+	 * @param AbstractObjectNode $node
+	 *
+	 * @return ObjectMapperInterface
+	 */
+	protected function createContractObjectMapper(AbstractObjectNode $node)
+	{
+		$mapper = $this->configuration->contractResolver->createSerializingObjectContract($node);
+		$mapper->setBase($node->getMapper());
+		$mapper->setTarget($node->getMapper()->getTarget());
+		return $mapper;
+	}
+
+	/**
+	 * @param MemberNode $node
+	 *
+	 * @return MemberMapperInterface
+	 */
+	protected function createContractMemberMapper(MemberNode $node)
+	{
+		$mapper = $this->configuration->contractResolver->createSerializingMemberContract($node);
+		$mapper->setBase($node->getMapper());
+		$mapper->setTarget($node->getMapper()->getTarget());
+		$mapper->setMemberParent($this->createContractObjectMapper($node->getParent()));
+
+		return $mapper;
 	}
 
 	/**

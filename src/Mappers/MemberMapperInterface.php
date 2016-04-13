@@ -38,11 +38,18 @@ interface MemberMapperInterface extends MapperInterface
 	public function setValue($instance, $value);
 
 	/**
+	 * Should return the name for the deserialized property or method.
+	 *
+	 * @return string
+	 */
+	public function getDeserializedName();
+
+	/**
 	 * Should return the name that will be used for the JSON property.
 	 *
 	 * @return string
 	 */
-	public function getName();
+	public function getSerializedName();
 
 	/**
 	 * Should return the type of the field as a fully qualified class name.

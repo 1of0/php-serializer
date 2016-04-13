@@ -20,7 +20,7 @@ class AbstractObjectNode extends AbstractNode
 	protected $instance;
 
 	/**
-	 * @var array $serializedInstance
+	 * @var array|stdClass $serializedInstance
 	 */
 	protected $serializedInstance;
 
