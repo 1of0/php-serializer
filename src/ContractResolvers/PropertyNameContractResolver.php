@@ -41,7 +41,9 @@ class PropertyNameContractResolver extends AbstractContractResolver
 	{
 		if (!class_exists(S::class))
 		{
+			// @codeCoverageIgnoreStart
 			throw new NotSupportedException('PascalCaseContractResolver requires the package "danielstjules/stringy"');
+			// @codeCoverageIgnoreEnd
 		}
 
 		$this->deserializedStyle = $deserializedStyle;

@@ -6,8 +6,9 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Exceptions;
+namespace OneOfZero\Json\Test\FixtureClasses;
 
-class ReferenceException extends SerializationException
+interface TypeHintableInterface
 {
+
 }

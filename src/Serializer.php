@@ -17,7 +17,7 @@ use OneOfZero\Json\Mappers\ReflectionMapperFactory;
 use OneOfZero\Json\Visitors\DeserializingVisitor;
 use OneOfZero\Json\Visitors\SerializingVisitor;
 
-class Serializer
+class Serializer implements SerializerInterface
 {	
 	/**
 	 * @var Serializer $instance
@@ -75,9 +75,7 @@ class Serializer
 	}
 
 	/**
-	 * @param mixed $data
-	 *
-	 * @return string
+	 * {@inheritdoc}
 	 */
 	public function serialize($data)
 	{
@@ -91,10 +89,7 @@ class Serializer
 	}
 
 	/**
-	 * @param string $json
-	 * @param string|null $typeHint
-	 *
-	 * @return mixed
+	 * {@inheritdoc}
 	 */
 	public function deserialize($json, $typeHint = null)
 	{
@@ -127,10 +122,12 @@ class Serializer
 	private function jsonEncode($data)
 	{
 		$options = $this->configuration->jsonEncodeOptions;
+		
 		if ($this->configuration->prettyPrint)
 		{
 			$options |= JSON_PRETTY_PRINT;
 		}
+		
 		return json_encode($data, $options, $this->configuration->maxDepth);
 	}
 
@@ -142,6 +139,7 @@ class Serializer
 	private function jsonDecode($json)
 	{
 		$options = $this->configuration->jsonEncodeOptions;
+		
 		return json_decode($json, false, $this->configuration->maxDepth, $options);
 	}
 
@@ -158,11 +156,10 @@ class Serializer
 	}
 
 	#region // Generic getters and setters
+	// @codeCoverageIgnoreStart
 
 	/**
 	 * @return Configuration
-	 * 
-	 * @codeCoverageIgnore
 	 */
 	public function getConfiguration()
 	{
@@ -171,8 +168,6 @@ class Serializer
 
 	/**
 	 * @param Configuration $configuration
-	 * 
-	 * @codeCoverageIgnore
 	 */
 	public function setConfiguration(Configuration $configuration)
 	{
@@ -181,8 +176,6 @@ class Serializer
 
 	/**
 	 * @return ContainerInterface
-	 * 
-	 * @codeCoverageIgnore
 	 */
 	public function getContainer()
 	{
@@ -191,8 +184,6 @@ class Serializer
 
 	/**
 	 * @param ContainerInterface $container
-	 * 
-	 * @codeCoverageIgnore
 	 */
 	public function setContainer(ContainerInterface $container)
 	{
@@ -201,8 +192,6 @@ class Serializer
 
 	/**
 	 * @return MapperFactoryInterface
-	 * 
-	 * @codeCoverageIgnore
 	 */
 	public function getMapperFactory()
 	{
@@ -211,8 +200,6 @@ class Serializer
 
 	/**
 	 * @param MapperFactoryInterface $mapperFactory
-	 * 
-	 * @codeCoverageIgnore
 	 */
 	public function setMapperFactory(MapperFactoryInterface $mapperFactory)
 	{
@@ -221,8 +208,6 @@ class Serializer
 
 	/**
 	 * @return ReferenceResolverInterface
-	 * 
-	 * @codeCoverageIgnore
 	 */
 	public function getReferenceResolver()
 	{
@@ -231,13 +216,12 @@ class Serializer
 
 	/**
 	 * @param ReferenceResolverInterface $referenceResolver
-	 * 
-	 * @codeCoverageIgnore
 	 */
 	public function setReferenceResolver(ReferenceResolverInterface $referenceResolver)
 	{
 		$this->referenceResolver = $referenceResolver;
 	}
-	
+
+	// @codeCoverageIgnoreEnd
 	#endregion
 }

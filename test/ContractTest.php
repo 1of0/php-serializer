@@ -8,9 +8,10 @@
 
 namespace OneOfZero\Json\Test;
 
-use OneOfZero\Json\Configuration;
 use OneOfZero\Json\ContractResolvers\PropertyNameContractResolver;
+use OneOfZero\Json\Exceptions\NotSupportedException;
 use OneOfZero\Json\Serializer;
+use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClassExtender;
 use stdClass;
 
@@ -18,9 +19,8 @@ class ContractTest extends AbstractTest
 {
 	public function testPascalCaseContract()
 	{
-		$config = $this->defaultConfiguration;
-		$config->contractResolver = new PropertyNameContractResolver();
-		$serializer = new Serializer($config);
+		$serializer = new Serializer($this->defaultConfiguration);
+		$serializer->getConfiguration()->contractResolver = new PropertyNameContractResolver();
 
 		$input = new SimpleClassExtender('abcd', '1234', 'efgh', '5678');
 
@@ -41,9 +41,8 @@ class ContractTest extends AbstractTest
 	
 	public function testAnonymousObjectContract()
 	{
-		$config = new Configuration();
-		$config->contractResolver = new PropertyNameContractResolver();
-		$serializer = new Serializer($config);
+		$serializer = new Serializer($this->defaultConfiguration);
+		$serializer->getConfiguration()->contractResolver = new PropertyNameContractResolver();
 
 		$input = new stdClass();
 		$input->foo                 = 'abcd';
@@ -63,5 +62,14 @@ class ContractTest extends AbstractTest
 
 		$deserialized = $serializer->deserialize($serialized);
 		$this->assertObjectEquals($input, $deserialized);
+	}
+	
+	public function testInvalidContractConfiguration()
+	{
+		$serializer = new Serializer();
+		$serializer->getConfiguration()->contractResolver = new SimpleClass(null, null, null);
+
+		$this->setExpectedException(NotSupportedException::class);
+		$serializer->serialize(new SimpleClass('abcd', '1234', 'efgh'));
 	}
 }

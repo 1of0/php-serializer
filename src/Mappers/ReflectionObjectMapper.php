@@ -10,6 +10,8 @@ namespace OneOfZero\Json\Mappers;
 
 /**
  * Implementation of a mapper that maps the serialization metadata for a class using reflection.
+ * 
+ * @codeCoverageIgnore This mapper defers all calls to the base mapper, so has no coverage value
  */
 class ReflectionObjectMapper implements ObjectMapperInterface
 {
@@ -49,8 +51,6 @@ class ReflectionObjectMapper implements ObjectMapperInterface
 
 	/**
 	 * {@inheritdoc}
-	 * 
-	 * @codeCoverageIgnore
 	 */
 	public function getSerializingConverterType()
 	{
@@ -59,8 +59,6 @@ class ReflectionObjectMapper implements ObjectMapperInterface
 
 	/**
 	 * {@inheritdoc}
-	 *
-	 * @codeCoverageIgnore
 	 */
 	public function getDeserializingConverterType()
 	{

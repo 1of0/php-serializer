@@ -9,7 +9,7 @@
 namespace OneOfZero\Json\Mappers;
 
 /**
- * @codeCoverageIgnore
+ * @codeCoverageIgnore  This is just a copy-paste object mapper deferring all calls to base
  */
 class DummyObjectMapper implements ObjectMapperInterface
 {

@@ -79,6 +79,8 @@ class ReflectionMemberMapper implements MemberMapperInterface
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @codeCoverageIgnore Defers to base
 	 */
 	public function isArray()
 	{
@@ -147,6 +149,8 @@ class ReflectionMemberMapper implements MemberMapperInterface
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @codeCoverageIgnore Defers to base
 	 */
 	public function isReference()
 	{
@@ -155,6 +159,8 @@ class ReflectionMemberMapper implements MemberMapperInterface
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @codeCoverageIgnore Defers to base
 	 */
 	public function isReferenceLazy()
 	{
@@ -163,6 +169,8 @@ class ReflectionMemberMapper implements MemberMapperInterface
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @codeCoverageIgnore Defers to base
 	 */
 	public function hasSerializingConverter()
 	{
@@ -171,6 +179,8 @@ class ReflectionMemberMapper implements MemberMapperInterface
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @codeCoverageIgnore Defers to base
 	 */
 	public function hasDeserializingConverter()
 	{
@@ -180,7 +190,7 @@ class ReflectionMemberMapper implements MemberMapperInterface
 	/**
 	 * {@inheritdoc}
 	 * 
-	 * @codeCoverageIgnore
+	 * @codeCoverageIgnore Defers to base
 	 */
 	public function getSerializingConverterType()
 	{
@@ -189,8 +199,8 @@ class ReflectionMemberMapper implements MemberMapperInterface
 
 	/**
 	 * {@inheritdoc}
-	 * 
-	 * @codeCoverageIgnore
+	 *
+	 * @codeCoverageIgnore Defers to base
 	 */
 	public function getDeserializingConverterType()
 	{

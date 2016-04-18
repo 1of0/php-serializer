@@ -148,7 +148,6 @@ class RecursionTest extends AbstractTest
 	
 	public function testRecursiveStdClass()
 	{
-		//$this->markTestSkipped('TODO: Test recursive stdClass usage');
 		$this->setExpectedExceptionRegExp(RecursionException::class, '/.*Infinite.*/');
 
 		$config = new Configuration();

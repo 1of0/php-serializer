@@ -1,15 +1,33 @@
 <?php
+/**
+ * Copyright (c) 2016 Bernardo van der Wal
+ * MIT License
+ *
+ * Refer to the LICENSE file for the full copyright notice.
+ */
 
 namespace OneOfZero\Json;
 
 class MetaHintWhitelist
 {
+	/**
+	 * @var string[] $classes
+	 */
 	protected $classes = [];
 
+	/**
+	 * @var string[] $interfaces
+	 */
 	protected $interfaces = [];
 
+	/**
+	 * @var string[] $namespaces
+	 */
 	protected $namespaces = [];
 
+	/**
+	 * @var string[] $patterns
+	 */
 	protected $patterns = [];
 
 	/**
@@ -71,6 +89,14 @@ class MetaHintWhitelist
 		if (in_array($class, $this->classes, true))
 		{
 			return true;
+		}
+
+		foreach (class_parents($class) as $parent)
+		{
+			if (in_array($parent, $this->classes, true))
+			{
+				return true;
+			}
 		}
 
 		foreach ($this->interfaces as $interface)
