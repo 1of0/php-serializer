@@ -8,7 +8,7 @@
 
 namespace OneOfZero\Json\Mappers;
 
-class YamlObjectMapper extends YamlAbstractMapper implements ObjectMapperInterface
+class ArrayObjectMapper extends ArrayAbstractMapper implements ObjectMapperInterface
 {
 	use BaseObjectMapperTrait;
 

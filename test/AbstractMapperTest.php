@@ -11,9 +11,7 @@ namespace OneOfZero\Json\Test;
 use DateTime;
 use OneOfZero\Json\Exceptions\SerializationException;
 use OneOfZero\Json\Helpers\Metadata;
-use OneOfZero\Json\Mappers\MapperPipeline;
-use OneOfZero\Json\Mappers\ReflectionMapperFactory;
-use OneOfZero\Json\Mappers\YamlMapperFactory;
+use OneOfZero\Json\Mappers\MapperFactoryInterface;
 use OneOfZero\Json\Test\FixtureClasses\ClassWithGetterAndSetter;
 use OneOfZero\Json\Test\FixtureClasses\ClassWithGetterAndSetterOnProperty;
 use OneOfZero\Json\Test\FixtureClasses\ClassWithInvalidGetterAndSetter;
@@ -25,9 +23,12 @@ use OneOfZero\Json\Test\FixtureClasses\ClassUsingDifferentClassLevelConverters;
 use OneOfZero\Json\Visitors\DeserializingVisitor;
 use OneOfZero\Json\Visitors\SerializingVisitor;
 
-class YamlVisitorTest extends AbstractTest
+abstract class AbstractMapperTest extends AbstractTest
 {
-	const YAML_MAPPING_FILE = __DIR__ . '/Assets/mapping.yaml';
+	/**
+	 * @return MapperFactoryInterface
+	 */
+	protected abstract function getPipeline();
 
 	public function testSerialization()
 	{
@@ -169,24 +170,14 @@ class YamlVisitorTest extends AbstractTest
 		
 		$this->createDeserializingVisitor()->visit($input);
 	}
-
+	
 	private function createSerializingVisitor()
 	{
-		$pipeline = (new MapperPipeline)
-			->addFactory(new YamlMapperFactory(self::YAML_MAPPING_FILE))
-			->addFactory(new ReflectionMapperFactory())
-			->build($this->defaultConfiguration)
-		;
-		return new SerializingVisitor(clone $this->defaultConfiguration, $pipeline);
+		return new SerializingVisitor(clone $this->defaultConfiguration, $this->getPipeline());
 	}
 
 	private function createDeserializingVisitor()
 	{
-		$pipeline = (new MapperPipeline)
-			->addFactory(new YamlMapperFactory(self::YAML_MAPPING_FILE))
-			->addFactory(new ReflectionMapperFactory())
-			->build($this->defaultConfiguration)
-		;
-		return new DeserializingVisitor(clone $this->defaultConfiguration, $pipeline);
+		return new DeserializingVisitor(clone $this->defaultConfiguration, $this->getPipeline());
 	}
 }

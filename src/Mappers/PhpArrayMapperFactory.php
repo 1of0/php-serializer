@@ -9,30 +9,21 @@
 namespace OneOfZero\Json\Mappers;
 
 use RuntimeException;
-use Symfony\Component\Yaml\Parser;
 
-class YamlMapperFactory extends ArrayMapperFactory
+class PhpArrayMapperFactory extends ArrayMapperFactory
 {
 	/**
 	 * @param string $mappingFile
 	 */
 	public function __construct($mappingFile)
 	{
-		if (!class_exists(Parser::class))
-		{
-			// @codeCoverageIgnoreStart
-			throw new RuntimeException('The package symfony/yaml is required to be able to use the yaml mapper');
-			// @codeCoverageIgnoreEnd
-		}
-
 		if (!file_exists($mappingFile))
 		{
 			throw new RuntimeException("File \"$mappingFile\" does not exist");
 		}
 
-		$parser = new Parser();
-		
-		$this->mapping = $parser->parse(file_get_contents($mappingFile));
+		/** @noinspection PhpIncludeInspection */
+		$this->mapping = include($mappingFile);
 		$this->aliases = array_key_exists('@use', $this->mapping) ? $this->mapping['@use'] : [];
 	}
 }

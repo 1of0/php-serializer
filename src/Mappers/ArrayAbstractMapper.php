@@ -11,9 +11,9 @@ namespace OneOfZero\Json\Mappers;
 use OneOfZero\Json\Exceptions\SerializationException;
 
 /**
- * @method YamlMapperFactory getFactory
+ * @method ArrayMapperFactory getFactory
  */
-abstract class YamlAbstractMapper implements MapperInterface
+abstract class ArrayAbstractMapper implements MapperInterface
 {
 	const NAME_ATTR = 'name';
 	const TYPE_ATTR = 'type';

@@ -10,7 +10,7 @@ namespace OneOfZero\Json\Mappers;
 
 use OneOfZero\Json\Exceptions\SerializationException;
 
-class YamlMemberMapper extends YamlAbstractMapper implements MemberMapperInterface
+class ArrayMemberMapper extends ArrayAbstractMapper implements MemberMapperInterface
 {
 	use BaseMemberMapperTrait;
 	

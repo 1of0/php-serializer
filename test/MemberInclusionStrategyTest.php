@@ -8,7 +8,6 @@
 
 namespace OneOfZero\Json\Test;
 
-use OneOfZero\Json\Configuration;
 use OneOfZero\Json\Serializer;
 
 class MemberInclusionStrategyTest extends AbstractMemberInclusionStrategyTest

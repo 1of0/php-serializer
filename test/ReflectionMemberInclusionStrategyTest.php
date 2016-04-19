@@ -8,7 +8,6 @@
 
 namespace OneOfZero\Json\Test;
 
-use OneOfZero\Json\Configuration;
 use OneOfZero\Json\Mappers\MapperPipeline;
 use OneOfZero\Json\Mappers\ReflectionMapperFactory;
 use OneOfZero\Json\Serializer;
