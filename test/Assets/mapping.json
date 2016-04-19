@@ -1,0 +1,114 @@
+{
+	"@use":
+	{
+		"SimpleClass": "OneOfZero\\Json\\Test\\FixtureClasses\\SimpleClass",
+		"ReferableClass": "OneOfZero\\Json\\Test\\FixtureClasses\\ReferableClass",
+		"ClassUsingConverters": "OneOfZero\\Json\\Test\\FixtureClasses\\ClassUsingConverters",
+		"ClassWithGetterAndSetter": "OneOfZero\\Json\\Test\\FixtureClasses\\ClassWithGetterAndSetter",
+		"ClassWithInvalidGetterAndSetter": "OneOfZero\\Json\\Test\\FixtureClasses\\ClassWithInvalidGetterAndSetter",
+		"ClassWithGetterAndSetterOnProperty": "OneOfZero\\Json\\Test\\FixtureClasses\\ClassWithGetterAndSetterOnProperty",
+		"ClassUsingClassLevelConverter": "OneOfZero\\Json\\Test\\FixtureClasses\\ClassUsingClassLevelConverter",
+		"ClassUsingDifferentClassLevelConverters": "OneOfZero\\Json\\Test\\FixtureClasses\\ClassUsingDifferentClassLevelConverters",
+		"DateTimeConverter": "OneOfZero\\Json\\Converters\\DateTimeConverter",
+		"ClassDependentMemberConverter": "OneOfZero\\Json\\Test\\FixtureClasses\\Converters\\ClassDependentMemberConverter",
+		"ContextSensitiveMemberConverter": "OneOfZero\\Json\\Test\\FixtureClasses\\Converters\\ContextSensitiveMemberConverter",
+		"PropertyDependentMemberConverter": "OneOfZero\\Json\\Test\\FixtureClasses\\Converters\\PropertyDependentMemberConverter",
+		"SerializingMemberConverter": "OneOfZero\\Json\\Test\\FixtureClasses\\Converters\\SerializingMemberConverter",
+		"DeserializingMemberConverter": "OneOfZero\\Json\\Test\\FixtureClasses\\Converters\\DeserializingMemberConverter",
+		"SerializingObjectConverter": "OneOfZero\\Json\\Test\\FixtureClasses\\Converters\\SerializingObjectConverter",
+		"DeserializingObjectConverter": "OneOfZero\\Json\\Test\\FixtureClasses\\Converters\\DeserializingObjectConverter",
+		"SimpleObjectConverter": "OneOfZero\\Json\\Test\\FixtureClasses\\Converters\\SimpleObjectConverter"
+	},
+	"SimpleClass":
+	{
+		"properties":
+		{
+			"foo": { "name": "food" },
+			"bar": { "include": true },
+			"baz": { "ignore": true }
+		}
+	},
+	"ClassUsingConverters": 
+	{
+		"properties":
+		{
+			"dateObject":
+			{
+				"type": "DateTime",
+				"converter": "DateTimeConverter"
+			},
+			"simpleClass":
+			{
+				"type": "SimpleClass",
+				"converter": "ClassDependentMemberConverter"
+			},
+			"referableClass":
+			{
+				"type": "ReferableClass",
+				"converter": "ClassDependentMemberConverter"
+			},
+			"differentConverters":
+			{
+				"converters":
+				{
+					"serializer": "SerializingMemberConverter",
+					"deserializer": "DeserializingMemberConverter"
+				}
+			},
+			"foo": { "converter": "PropertyDependentMemberConverter" },
+			"bar": { "converter": "PropertyDependentMemberConverter" },
+			"contextSensitive": { "converter": "ContextSensitiveMemberConverter" }
+		},
+		"methods":
+		{
+			"getPrivateDateObject":
+			{
+				"getter": true,
+				"type": "DateTime",
+				"converter": "DateTimeConverter"
+			},
+			"setPrivateDateObject":
+			{
+				"setter": true,
+				"type": "DateTime",
+				"converter": "DateTimeConverter"
+			}
+		}
+	},
+	"ClassUsingClassLevelConverter":
+	{
+		"converter": "SimpleObjectConverter"
+	},
+	"ClassUsingDifferentClassLevelConverters":
+	{
+		"converters":
+		{
+			"serializer": "SerializingObjectConverter",
+			"deserializer": "DeserializingObjectConverter"
+		}
+	},
+	"ClassWithGetterAndSetter":
+	{
+		"methods":
+		{
+			"getFoo": { "getter": true },
+			"setFoo": { "setter": true }
+		}
+	},
+	"ClassWithInvalidGetterAndSetter":
+	{
+		"methods":
+		{
+			"getFoo": { "getter": true },
+			"setFoo": { "setter": true }
+		}
+	},
+	"ClassWithGetterAndSetterOnProperty":
+	{
+		"properties":
+		{
+			"foo": { "getter": true	},
+			"bar": { "setter": true }
+		}
+	}
+}
