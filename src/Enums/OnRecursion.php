@@ -8,6 +8,9 @@
 
 namespace OneOfZero\Json\Enums;
 
+/**
+ * Enumeration of serializer behaviour options when recursion occurs.
+ */
 class OnRecursion
 {
 	/**

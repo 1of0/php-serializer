@@ -8,6 +8,10 @@
 
 namespace OneOfZero\Json;
 
+/**
+ * Defines an interface for an object that is referable by other objects. By annotation, mapping or serializer 
+ * configuration, the serializer can be configured to replace the object with the identifier in the JSON representation.
+ */
 interface ReferableInterface
 {
 	/**

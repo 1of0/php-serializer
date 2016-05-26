@@ -11,6 +11,8 @@ namespace OneOfZero\Json;
 interface SerializerInterface
 {
 	/**
+	 * Returns the provided $data in JSON encoded form.
+	 * 
 	 * @param mixed $data
 	 *
 	 * @return string
@@ -18,6 +20,10 @@ interface SerializerInterface
 	public function serialize($data);
 
 	/**
+	 * Returns the data in the provided $json data as a PHP value.
+	 *
+	 * If the $typeHint parameter is provided, the result will be an object of that type populated with the $json data.
+	 * 
 	 * @param string $json
 	 * @param string|null $typeHint
 	 *

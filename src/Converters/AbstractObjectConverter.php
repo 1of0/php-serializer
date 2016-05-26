@@ -8,7 +8,7 @@
 
 namespace OneOfZero\Json\Converters;
 
-use OneOfZero\Json\Nodes\ObjectNode;
+use OneOfZero\Json\Nodes\AbstractObjectNode;
 use OneOfZero\Json\Exceptions\ResumeSerializationException;
 
 abstract class AbstractObjectConverter implements ObjectConverterInterface
@@ -16,7 +16,7 @@ abstract class AbstractObjectConverter implements ObjectConverterInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function serialize(ObjectNode $node)
+	public function serialize(AbstractObjectNode $node)
 	{
 		throw new ResumeSerializationException();
 	}
@@ -24,7 +24,7 @@ abstract class AbstractObjectConverter implements ObjectConverterInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function deserialize(ObjectNode $node)
+	public function deserialize(AbstractObjectNode $node)
 	{
 		throw new ResumeSerializationException();
 	}

@@ -11,6 +11,8 @@ namespace OneOfZero\Json\Annotations;
 use Doctrine\Common\Annotations\Annotation;
 
 /**
+ * Specifies that a specified serializing or deserializing converter should be used on the annotated class or member.
+ * 
  * @Annotation
  * @Target({"CLASS", "PROPERTY", "METHOD"})
  */

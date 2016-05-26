@@ -8,6 +8,7 @@
 
 namespace OneOfZero\Json\Test\FixtureClasses\Converters;
 
+use OneOfZero\Json\Nodes\AbstractObjectNode;
 use OneOfZero\Json\Nodes\ObjectNode;
 use OneOfZero\Json\Converters\AbstractObjectConverter;
 
@@ -16,7 +17,7 @@ class SimpleObjectConverter extends AbstractObjectConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function serialize(ObjectNode $node)
+	public function serialize(AbstractObjectNode $node)
 	{
 		return ['abcd' => $node->getInstance()->foo];
 	}
@@ -24,11 +25,16 @@ class SimpleObjectConverter extends AbstractObjectConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function deserialize(ObjectNode $node)
+	public function deserialize(AbstractObjectNode $node)
 	{
+		if (!($node instanceof ObjectNode))
+		{
+			return null;
+		}
+
 		$instance = $node->getReflector()->newInstance();
 		$instance->foo = $node->getSerializedMemberValue('abcd');
-		
+
 		return $instance;
 	}
 }

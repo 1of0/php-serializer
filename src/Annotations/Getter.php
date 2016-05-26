@@ -11,6 +11,8 @@ namespace OneOfZero\Json\Annotations;
 use Doctrine\Common\Annotations\Annotation;
 
 /**
+ * Explicitly includes the annotated method as a getter.
+ * 
  * @Annotation
  * @Target({"METHOD"})
  */

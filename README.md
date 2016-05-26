@@ -1,11 +1,11 @@
-# OneOfZero\Json
+# 1of0 JSON
 
-`OneOfZero\Json` is an abstraction layer over the PHP `json_encode()` and `json_decode()` functions. The functionality
-is largely inspired by the .NET library [Json.NET](http://www.newtonsoft.com/json).
+This library provides advanced serialization features built over the PHP `json_encode()` and `json_decode()` functions. 
+Most of the features are inspired by the popular .NET library [Json.NET](http://www.newtonsoft.com/json).
 
 ## Installation
 
-Use composer to install the package: 
+This library is available on [Packagist](https://packagist.org/packages/1of0/json), and installable with composer:
 
 ```shell
 composer require 1of0/json
@@ -13,24 +13,32 @@ composer require 1of0/json
 
 ## Quick start
 
+The most straightforward way of using this library is using the static methods on the `Convert` class. The `Convert`
+class is a static facade around the singleton instance of the Serializer class.
+
+
 ```php
-use OneOfZero\Json\JsonConvert;
+use OneOfZero\Json\Convert;
+use OneOfZero\Json\Serializer;
 
 // Basic serialization
-$json = JsonConvert.toJson($myObject);
+$json = Convert::toJson($myObject);
 
 // Basic deserialization
-$object = JsonConvert.fromJson($json);
+$object = Convert::fromJson($json);
 
 // Type hint example
-$object = JsonConvert.fromJson($json, MyNamespace\MyClass::class);
+$object = Convert::fromJson($json, MyNamespace\MyClass::class);
+
+// The same as Convert::toJson($myObject)
+$json = Serializer::get()->serialize($myObject);
 ```
 
 ## How does it work?
 
-The serializer takes annotated objects, and pre-processes them before feeding them to the `json_encode()` function. 
-Inversely, the deserializer feeds the JSON to the `json_decode()` function, and post-processes the result to get as 
-close a match to the original object (assuming it's properly annotated).
+The serializer takes annotated or XML/YAML/JSON mapped objects, and pre-processes them before feeding them to the 
+`json_encode()` function. Inversely, the deserializer feeds the JSON to the `json_decode()` function, and 
+post-processes the result to get as close a match to the original object (assuming it's properly mapped/annotated).
 
 Behaviour is mostly defined through the annotations; see the [documentation](documentation.md) page for a reference. 
 
@@ -42,7 +50,7 @@ When an object is serialized, by default, a metadata property will be appended w
 can be properly deserialized by this library (this feature was inspired by the 
 [zumba/json-serializer](https://github.com/zumba/json-serializer) library).
 
-```json
+```
 {
 	"@class": "MyNamespace\MyClass",
 	"propertyA": "valueA",

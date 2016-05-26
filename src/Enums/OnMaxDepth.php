@@ -8,6 +8,9 @@
 
 namespace OneOfZero\Json\Enums;
 
+/**
+ * Enumeration of serializer behaviour options when the configured maximum depth is reached.
+ */
 class OnMaxDepth
 {
 	/**

@@ -17,21 +17,26 @@ use OneOfZero\Json\Mappers\ReflectionMapperFactory;
 use OneOfZero\Json\Visitors\DeserializingVisitor;
 use OneOfZero\Json\Visitors\SerializingVisitor;
 
+/**
+ * The serializer class provides methods to serialize and deserialize JSON data.
+ */
 class Serializer implements SerializerInterface
 {	
 	/**
-	 * @var Serializer $instance
+	 * @var self $instance
 	 */
 	private static $instance;
 
 	/**
-	 * @return Serializer
+	 * Returns a singleton instance for the Serializer class.
+	 * 
+	 * @return self
 	 */
 	public static function get()
 	{
 		if (!self::$instance)
 		{
-			self::$instance = new Serializer();
+			self::$instance = new self();
 		}
 		return self::$instance;
 	}
@@ -57,6 +62,9 @@ class Serializer implements SerializerInterface
 	private $referenceResolver;
 
 	/**
+	 * Initializes the Serializer class, optionally providing a custom configuration, a dependency injection container,
+	 * a mapper factory/pipeline, or a reference resolver.
+	 * 
 	 * @param Configuration|null $configuration
 	 * @param ContainerInterface|null $container
 	 * @param MapperFactoryInterface|null $mapperFactory
@@ -104,6 +112,9 @@ class Serializer implements SerializerInterface
 	}
 
 	/**
+	 * Casts the provided $instance into the specified $type by serializing the $instance and deserializing it into the
+	 * specified $type.
+	 * 
 	 * @param object $instance
 	 * @param string $type
 	 *

@@ -11,6 +11,9 @@ namespace OneOfZero\Json\Annotations;
 use Doctrine\Common\Annotations\Annotation;
 
 /**
+ * Specifies that the annotated class should be serialized and deserialized with the contract class that is specified 
+ * as value.
+ * 
  * @Annotation
  * @Target({"CLASS"})
  */

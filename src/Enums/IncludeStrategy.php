@@ -8,6 +8,9 @@
 
 namespace OneOfZero\Json\Enums;
 
+/**
+ * Enumeration of inclusion strategy flags. These flags determine what kind of members are implicitly serialized.
+ */
 class IncludeStrategy
 {
 	const NONE                  = 0b00000000;

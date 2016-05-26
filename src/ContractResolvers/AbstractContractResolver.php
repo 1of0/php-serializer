@@ -13,6 +13,9 @@ use OneOfZero\Json\Mappers\ContractObjectMapper;
 use OneOfZero\Json\Nodes\AbstractObjectNode;
 use OneOfZero\Json\Nodes\MemberNode;
 
+/**
+ * Empty abstract implementation of a contract resolver.
+ */
 abstract class AbstractContractResolver implements ContractResolverInterface
 {
 	/**
@@ -20,7 +23,7 @@ abstract class AbstractContractResolver implements ContractResolverInterface
 	 */
 	public function createSerializingObjectContract(AbstractObjectNode $object)
 	{
-		return new ContractObjectMapper();
+		return null;
 	}
 
 	/**
@@ -28,7 +31,7 @@ abstract class AbstractContractResolver implements ContractResolverInterface
 	 */
 	public function createDeserializingObjectContract(AbstractObjectNode $object)
 	{
-		return new ContractObjectMapper();
+		return null;
 	}
 
 	/**
@@ -36,7 +39,7 @@ abstract class AbstractContractResolver implements ContractResolverInterface
 	 */
 	public function createSerializingMemberContract(MemberNode $member)
 	{
-		return new ContractMemberMapper();
+		return null;
 	}
 
 	/**
@@ -44,6 +47,6 @@ abstract class AbstractContractResolver implements ContractResolverInterface
 	 */
 	public function createDeserializingMemberContract(MemberNode $member)
 	{
-		return new ContractMemberMapper();
+		return null;
 	}
 }

@@ -116,11 +116,16 @@ class DeserializingVisitor extends AbstractVisitor
 	 */
 	protected function visitObject(AbstractObjectNode $node)
 	{
-		/** @var ObjectNode $node */
+		/** @var AbstractObjectNode $node */
 		
 		if ($this->hasContractResolver)
 		{
-			$node = $node->withMapper($this->createContractObjectMapper($node));
+			$contractMapper = $this->createContractObjectMapper($node);
+
+			if ($contractMapper !== null)
+			{
+				$node = $node->withMapper($contractMapper);
+			}
 		}
 		
 		$mapper = $node->getMapper();
@@ -164,14 +169,17 @@ class DeserializingVisitor extends AbstractVisitor
 	 */
 	protected function visitObjectMember(MemberNode $node)
 	{
-		/** @var MemberNode $node */
-
 		if ($this->hasContractResolver)
 		{
-			$node = $node->withMapper($this->createContractMemberMapper($node));
+			$contractMapper = $this->createContractMemberMapper($node);
 			
-			// Refresh serialized value with possibly different name from contract mapper
-			$node = $node->withSerializedValue($node->getParent()->getSerializedMemberValue($node->getMapper()->getSerializedName()));
+			if ($contractMapper !== null)
+			{
+				$node = $node->withMapper($contractMapper);
+
+				// Refresh serialized value with possibly different name from contract mapper
+				$node = $node->withSerializedValue($node->getParent()->getSerializedMemberValue($node->getMapper()->getSerializedName()));
+			}
 		}
 		
 		$mapper = $node->getMapper();
@@ -210,8 +218,13 @@ class DeserializingVisitor extends AbstractVisitor
 	protected function createContractObjectMapper(AbstractObjectNode $node)
 	{
 		$mapper = $this->configuration->contractResolver->createDeserializingObjectContract($node);
-		$mapper->setBase($node->getMapper());
-		$mapper->setTarget($node->getMapper()->getTarget());
+		
+		if ($mapper !== null)
+		{
+			$mapper->setBase($node->getMapper());
+			$mapper->setTarget($node->getMapper()->getTarget());
+		}
+		
 		return $mapper;
 	}
 
@@ -223,10 +236,20 @@ class DeserializingVisitor extends AbstractVisitor
 	protected function createContractMemberMapper(MemberNode $node)
 	{
 		$mapper = $this->configuration->contractResolver->createDeserializingMemberContract($node);
-		$mapper->setBase($node->getMapper());
-		$mapper->setTarget($node->getMapper()->getTarget());
-		$mapper->setMemberParent($this->createContractObjectMapper($node->getParent()));
 
+		if ($mapper !== null)
+		{
+			$mapper->setBase($node->getMapper());
+			$mapper->setTarget($node->getMapper()->getTarget());
+
+			$parentContractMapper = $this->createContractObjectMapper($node->getParent());
+
+			$mapper->setMemberParent($parentContractMapper !== null
+				? $parentContractMapper
+				: $node->getParent()->getMapper()
+			);
+		}
+		
 		return $mapper;
 	}
 

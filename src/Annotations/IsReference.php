@@ -11,6 +11,8 @@ namespace OneOfZero\Json\Annotations;
 use Doctrine\Common\Annotations\Annotation;
 
 /**
+ * Specifies that the annotated member is a referable, and may be replaced by a reference during serialization.
+ * 
  * @Annotation
  * @Target({"PROPERTY","METHOD"})
  */

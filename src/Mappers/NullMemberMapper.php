@@ -7,6 +7,7 @@
  */
 
 namespace OneOfZero\Json\Mappers;
+use OneOfZero\Json\Enums\ReferenceResolutionStrategy;
 
 /**
  * @codeCoverageIgnore Not much to test here...
@@ -68,7 +69,7 @@ class NullMemberMapper implements MemberMapperInterface
 	 */
 	public function isReferenceLazy()
 	{
-		return false;
+		return $this->getConfiguration()->defaultReferenceResolutionStrategy == ReferenceResolutionStrategy::LAZY;
 	}
 
 	/**

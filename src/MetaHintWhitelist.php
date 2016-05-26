@@ -8,6 +8,11 @@
 
 namespace OneOfZero\Json;
 
+/**
+ * The deserialization type can be read from the input JSON. This is however quite dangerous and has the potential of 
+ * facilitating remote code execution. To address that issue the MetaHintWhitelist specifies to which types the engine 
+ * may deserialize based on class name, namespace or inheritance criteria.
+ */
 class MetaHintWhitelist
 {
 	/**
@@ -34,40 +39,52 @@ class MetaHintWhitelist
 	 * Enables meta type hints where the hinted class is the provided class.
 	 *
 	 * @param string $class
+	 * 
+	 * @return self
 	 */
 	public function allowClass($class)
 	{
 		$this->classes[] = ltrim($class, '\\');
+		return $this;
 	}
 
 	/**
 	 * Enables meta type hints where the hinted class implements the provided interface.
 	 *
 	 * @param string $interface
+	 *
+	 * @return self
 	 */
 	public function allowClassesImplementing($interface)
 	{
 		$this->interfaces[] = $interface;
+		return $this;
 	}
 
 	/**
 	 * Enables meta type hints where the hinted class is in the provided namespace (or any of its sub-namespaces).
 	 *
 	 * @param string $namespace
+	 *
+	 * @return self
 	 */
 	public function allowClassesInNamespace($namespace)
 	{
 		$this->namespaces[] = trim($namespace, '\\') . '\\';
+		return $this;
 	}
 
 	/**
 	 * Enables meta type hints where the hinted class matches the provided regular expression.
 	 *
 	 * @param string $pattern
+	 *
+	 * @return self
 	 */
 	public function allowClassesMatchingPattern($pattern)
 	{
 		$this->patterns[] = $pattern;
+		return $this;
 	}
 
 	/**

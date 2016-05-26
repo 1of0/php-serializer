@@ -11,6 +11,8 @@ namespace OneOfZero\Json\Annotations;
 use Doctrine\Common\Annotations\Annotation;
 
 /**
+ * Specifies the type for the annotated member.
+ * 
  * @Annotation
  * @Target({"PROPERTY","METHOD"})
  */

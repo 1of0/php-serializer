@@ -8,7 +8,7 @@
 
 namespace OneOfZero\Json\Test;
 
-use OneOfZero\Json\JsonConvert;
+use OneOfZero\Json\Convert;
 use OneOfZero\Json\Serializer;
 use OneOfZero\Json\Test\FixtureClasses\PrivatePropertiesClass;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
@@ -132,7 +132,7 @@ class BasicFunctionalityTest extends AbstractTest
 		$object = new SimpleClassExtender('1234', 'abcd', '5678', '1337');
 		$expected = new SimpleClass('1234', 'abcd', '5678');
 
-		$cast = JsonConvert::cast($object, SimpleClass::class);
+		$cast = Convert::cast($object, SimpleClass::class);
 		$this->assertObjectEquals($expected, $cast);
 		$this->assertEquals(SimpleClass::class, get_class($cast));
 	}

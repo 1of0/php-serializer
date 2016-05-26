@@ -8,6 +8,9 @@
 
 namespace OneOfZero\Json\Enums;
 
+/**
+ * Enumeration of reference resolution strategies.
+ */
 class ReferenceResolutionStrategy
 {
 	const LAZY = 0;

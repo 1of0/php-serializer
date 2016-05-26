@@ -116,11 +116,14 @@ class SerializingVisitor extends AbstractVisitor
 	 */
 	protected function visitObject(AbstractObjectNode $node)
 	{
-		/** @var ObjectNode $node */
-		
 		if ($this->hasContractResolver)
 		{
-			$node = $node->withMapper($this->createContractObjectMapper($node));
+			$contractMapper = $this->createContractObjectMapper($node);
+			
+			if ($contractMapper !== null)
+			{
+				$node = $node->withMapper($contractMapper);
+			}
 		}
 		
 		$mapper = $node->getMapper();
@@ -208,7 +211,12 @@ class SerializingVisitor extends AbstractVisitor
 		
 		if ($this->hasContractResolver)
 		{
-			$node = $node->withMapper($this->createContractMemberMapper($node));
+			$contractMapper = $this->createContractMemberMapper($node);
+			
+			if ($contractMapper !== null)
+			{
+				$node = $node->withMapper($contractMapper);
+			}
 		}
 		
 		$mapper = $node->getMapper();
@@ -254,8 +262,13 @@ class SerializingVisitor extends AbstractVisitor
 	protected function createContractObjectMapper(AbstractObjectNode $node)
 	{
 		$mapper = $this->configuration->contractResolver->createSerializingObjectContract($node);
-		$mapper->setBase($node->getMapper());
-		$mapper->setTarget($node->getMapper()->getTarget());
+		
+		if ($mapper !== null)
+		{
+			$mapper->setBase($node->getMapper());
+			$mapper->setTarget($node->getMapper()->getTarget());
+		}
+		
 		return $mapper;
 	}
 
@@ -267,9 +280,19 @@ class SerializingVisitor extends AbstractVisitor
 	protected function createContractMemberMapper(MemberNode $node)
 	{
 		$mapper = $this->configuration->contractResolver->createSerializingMemberContract($node);
-		$mapper->setBase($node->getMapper());
-		$mapper->setTarget($node->getMapper()->getTarget());
-		$mapper->setMemberParent($this->createContractObjectMapper($node->getParent()));
+		
+		if ($mapper !== null)
+		{
+			$mapper->setBase($node->getMapper());
+			$mapper->setTarget($node->getMapper()->getTarget());
+			
+			$parentContractMapper = $this->createContractObjectMapper($node->getParent());
+			
+			$mapper->setMemberParent($parentContractMapper !== null
+				? $parentContractMapper
+				: $node->getParent()->getMapper()
+			);
+		}
 
 		return $mapper;
 	}

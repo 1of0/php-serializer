@@ -14,6 +14,12 @@ use OneOfZero\Json\Nodes\MemberNode;
 use Stringy\Stringy as S;
 use Stringy\Stringy;
 
+/**
+ * Implementation of a contract resolver that changes the casing style between the serialized and unserialized 
+ * representations. 
+ * 
+ * E.g. an instance property is named $someProperty, but when serialized the name becomes "SomeProperty".
+ */
 class PropertyNameContractResolver extends AbstractContractResolver
 {
 	const PASCAL_CASE = 'PASCAL_CASE';
@@ -42,7 +48,7 @@ class PropertyNameContractResolver extends AbstractContractResolver
 		if (!class_exists(S::class))
 		{
 			// @codeCoverageIgnoreStart
-			throw new NotSupportedException('PascalCaseContractResolver requires the package "danielstjules/stringy"');
+			throw new NotSupportedException('PropertyNameContractResolver requires the package "danielstjules/stringy"');
 			// @codeCoverageIgnoreEnd
 		}
 

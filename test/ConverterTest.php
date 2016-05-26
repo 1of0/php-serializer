@@ -10,7 +10,7 @@ namespace OneOfZero\Json\Test;
 
 use DateTime;
 use OneOfZero\Json\Exceptions\ConverterException;
-use OneOfZero\Json\JsonConvert;
+use OneOfZero\Json\Convert;
 use OneOfZero\Json\Test\FixtureClasses\ClassUsingClassLevelConverter;
 use OneOfZero\Json\Test\FixtureClasses\ClassUsingConverters;
 use OneOfZero\Json\Test\FixtureClasses\ClassUsingDifferentClassLevelConverters;
@@ -49,11 +49,11 @@ class ConverterTests extends AbstractTest
 		$object->contextSensitive   = 2;
 		$object->setPrivateDateObject($date);
 
-		$json = JsonConvert::toJson($object);
+		$json = Convert::toJson($object);
 		$this->assertEquals($expectedJson, $json);
 
 		/** @var ClassUsingConverters $deserialized */
-		$deserialized = JsonConvert::fromJson($json);
+		$deserialized = Convert::fromJson($json);
 		
 		$this->assertEquals('bar', $deserialized->differentConverters);
 		$deserialized->differentConverters = null;
@@ -71,10 +71,10 @@ class ConverterTests extends AbstractTest
 			'abcd'       => 1234,
 		]);
 
-		$json = JsonConvert::toJson($object);
+		$json = Convert::toJson($object);
 		$this->assertEquals($expectedJson, $json);
 
-		$deserialized = JsonConvert::fromJson($json);
+		$deserialized = Convert::fromJson($json);
 		$this->assertObjectEquals($object, $deserialized);
 	}
 
@@ -88,10 +88,10 @@ class ConverterTests extends AbstractTest
 			'abcd'       => 1234,
 		]);
 
-		$json = JsonConvert::toJson($object);
+		$json = Convert::toJson($object);
 		$this->assertEquals($expectedJson, $json);
 
-		$deserialized = JsonConvert::fromJson($json, ClassUsingDifferentClassLevelConverters::class);
+		$deserialized = Convert::fromJson($json, ClassUsingDifferentClassLevelConverters::class);
 		$this->assertEquals('bar', $deserialized->foo);
 	}
 	
@@ -105,10 +105,10 @@ class ConverterTests extends AbstractTest
 			'bar'       => '1234',
 		]);
 		
-		$json = JsonConvert::toJson($object);
+		$json = Convert::toJson($object);
 		$this->assertEquals($expectedJson, $json);
 
-		$deserialized = JsonConvert::fromJson($json);
+		$deserialized = Convert::fromJson($json);
 		$this->assertObjectEquals($object, $deserialized);
 	}
 	
@@ -122,28 +122,28 @@ class ConverterTests extends AbstractTest
 			'bar'       => '1234',
 		]);
 		
-		$json = JsonConvert::toJson($object);
+		$json = Convert::toJson($object);
 		$this->assertEquals($expectedJson, $json);
 
-		$deserialized = JsonConvert::fromJson($json);
+		$deserialized = Convert::fromJson($json);
 		$this->assertObjectEquals($object, $deserialized);
 	}
 	
 	public function testInvalidConverterDefinition()
 	{
 		$this->setExpectedException(ConverterException::class);
-		JsonConvert::toJson(new ClassUsingInvalidConverterDefinition());
+		Convert::toJson(new ClassUsingInvalidConverterDefinition());
 	}
 	
 	public function testInvalidTypeForObjectConverter()
 	{
 		$this->setExpectedException(ConverterException::class);
-		JsonConvert::toJson(new ClassUsingInvalidTypeForObjectConverter());
+		Convert::toJson(new ClassUsingInvalidTypeForObjectConverter());
 	}
 	
 	public function testInvalidTypeForMemberConverter()
 	{
 		$this->setExpectedException(ConverterException::class);
-		JsonConvert::toJson(new ClassUsingInvalidTypeForMemberConverter());
+		Convert::toJson(new ClassUsingInvalidTypeForMemberConverter());
 	}
 }

@@ -14,6 +14,9 @@ use OneOfZero\Json\Enums\OnMaxDepth;
 use OneOfZero\Json\Enums\OnRecursion;
 use OneOfZero\Json\Enums\ReferenceResolutionStrategy;
 
+/**
+ * The Configuration class provides various options that allow you to control the behaviour of the serializer. 
+ */
 class Configuration
 {
 	/**
