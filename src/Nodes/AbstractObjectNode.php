@@ -33,22 +33,18 @@ class AbstractObjectNode extends AbstractNode
 	 * @var array $metadata
 	 */
 	protected $metadata = [];
-	
+
 	/**
-	 * @param MemberNode $node
-	 *
-	 * @return self
+	 * @param MemberNode $memberNode
 	 */
-	public function withInstanceMember(MemberNode $node)
+	public function setInstanceMember(MemberNode $memberNode)
 	{
-		$new = clone $this;
-
-		if ($node->getValue() !== null)
+		$value = $memberNode->getValue();
+		
+		if ($value !== null)
 		{
-			$node->getMapper()->setValue($new->getInstance(), $node->getValue());
+			$memberNode->setObjectValue($this, $value);
 		}
-
-		return $new;
 	}
 	
 	/**

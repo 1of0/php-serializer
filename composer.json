@@ -1,8 +1,8 @@
 {
 	"name": "1of0/json",
-	"description": "Abstraction layer for json_encode() and json_decode(), providing Json.NET-like functionality through annotations",
+	"description": "Abstraction layer for json_encode() and json_decode(), providing Json.NET-like functionality through annotations or mappings",
 	"keywords": [ "json", "serializer", "serialization", "json.net", "annotations" ],
-	"homepage": "https://bitbucket.org/thebigb86/jsonserializer",
+	"homepage": "https://bitbucket.org/1of0/json",
 	"license": "MIT",
 	"authors": [
 		{
@@ -30,8 +30,10 @@
 	},
 	"suggest":
 	{
-		"symfony/yaml": "Required for yaml mapper support",
-		"danielstjules/stringy": "Required for PascalCaseContractResolver"
+		"ext-xml": "Required for XML mapper support",
+		"symfony/yaml": "Required for YAML mapper support",
+		"danielstjules/stringy": "Required for PascalCaseContractResolver",
+		"ocramius/proxy-manager": "Useful for making lazy proxies"
 	},
 	"autoload":
 	{

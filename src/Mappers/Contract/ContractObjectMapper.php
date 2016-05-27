@@ -6,7 +6,10 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Mappers;
+namespace OneOfZero\Json\Mappers\Contract;
+
+use OneOfZero\Json\Mappers\BaseMapperTrait;
+use OneOfZero\Json\Mappers\ObjectMapperInterface;
 
 class ContractObjectMapper implements ObjectMapperInterface
 {

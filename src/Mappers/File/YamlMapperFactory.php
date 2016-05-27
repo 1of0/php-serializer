@@ -6,8 +6,9 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Mappers;
+namespace OneOfZero\Json\Mappers\File;
 
+use OneOfZero\Json\Mappers\AbstractArray\ArrayMapperFactory;
 use RuntimeException;
 use Symfony\Component\Yaml\Parser;
 

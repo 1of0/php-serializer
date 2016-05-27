@@ -6,11 +6,12 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Mappers;
+namespace OneOfZero\Json\Mappers\File;
 
+use OneOfZero\Json\Mappers\AbstractArray\ArrayMapperFactory;
 use RuntimeException;
 
-class JsonMapperFactory extends ArrayMapperFactory
+class PhpArrayMapperFactory extends ArrayMapperFactory
 {
 	/**
 	 * @param string $mappingFile
@@ -22,7 +23,7 @@ class JsonMapperFactory extends ArrayMapperFactory
 			throw new RuntimeException("File \"$mappingFile\" does not exist");
 		}
 
-		$this->mapping = json_decode(file_get_contents($mappingFile), true);
-		$this->aliases = array_key_exists('@use', $this->mapping) ? $this->mapping['@use'] : [];
+		/** @noinspection PhpIncludeInspection */
+		$this->mapping = include($mappingFile);
 	}
 }

@@ -10,10 +10,10 @@ namespace OneOfZero\Json;
 
 use Interop\Container\ContainerInterface;
 use OneOfZero\Json\Helpers\Environment;
-use OneOfZero\Json\Mappers\AnnotationMapperFactory;
+use OneOfZero\Json\Mappers\Annotation\AnnotationMapperFactory;
 use OneOfZero\Json\Mappers\MapperFactoryInterface;
 use OneOfZero\Json\Mappers\MapperPipeline;
-use OneOfZero\Json\Mappers\ReflectionMapperFactory;
+use OneOfZero\Json\Mappers\Reflection\ReflectionMapperFactory;
 use OneOfZero\Json\Visitors\DeserializingVisitor;
 use OneOfZero\Json\Visitors\SerializingVisitor;
 

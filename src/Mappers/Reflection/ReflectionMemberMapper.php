@@ -6,10 +6,13 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Mappers;
+namespace OneOfZero\Json\Mappers\Reflection;
 
 use OneOfZero\Json\Enums\IncludeStrategy;
 use OneOfZero\Json\Helpers\Flags;
+use OneOfZero\Json\Helpers\ReflectionHelper;
+use OneOfZero\Json\Mappers\BaseMemberMapperTrait;
+use OneOfZero\Json\Mappers\MemberMapperInterface;
 use ReflectionParameter;
 
 /**
@@ -97,7 +100,7 @@ class ReflectionMemberMapper implements MemberMapperInterface
 			return false;
 		}
 
-		if (!$this->hasGetterSignature())
+		if (!ReflectionHelper::hasGetterSignature($this->target))
 		{
 			return false;
 		}
@@ -127,7 +130,7 @@ class ReflectionMemberMapper implements MemberMapperInterface
 			return false;
 		}
 
-		if (!$this->hasSetterSignature())
+		if (!ReflectionHelper::hasSetterSignature($this->target))
 		{
 			return false;
 		}

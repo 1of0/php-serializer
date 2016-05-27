@@ -6,7 +6,11 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Mappers;
+namespace OneOfZero\Json\Mappers\Anonymous;
+
+use OneOfZero\Json\Mappers\BaseMapperTrait;
+use OneOfZero\Json\Mappers\MemberMapperInterface;
+use OneOfZero\Json\Mappers\ObjectMapperInterface;
 
 class AnonymousMemberMapper implements MemberMapperInterface
 {
@@ -56,22 +60,6 @@ class AnonymousMemberMapper implements MemberMapperInterface
 	public function getSerializedName()
 	{
 		return $this->name;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getValue($instance)
-	{
-		return $instance->{$this->getDeserializedName()};
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setValue($instance, $value)
-	{
-		$instance->{$this->getDeserializedName()} = $value;
 	}
 
 	#region // Null getters

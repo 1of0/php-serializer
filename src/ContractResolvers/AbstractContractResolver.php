@@ -8,8 +8,6 @@
 
 namespace OneOfZero\Json\ContractResolvers;
 
-use OneOfZero\Json\Mappers\ContractMemberMapper;
-use OneOfZero\Json\Mappers\ContractObjectMapper;
 use OneOfZero\Json\Nodes\AbstractObjectNode;
 use OneOfZero\Json\Nodes\MemberNode;
 

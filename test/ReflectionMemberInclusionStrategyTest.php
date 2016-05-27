@@ -9,7 +9,7 @@
 namespace OneOfZero\Json\Test;
 
 use OneOfZero\Json\Mappers\MapperPipeline;
-use OneOfZero\Json\Mappers\ReflectionMapperFactory;
+use OneOfZero\Json\Mappers\Reflection\ReflectionMapperFactory;
 use OneOfZero\Json\Serializer;
 
 class ReflectionMemberInclusionStrategyTest extends AbstractMemberInclusionStrategyTest

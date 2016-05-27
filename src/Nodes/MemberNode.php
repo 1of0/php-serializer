@@ -8,9 +8,11 @@
 
 namespace OneOfZero\Json\Nodes;
 
+use OneOfZero\Json\Helpers\ReflectionHelper;
 use OneOfZero\Json\Mappers\MemberMapperInterface;
 use ReflectionMethod;
 use ReflectionProperty;
+use stdClass;
 
 class MemberNode extends AbstractNode
 {
@@ -39,7 +41,62 @@ class MemberNode extends AbstractNode
 	 */
 	public function getParent()
 	{
-		return parent::getParent();
+		return $this->parent;
+	}
+
+	/**
+	 * @param AbstractObjectNode $objectNode
+	 * 
+	 * @return mixed
+	 */
+	public function getObjectValue(AbstractObjectNode $objectNode)
+	{
+		if ($objectNode->getInstance() instanceof stdClass)
+		{
+			return $objectNode->getInstance()->{$this->mapper->getDeserializedName()};
+		}
+		
+		$this->reflector->setAccessible(true);
+
+		if ($this->reflector instanceof ReflectionProperty)
+		{
+			return $this->reflector->getValue($objectNode->getInstance());
+		}
+
+		if (ReflectionHelper::hasGetterSignature($this->reflector))
+		{
+			return $this->reflector->invoke($objectNode->getInstance());
+		}
+
+		return null;
+	}
+
+	/**
+	 * @param AbstractObjectNode $objectNode
+	 * 
+	 * @param mixed $value
+	 */
+	public function setObjectValue(AbstractObjectNode $objectNode, $value)
+	{
+		if ($objectNode->getInstance() instanceof stdClass)
+		{
+			$objectNode->getInstance()->{$this->mapper->getDeserializedName()} = $value;
+			return;
+		}
+		
+		$this->reflector->setAccessible(true);
+
+		if ($this->reflector instanceof ReflectionProperty)
+		{
+			$this->reflector->setValue($objectNode->getInstance(), $value);
+			return;
+		}
+
+		if (ReflectionHelper::hasSetterSignature($this->reflector))
+		{
+			$this->reflector->invoke($objectNode->getInstance(), $value);
+			return;
+		}
 	}
 	
 	#region // Generic immutability helpers
@@ -104,6 +161,14 @@ class MemberNode extends AbstractNode
 		return $this->value;
 	}
 
+	/**
+	 * @param mixed $value
+	 */
+	public function setValue($value)
+	{
+		$this->value = $value;
+	}
+	
 	/**
 	 * @return mixed
 	 */

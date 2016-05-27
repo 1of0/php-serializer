@@ -1,4 +1,4 @@
-# 1of0 JSON
+# 1of0/json
 
 This library provides advanced serialization features built over the PHP `json_encode()` and `json_decode()` functions. 
 Most of the features are inspired by the popular .NET library [Json.NET](http://www.newtonsoft.com/json).

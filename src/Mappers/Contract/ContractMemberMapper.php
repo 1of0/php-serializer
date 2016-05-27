@@ -6,18 +6,15 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Mappers;
+namespace OneOfZero\Json\Mappers\Contract;
 
-use stdClass;
+use OneOfZero\Json\Mappers\BaseMemberMapperTrait;
+use OneOfZero\Json\Mappers\MemberMapperInterface;
 
 class ContractMemberMapper implements MemberMapperInterface
 {
-	use BaseMemberMapperTrait
-	{
-		getValue as baseGetValue;
-		setValue as baseSetValue;
-	}
-
+	use BaseMemberMapperTrait;
+	
 	/**
 	 * @var string|null $deserializedName
 	 */
@@ -126,33 +123,6 @@ class ContractMemberMapper implements MemberMapperInterface
 		$this->isDeserializable = $isDeserializable;
 		$this->serializingConverter = $serializingConverter;
 		$this->deserializingConverter = $deserializingConverter;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getValue($instance)
-	{
-		if ($instance instanceof stdClass)
-		{
-			return $instance->{$this->getDeserializedName()};
-		}
-		
-		return $this->baseGetValue($instance);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setValue($instance, $value)
-	{
-		if ($instance instanceof stdClass)
-		{
-			$instance->{$this->getDeserializedName()} = $value;
-			return;
-		}
-
-		$this->baseSetValue($instance, $value);
 	}
 
 	#region // Getters

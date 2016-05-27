@@ -6,8 +6,10 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Mappers;
+namespace OneOfZero\Json\Mappers\Anonymous;
 
+use OneOfZero\Json\Mappers\BaseMapperTrait;
+use OneOfZero\Json\Mappers\ObjectMapperInterface;
 use stdClass;
 
 class AnonymousObjectMapper implements ObjectMapperInterface

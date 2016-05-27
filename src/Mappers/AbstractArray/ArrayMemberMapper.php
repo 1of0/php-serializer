@@ -6,9 +6,11 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Mappers;
+namespace OneOfZero\Json\Mappers\AbstractArray;
 
 use OneOfZero\Json\Exceptions\SerializationException;
+use OneOfZero\Json\Mappers\BaseMemberMapperTrait;
+use OneOfZero\Json\Mappers\MemberMapperInterface;
 
 class ArrayMemberMapper extends ArrayAbstractMapper implements MemberMapperInterface
 {

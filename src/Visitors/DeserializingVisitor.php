@@ -154,7 +154,7 @@ class DeserializingVisitor extends AbstractVisitor
 				->withParent($node)
 			;
 
-			$node = $node->withInstanceMember($this->visitObjectMember($memberNode));
+			$node->setInstanceMember($this->visitObjectMember($memberNode));
 		}
 		
 		return $node;

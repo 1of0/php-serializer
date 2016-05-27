@@ -6,13 +6,14 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Mappers;
+namespace OneOfZero\Json\Mappers\File;
 
 use DOMAttr;
 use DOMDocument;
 use DOMElement;
 use DOMXPath;
 use Exception;
+use OneOfZero\Json\Mappers\AbstractArray\ArrayMapperFactory;
 use RuntimeException;
 
 class XmlMapperFactory extends ArrayMapperFactory

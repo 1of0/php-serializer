@@ -21,23 +21,6 @@ interface MemberMapperInterface extends MapperInterface
 	public function setMemberParent(ObjectMapperInterface $parent);
 
 	/**
-	 * Should return the value for the member on the provided instance.
-	 *
-	 * @param object $instance
-	 *
-	 * @return mixed
-	 */
-	public function getValue($instance);
-
-	/**
-	 * Should set the provided value on the member of the provided instance.
-	 *
-	 * @param object $instance
-	 * @param mixed $value
-	 */
-	public function setValue($instance, $value);
-
-	/**
 	 * Should return the name for the deserialized property or method.
 	 *
 	 * @return string

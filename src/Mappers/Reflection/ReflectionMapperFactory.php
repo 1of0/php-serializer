@@ -6,8 +6,11 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Mappers;
+namespace OneOfZero\Json\Mappers\Reflection;
 
+use OneOfZero\Json\Mappers\BaseFactoryTrait;
+use OneOfZero\Json\Mappers\MapperFactoryInterface;
+use OneOfZero\Json\Mappers\ObjectMapperInterface;
 use ReflectionClass;
 
 class ReflectionMapperFactory implements MapperFactoryInterface

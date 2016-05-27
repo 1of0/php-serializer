@@ -6,10 +6,11 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Mappers;
+namespace OneOfZero\Json\Mappers\Annotation;
 
 use OneOfZero\BetterAnnotations\Annotations;
 use OneOfZero\Json\Annotations\Converter;
+use OneOfZero\Json\Mappers\MapperInterface;
 use OneOfZero\PhpDocReader\PhpDocReader;
 
 trait AnnotationMapperTrait

@@ -116,6 +116,8 @@ class SerializingVisitor extends AbstractVisitor
 	 */
 	protected function visitObject(AbstractObjectNode $node)
 	{
+		/** @var AbstractObjectNode $node */
+		
 		if ($this->hasContractResolver)
 		{
 			$contractMapper = $this->createContractObjectMapper($node);
@@ -128,9 +130,9 @@ class SerializingVisitor extends AbstractVisitor
 		
 		$mapper = $node->getMapper();
 
-
 		if ($node instanceof ObjectNode && !$mapper->isMetadataDisabled())
 		{
+			/** @var ObjectNode $node */
 			$node = $node->withMetadata(Metadata::TYPE, $node->getReflector()->name);
 		}
 
@@ -171,11 +173,12 @@ class SerializingVisitor extends AbstractVisitor
 		foreach ($node->getMapper()->getMembers() as $memberMapper)
 		{
 			$memberNode = (new MemberNode)
-				->withValue($memberMapper->getValue($node->getInstance()))
 				->withReflector($memberMapper->getTarget())
 				->withMapper($memberMapper)
 				->withParent($node)
 			;
+			
+			$memberNode = $memberNode->withValue($memberNode->getObjectValue($node));
 
 			try
 			{
@@ -330,14 +333,14 @@ class SerializingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * @param ObjectNode $node
+	 * @param AbstractObjectNode $node
 	 * 
 	 * @return ObjectNode
 	 * 
 	 * @throws NotSupportedException
 	 * @throws RecursionException
 	 */
-	protected function handleMaxDepth(ObjectNode $node)
+	protected function handleMaxDepth(AbstractObjectNode $node)
 	{
 		switch ($this->configuration->defaultMaxDepthHandlingStrategy)
 		{

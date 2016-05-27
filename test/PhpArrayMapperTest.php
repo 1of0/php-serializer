@@ -8,9 +8,9 @@
 
 namespace OneOfZero\Json\Test;
 
+use OneOfZero\Json\Mappers\File\PhpArrayMapperFactory;
 use OneOfZero\Json\Mappers\MapperPipeline;
-use OneOfZero\Json\Mappers\PhpArrayMapperFactory;
-use OneOfZero\Json\Mappers\ReflectionMapperFactory;
+use OneOfZero\Json\Mappers\Reflection\ReflectionMapperFactory;
 use RuntimeException;
 
 class PhpArrayMapperTest extends AbstractMapperTest

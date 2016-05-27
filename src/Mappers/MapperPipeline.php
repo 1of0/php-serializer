@@ -9,6 +9,7 @@
 namespace OneOfZero\Json\Mappers;
 
 use OneOfZero\Json\Configuration;
+use OneOfZero\Json\Mappers\Null\NullMapperFactory;
 
 class MapperPipeline
 {

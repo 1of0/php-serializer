@@ -9,10 +9,10 @@
 namespace OneOfZero\Json\ContractResolvers;
 
 use OneOfZero\Json\Exceptions\NotSupportedException;
-use OneOfZero\Json\Mappers\ContractMemberMapper;
+use OneOfZero\Json\Mappers\Contract\ContractMemberMapper;
 use OneOfZero\Json\Nodes\MemberNode;
-use Stringy\Stringy as S;
 use Stringy\Stringy;
+use Stringy\Stringy as S;
 
 /**
  * Implementation of a contract resolver that changes the casing style between the serialized and unserialized 

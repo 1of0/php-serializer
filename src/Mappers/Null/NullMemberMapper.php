@@ -6,8 +6,11 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Mappers;
+namespace OneOfZero\Json\Mappers\Null;
+
 use OneOfZero\Json\Enums\ReferenceResolutionStrategy;
+use OneOfZero\Json\Mappers\BaseMemberMapperTrait;
+use OneOfZero\Json\Mappers\MemberMapperInterface;
 
 /**
  * @codeCoverageIgnore Not much to test here...

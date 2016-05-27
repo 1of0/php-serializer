@@ -8,7 +8,7 @@
 
 namespace OneOfZero\Json\Nodes;
 
-use OneOfZero\Json\Mappers\AnonymousObjectMapper;
+use OneOfZero\Json\Mappers\Anonymous\AnonymousObjectMapper;
 use stdClass;
 
 class AnonymousObjectNode extends AbstractObjectNode

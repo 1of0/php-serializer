@@ -6,7 +6,10 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Mappers;
+namespace OneOfZero\Json\Mappers\Null;
+
+use OneOfZero\Json\Mappers\BaseObjectMapperTrait;
+use OneOfZero\Json\Mappers\ObjectMapperInterface;
 
 /**
  * @codeCoverageIgnore Not much to test here...

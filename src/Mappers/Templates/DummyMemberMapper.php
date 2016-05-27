@@ -6,7 +6,10 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Mappers;
+namespace OneOfZero\Json\Mappers\Templates;
+
+use OneOfZero\Json\Mappers\BaseMemberMapperTrait;
+use OneOfZero\Json\Mappers\MemberMapperInterface;
 
 /**
  * @codeCoverageIgnore This is just a copy-paste member mapper deferring all calls to base

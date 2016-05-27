@@ -9,6 +9,7 @@
 namespace OneOfZero\Json\Mappers;
 
 use OneOfZero\Json\Exceptions\SerializationException;
+use OneOfZero\Json\Mappers\Reflection\ReflectionObjectMapper;
 use ReflectionMethod;
 use ReflectionProperty;
 
@@ -44,46 +45,6 @@ trait BaseMemberMapperTrait
 	}
 	
 	/**
-	 * {@inheritdoc}
-	 */
-	public function getValue($instance)
-	{
-		$this->target->setAccessible(true);
-
-		if ($this->isClassProperty())
-		{
-			return $this->target->getValue($instance);
-		}
-
-		if ($this->hasGetterSignature())
-		{
-			return $this->target->invoke($instance);
-		}
-
-		return null;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setValue($instance, $value)
-	{
-		$this->target->setAccessible(true);
-
-		if ($this->isClassProperty())
-		{
-			$this->target->setValue($instance, $value);
-			return;
-		}
-
-		if ($this->hasSetterSignature())
-		{
-			$this->target->invoke($instance, $value);
-			return;
-		}
-	}
-
-	/**
 	 * Returns a boolean value indicating whether or not the target field is a property.
 	 *
 	 * @return bool
@@ -101,29 +62,6 @@ trait BaseMemberMapperTrait
 	protected final function isClassMethod()
 	{
 		return $this->target instanceof ReflectionMethod;
-	}
-
-	/**
-	 * @return bool
-	 */
-	protected final function hasGetterSignature()
-	{
-		// Valid getters must have no required parameters
-		return $this->isClassMethod() 
-		    && $this->target->getNumberOfRequiredParameters() === 0
-		;
-	}
-
-	/**
-	 * @return bool
-	 */
-	protected final function hasSetterSignature()
-	{
-		// Valid setters must have at least one parameter, and at most one required parameter
-		return $this->isClassMethod() 
-		    && $this->target->getNumberOfParameters() > 0 
-		    && $this->target->getNumberOfRequiredParameters() <= 1
-		;
 	}
 
 	/**

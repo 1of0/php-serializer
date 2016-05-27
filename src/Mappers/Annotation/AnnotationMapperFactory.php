@@ -6,10 +6,13 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Mappers;
+namespace OneOfZero\Json\Mappers\Annotation;
 
 use Doctrine\Common\Annotations\Reader;
 use OneOfZero\BetterAnnotations\Annotations;
+use OneOfZero\Json\Mappers\BaseFactoryTrait;
+use OneOfZero\Json\Mappers\MapperFactoryInterface;
+use OneOfZero\Json\Mappers\ObjectMapperInterface;
 use ReflectionClass;
 
 class AnnotationMapperFactory implements MapperFactoryInterface

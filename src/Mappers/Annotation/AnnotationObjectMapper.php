@@ -6,11 +6,13 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Mappers;
+namespace OneOfZero\Json\Mappers\Annotation;
 
 use Doctrine\Common\Annotations\Annotation;
 use OneOfZero\Json\Annotations\ExplicitInclusion;
 use OneOfZero\Json\Annotations\NoMetadata;
+use OneOfZero\Json\Mappers\BaseObjectMapperTrait;
+use OneOfZero\Json\Mappers\ObjectMapperInterface;
 
 /**
  * Implementation of a mapper that maps the serialization metadata for a class using annotations.

@@ -8,6 +8,7 @@
 
 namespace OneOfZero\Json\Mappers;
 
+use OneOfZero\Json\Mappers\Reflection\ReflectionMemberMapper;
 use ReflectionMethod;
 use ReflectionProperty;
 

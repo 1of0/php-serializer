@@ -6,7 +6,7 @@
  * Refer to the LICENSE file for the full copyright notice.
  */
 
-namespace OneOfZero\Json\Mappers;
+namespace OneOfZero\Json\Mappers\Annotation;
 
 use Doctrine\Common\Annotations\Annotation;
 use OneOfZero\Json\Annotations\AbstractName;
@@ -18,6 +18,8 @@ use OneOfZero\Json\Annotations\Property;
 use OneOfZero\Json\Annotations\Setter;
 use OneOfZero\Json\Annotations\Type;
 use OneOfZero\Json\Exceptions\SerializationException;
+use OneOfZero\Json\Mappers\BaseMemberMapperTrait;
+use OneOfZero\Json\Mappers\MemberMapperInterface;
 use ReflectionParameter;
 
 class AnnotationMemberMapper implements MemberMapperInterface
