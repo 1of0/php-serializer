@@ -7,8 +7,14 @@
 		</testsuite>
 	</testsuites>
 	<filter>
-		<whitelist>
-			<directory>src/</directory>
+		<whitelist processUncoveredFilesFromWhitelist="true">
+			<directory suffix=".php">src</directory>
+			<exclude>
+				<directory>src/Annotations</directory>
+				<directory>src/Enums</directory>
+				<directory>src/Exceptions</directory>
+				<directory>src/Mappers/Templates</directory>
+			</exclude>
 		</whitelist>
 	</filter>
 </phpunit>

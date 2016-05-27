@@ -104,4 +104,14 @@ class Configuration
 	{
 		$this->metaHintWhitelist = new MetaHintWhitelist();
 	}
+
+	/**
+	 * Returns a hash for this configuration.
+	 * 
+	 * @return string
+	 */
+	public function getHash()
+	{
+		return sha1(serialize($this));
+	}
 }

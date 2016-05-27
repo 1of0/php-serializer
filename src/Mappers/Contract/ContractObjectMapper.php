@@ -60,7 +60,25 @@ class ContractObjectMapper implements ObjectMapperInterface
 	{
 		return $this->getBase()->getMembers();
 	}
-	
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getProperties()
+	{
+		return $this->getBase()->getProperties();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getMethods()
+	{
+		return $this->getBase()->getMethods();
+	}
+
+
+
 	#region // Getters
 	
 	/**

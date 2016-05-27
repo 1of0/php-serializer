@@ -23,8 +23,8 @@ class YamlMapperTest extends AbstractMapperTest
 	protected function getPipeline()
 	{
 		return (new MapperPipeline)
-			->addFactory(new YamlMapperFactory(self::YAML_MAPPING_FILE))
-			->addFactory(new ReflectionMapperFactory())
+			->withFactory(new YamlMapperFactory(self::YAML_MAPPING_FILE))
+			->withFactory(new ReflectionMapperFactory())
 			->build($this->defaultConfiguration)
 		;
 	}

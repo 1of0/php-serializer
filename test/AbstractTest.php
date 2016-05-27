@@ -39,8 +39,8 @@ abstract class AbstractTest extends PHPUnit_Framework_TestCase
 		$this->defaultConfiguration = new Configuration();
 
 		$this->defaultPipeline = (new MapperPipeline)
-			->addFactory(new AnnotationMapperFactory(Environment::getAnnotationReader()))
-			->addFactory(new ReflectionMapperFactory())
+			->withFactory(new AnnotationMapperFactory(Environment::getAnnotationReader()))
+			->withFactory(new ReflectionMapperFactory())
 			->build($this->defaultConfiguration)
 		;
 

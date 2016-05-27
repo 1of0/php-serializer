@@ -23,8 +23,8 @@ class XmlMapperTest extends AbstractMapperTest
 	protected function getPipeline()
 	{
 		return (new MapperPipeline)
-			->addFactory(new XmlMapperFactory(self::XML_MAPPING_FILE))
-			->addFactory(new ReflectionMapperFactory())
+			->withFactory(new XmlMapperFactory(self::XML_MAPPING_FILE))
+			->withFactory(new ReflectionMapperFactory())
 			->build($this->defaultConfiguration)
 		;
 	}

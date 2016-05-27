@@ -43,6 +43,14 @@ class AnonymousObjectMapper implements ObjectMapperInterface
 	 */
 	public final function getMembers()
 	{
+		return $this->getProperties();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getProperties()
+	{
 		if ($this->members !== null)
 		{
 			return $this->members;
@@ -63,7 +71,17 @@ class AnonymousObjectMapper implements ObjectMapperInterface
 
 		return $this->members;
 	}
-	
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getMethods()
+	{
+		return [];
+	}
+
+
+
 	#region // Null getters
 
 	/**

@@ -23,8 +23,8 @@ class PhpArrayMapperTest extends AbstractMapperTest
 	protected function getPipeline()
 	{
 		return (new MapperPipeline)
-			->addFactory(new PhpArrayMapperFactory(self::PHP_ARRAY_MAPPING_FILE))
-			->addFactory(new ReflectionMapperFactory())
+			->withFactory(new PhpArrayMapperFactory(self::PHP_ARRAY_MAPPING_FILE))
+			->withFactory(new ReflectionMapperFactory())
 			->build($this->defaultConfiguration)
 		;
 	}

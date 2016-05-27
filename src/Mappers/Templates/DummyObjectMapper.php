@@ -11,9 +11,6 @@ namespace OneOfZero\Json\Mappers\Templates;
 use OneOfZero\Json\Mappers\BaseObjectMapperTrait;
 use OneOfZero\Json\Mappers\ObjectMapperInterface;
 
-/**
- * @codeCoverageIgnore  This is just a copy-paste object mapper deferring all calls to base
- */
 class DummyObjectMapper implements ObjectMapperInterface
 {
 	use BaseObjectMapperTrait;

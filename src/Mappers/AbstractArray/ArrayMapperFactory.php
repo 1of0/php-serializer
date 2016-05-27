@@ -47,11 +47,14 @@ abstract class ArrayMapperFactory implements MapperFactoryInterface
 
 	/**
 	 * {@inheritdoc}
-	 *
-	 * @param ArrayObjectMapper $memberParent
 	 */
 	public function mapMember($reflector, ObjectMapperInterface $memberParent)
 	{
+		while (!($memberParent instanceof ArrayObjectMapper))
+		{
+			$memberParent = $memberParent->getBase();
+		}
+		
 		$objectMapping = $memberParent->getMapping();
 		$memberMapping = $this->getMemberMapping($reflector, $objectMapping);
 		

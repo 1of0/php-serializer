@@ -30,12 +30,25 @@ trait BaseObjectMapperTrait
 	{
 		if ($this->members === null)
 		{
-			$this->members = array_merge(
-				$this->mapMembers($this->target->getProperties()),
-				$this->mapMembers($this->target->getMethods())
-			);
+			$this->members = array_merge($this->getProperties(), $this->getMethods());
 		}
 		return $this->members;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getProperties()
+	{
+		return $this->mapMembers($this->target->getProperties());
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getMethods()
+	{
+		return $this->mapMembers($this->target->getMethods());
 	}
 
 	/**

@@ -23,10 +23,29 @@ class MapperPipeline
 	 *
 	 * @return self
 	 */
-	public function addFactory(MapperFactoryInterface $factory)
+	public function withFactory(MapperFactoryInterface $factory)
 	{
-		$this->pipeline[] = $factory;
-		return $this;
+		$new = clone $this;
+		$new->pipeline[] = $factory;
+		return $new;
+	}
+
+	/**
+	 * @param string $className
+	 * 
+	 * @return bool
+	 */
+	public function containsFactory($className)
+	{
+		foreach ($this->pipeline as $factory)
+		{
+			if (get_class($factory) === $className)
+			{
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	/**

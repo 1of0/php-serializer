@@ -23,8 +23,8 @@ class JsonMapperTest extends AbstractMapperTest
 	protected function getPipeline()
 	{
 		return (new MapperPipeline)
-			->addFactory(new JsonMapperFactory(self::JSON_MAPPING_FILE))
-			->addFactory(new ReflectionMapperFactory())
+			->withFactory(new JsonMapperFactory(self::JSON_MAPPING_FILE))
+			->withFactory(new ReflectionMapperFactory())
 			->build($this->defaultConfiguration)
 		;
 	}
