@@ -10,28 +10,23 @@ namespace OneOfZero\Json\Mappers\Annotation;
 
 use OneOfZero\BetterAnnotations\Annotations;
 use OneOfZero\Json\Annotations\Converter;
+use OneOfZero\Json\Mappers\AbstractMapperChain;
 use OneOfZero\Json\Mappers\MapperInterface;
-use OneOfZero\PhpDocReader\PhpDocReader;
+use OneOfZero\Json\Mappers\MemberMapperChain;
+use OneOfZero\Json\Mappers\ObjectMapperChain;
 
+/**
+ * @method AnnotationSource getSource
+ * @method AbstractMapperChain|ObjectMapperChain|MemberMapperChain getChain
+ */
 trait AnnotationMapperTrait
 {
 	/**
-	 * @var Annotations $annotations
+	 * @return Annotations
 	 */
-	protected $annotations;
-
-	/**
-	 * @var PhpDocReader $docReader
-	 */
-	protected $docReader;
-
-	/**
-	 * @param Annotations $annotations
-	 */
-	public function __construct(Annotations $annotations)
+	protected function getAnnotations()
 	{
-		$this->annotations = $annotations;
-		$this->docReader = new PhpDocReader(true);
+		return $this->getSource()->getAnnotations();
 	}
 	
 	/**
@@ -39,7 +34,7 @@ trait AnnotationMapperTrait
 	 */
 	public function hasSerializingConverter()
 	{
-		$annotation = $this->annotations->get($this->target, Converter::class);
+		$annotation = $this->getAnnotations()->get($this->getTarget(), Converter::class);
 
 		if ($annotation !== null)
 		{
@@ -54,7 +49,8 @@ trait AnnotationMapperTrait
 			}
 		}
 
-		return $this->getBase()->hasSerializingConverter();
+		/** @var MapperInterface $this */
+		return $this->getChain()->getNext($this)->hasSerializingConverter();
 	}
 
 	/**
@@ -62,7 +58,7 @@ trait AnnotationMapperTrait
 	 */
 	public function hasDeserializingConverter()
 	{
-		$annotation = $this->annotations->get($this->target, Converter::class);
+		$annotation = $this->getAnnotations()->get($this->getTarget(), Converter::class);
 
 		if ($annotation !== null)
 		{
@@ -77,7 +73,8 @@ trait AnnotationMapperTrait
 			}
 		}
 
-		return $this->getBase()->hasDeserializingConverter();
+		/** @var MapperInterface $this */
+		return $this->getChain()->getNext($this)->hasDeserializingConverter();
 	}
 
 	/**
@@ -85,7 +82,7 @@ trait AnnotationMapperTrait
 	 */
 	public function getSerializingConverterType()
 	{
-		$annotation = $this->annotations->get($this->target, Converter::class);
+		$annotation = $this->getAnnotations()->get($this->getTarget(), Converter::class);
 
 		if ($annotation !== null)
 		{
@@ -100,7 +97,9 @@ trait AnnotationMapperTrait
 			}
 		}
 
-		return $this->getBase()->getSerializingConverterType();
+
+		/** @var MapperInterface $this */
+		return $this->getChain()->getNext($this)->getSerializingConverterType();
 	}
 
 	/**
@@ -108,7 +107,7 @@ trait AnnotationMapperTrait
 	 */
 	public function getDeserializingConverterType()
 	{
-		$annotation = $this->annotations->get($this->target, Converter::class);
+		$annotation = $this->getAnnotations()->get($this->getTarget(), Converter::class);
 
 		if ($annotation !== null)
 		{
@@ -123,11 +122,7 @@ trait AnnotationMapperTrait
 			}
 		}
 
-		return $this->getBase()->getDeserializingConverterType();
+		/** @var MapperInterface $this */
+		return $this->getChain()->getNext($this)->getDeserializingConverterType();
 	}
-
-	/**
-	 * @return MapperInterface
-	 */
-	public abstract function getBase();
 }

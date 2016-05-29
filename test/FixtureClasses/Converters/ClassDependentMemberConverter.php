@@ -18,7 +18,7 @@ class ClassDependentMemberConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function serialize(MemberNode $node)
+	public function serialize(MemberNode $node, $typeHint = null)
 	{
 		$object = $node->getValue();
 		
@@ -38,7 +38,7 @@ class ClassDependentMemberConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function deserialize(MemberNode $node)
+	public function deserialize(MemberNode $node, $typeHint = null)
 	{
 		$class = $node->getMapper()->getType();
 		

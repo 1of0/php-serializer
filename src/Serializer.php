@@ -11,11 +11,11 @@ namespace OneOfZero\Json;
 use Doctrine\Common\Cache\CacheProvider;
 use Interop\Container\ContainerInterface;
 use OneOfZero\Json\Helpers\Environment;
-use OneOfZero\Json\Mappers\Annotation\AnnotationMapperFactory;
-use OneOfZero\Json\Mappers\Caching\CachingMapperFactory;
-use OneOfZero\Json\Mappers\MapperFactoryInterface;
-use OneOfZero\Json\Mappers\MapperPipeline;
-use OneOfZero\Json\Mappers\Reflection\ReflectionMapperFactory;
+use OneOfZero\Json\Mappers\Annotation\AnnotationFactory;
+use OneOfZero\Json\Mappers\Annotation\AnnotationSource;
+use OneOfZero\Json\Mappers\FactoryChain;
+use OneOfZero\Json\Mappers\FactoryChainFactory;
+use OneOfZero\Json\Mappers\Reflection\ReflectionFactory;
 use OneOfZero\Json\Visitors\DeserializingVisitor;
 use OneOfZero\Json\Visitors\SerializingVisitor;
 
@@ -44,19 +44,19 @@ class Serializer implements SerializerInterface
 	}
 
 	/**
-	 * @var ContainerInterface $container
-	 */
-	private $container;
-
-	/**
 	 * @var Configuration $configuration
 	 */
 	private $configuration;
 
 	/**
-	 * @var MapperPipeline $mapperPipeline
+	 * @var ContainerInterface $container
 	 */
-	private $mapperPipeline;
+	private $container;
+
+	/**
+	 * @var FactoryChainFactory $chainFactory
+	 */
+	private $chainFactory;
 
 	/**
 	 * @var ReferenceResolverInterface $referenceResolver
@@ -73,20 +73,20 @@ class Serializer implements SerializerInterface
 	 *
 	 * @param Configuration|null $configuration
 	 * @param ContainerInterface|null $container
-	 * @param MapperPipeline|null $mapperPipeline
+	 * @param FactoryChainFactory|null $chainFactory
 	 * @param ReferenceResolverInterface|null $referenceResolver
 	 * @param CacheProvider $cacheProvider
 	 */
 	public function __construct(
 		Configuration $configuration = null,
 		ContainerInterface $container = null,
-		MapperPipeline $mapperPipeline = null,
+		FactoryChainFactory $chainFactory = null,
 		ReferenceResolverInterface $referenceResolver = null,
 		CacheProvider $cacheProvider = null
 	) {
-		$this->configuration = $configuration ?: new Configuration();
+		$this->configuration = $configuration ?: new Configuration($container);
 		$this->container = $container;
-		$this->mapperPipeline = $mapperPipeline ?: $this->createDefaultPipeline();
+		$this->chainFactory = $chainFactory ?: $this->createDefaultChainFactory();
 		$this->referenceResolver = $referenceResolver;
 		$this->cacheProvider = $cacheProvider;
 	}
@@ -98,7 +98,7 @@ class Serializer implements SerializerInterface
 	{
 		$visitor = new SerializingVisitor(
 			clone $this->configuration,
-			$this->buildPipeline(),
+			$this->buildChain(),
 			$this->container
 		);
 
@@ -112,7 +112,7 @@ class Serializer implements SerializerInterface
 	{
 		$visitor = new DeserializingVisitor(
 			clone $this->configuration,
-			$this->buildPipeline(),
+			$this->buildChain(),
 			$this->container,
 			$this->referenceResolver
 		);
@@ -164,27 +164,23 @@ class Serializer implements SerializerInterface
 	}
 
 	/**
-	 * @return MapperPipeline
+	 * @return FactoryChainFactory
 	 */
-	private function createDefaultPipeline()
+	private function createDefaultChainFactory()
 	{
-		return (new MapperPipeline)
-			->withFactory(new AnnotationMapperFactory(Environment::getAnnotationReader($this->container)))
-			->withFactory(new ReflectionMapperFactory())
+		return (new FactoryChainFactory)
+			->addFactory(new AnnotationFactory(new AnnotationSource(Environment::getAnnotationReader($this->container))))
+			->addFactory(new ReflectionFactory())
 		;
 	}
 
 	/**
-	 * @return MapperFactoryInterface
+	 * @return FactoryChain
 	 */
-	private function buildPipeline()
+	private function buildChain()
 	{
-		$pipeline = $this->mapperPipeline;
-		
-		if ($this->cacheProvider !== null && !$pipeline->containsFactory(CachingMapperFactory::class))
-		{
-			$pipeline = $pipeline->withFactory(new CachingMapperFactory($this->cacheProvider));
-		}
+		$pipeline = $this->chainFactory;
+		$pipeline->setCache($this->cacheProvider);
 		
 		return $pipeline->build(clone $this->configuration);
 	}
@@ -225,19 +221,19 @@ class Serializer implements SerializerInterface
 	}
 
 	/**
-	 * @return MapperPipeline
+	 * @return FactoryChainFactory
 	 */
-	public function getMapperPipeline()
+	public function getChainFactory()
 	{
-		return $this->mapperPipeline;
+		return $this->chainFactory;
 	}
 
 	/**
-	 * @param MapperPipeline $mapperPipeline
+	 * @param FactoryChainFactory $chainFactory
 	 */
-	public function setMapperPipeline(MapperPipeline $mapperPipeline)
+	public function setChainFactory(FactoryChainFactory $chainFactory)
 	{
-		$this->mapperPipeline = $mapperPipeline;
+		$this->chainFactory = $chainFactory;
 	}
 	
 	/**

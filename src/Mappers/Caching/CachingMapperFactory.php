@@ -9,30 +9,31 @@
 namespace OneOfZero\Json\Mappers\Caching;
 
 use Doctrine\Common\Cache\CacheProvider;
-use OneOfZero\Json\Configuration;
-use OneOfZero\Json\Mappers\BaseFactoryTrait;
-use OneOfZero\Json\Mappers\MapperFactoryInterface;
+use OneOfZero\Json\Mappers\AbstractFactory;
+use OneOfZero\Json\Mappers\MemberMapperChain;
 use OneOfZero\Json\Mappers\MemberMapperInterface;
+use OneOfZero\Json\Mappers\ObjectMapperChain;
 use OneOfZero\Json\Mappers\ObjectMapperInterface;
+use OneOfZero\Json\Mappers\SourceInterface;
 use ReflectionClass;
+use Reflector;
+use RuntimeException;
 
-class CachingMapperFactory implements MapperFactoryInterface
+class CachingMapperFactory extends AbstractFactory
 {
-	use BaseFactoryTrait;
-
 	const CACHE_NAMESPACE = '1of0_json_mapper';
 	
-	const EXCLUDED_MAPPER_METHODS = [
+	private static $excludedMapperMethods = [
 		'getConfiguration',
 		'getBase',
 		'setBase',
+		'getTop',
+		'setTop',
 		'getFactory',
-		'setFactory',
 		'getTarget',
 		'setTarget',
 		'getMembers',
-		'getProperties',
-		'getMethods',
+		'getMemberParent',
 		'setMemberParent',
 	];
 
@@ -45,112 +46,62 @@ class CachingMapperFactory implements MapperFactoryInterface
 	 * @var string[] $memberMapperMethods
 	 */
 	private static $memberMapperMethods;
-	
+
 	/**
 	 * @var CacheProvider $cache
 	 */
 	private $cache;
 
 	/**
-	 * @var string $configurationHash
-	 */
-	private $configurationHash;
-
-	/**
-	 * @var string $pipelineHash
-	 */
-	private $pipelineHash;
-
-	/**
-	 * @param CacheProvider $cache
-	 */
-	public function __construct(CacheProvider $cache)
-	{
-		$this->setCache($cache);
-	}
-
-	/**
-	 * @codeCoverageIgnore Not in scope
+	 * @codeCoverageIgnore Static constructors can not be covered
 	 */
 	public static function __constructStatic()
 	{
 		self::$objectMapperMethods = array_diff(
 			get_class_methods(ObjectMapperInterface::class),
-			self::EXCLUDED_MAPPER_METHODS
+			self::$excludedMapperMethods
 		);
 		self::$memberMapperMethods = array_diff(
 			get_class_methods(MemberMapperInterface::class),
-			self::EXCLUDED_MAPPER_METHODS
+			self::$excludedMapperMethods
 		);
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * @param SourceInterface|null $source
 	 */
-	public function withConfiguration(Configuration $configuration)
+	public function __construct(SourceInterface $source = null)
 	{
-		$this->configuration = $configuration;
-		$this->configurationHash = $configuration->getHash();
-
-		return $this;
+		parent::__construct($source);
+		
+		if (!($source instanceof CacheSource))
+		{
+			throw new RuntimeException('The CacheMapperFactory requires a CacheSource instance as source');
+		}
+		
+		$this->cache = clone $source->getCache();
+		$this->cache->setNamespace(self::CACHE_NAMESPACE);
+		
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function withParent(MapperFactoryInterface $parent)
+	public function mapObject(ReflectionClass $target, ObjectMapperChain $chain)
 	{
-		$this->parent = $parent;
-		
-		$this->pipelineHash = '';
-		
-		while ($parent !== null)
-		{
-			$this->pipelineHash = sha1($this->pipelineHash . get_class($parent));
-			$parent = $parent->getParent();
-		}
-		
-		return $this;
-	}
-	
-	/**
-	 * {@inheritdoc}
-	 */
-	public function mapObject(ReflectionClass $reflector)
-	{
-		$cacheKey = "{$this->configurationHash}_{$this->pipelineHash}_{$reflector->name}";
-
-		$baseMapper = null;
-		$mapping = $this->cache->fetch($cacheKey);
-
-		if ($mapping === false)
-		{
-			$mapping = $this->cacheObjectMapper($this->parent->mapObject($reflector));
-			
-			$this->cache->save($cacheKey, $mapping);
-		}
-
-		$mapper = new CachedObjectMapper($mapping);
-		$mapper->setFactory($this);
-		$mapper->setTarget($reflector);
-
-		if ($baseMapper !== null)
-		{
-			$mapper->setBase($baseMapper);
-		}
-		
-		return $mapper;
+		// TODO: Implement mapObject() method.
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function mapMember($reflector, ObjectMapperInterface $memberParent)
+	public function mapMember(Reflector $target, MemberMapperChain $chain)
 	{
-		return null;
+		// TODO: Implement mapMember() method.
 	}
-	
-	private function cacheObjectMapper( ObjectMapperInterface $mapper)
+
+	/*
+	private function cacheObjectMapper(ObjectMapperInterface $mapper)
 	{
 		$mapping = [];
 
@@ -159,16 +110,11 @@ class CachingMapperFactory implements MapperFactoryInterface
 			$mapping[$method] = $mapper->{$method}();
 		}
 		
-		$mapping['__properties'] = $this->cacheMemberMappers($mapper->getProperties());
-		$mapping['__methods'] = $this->cacheMemberMappers($mapper->getMethods());
+		$mapping['__members'] = $this->cacheMemberMappers($mapper->getMembers());
 		
 		return $mapping;
 	}
-
-	/**
-	 * @param MemberMapperInterface[] $mappers
-	 * @return array
-	 */
+	
 	private function cacheMemberMappers(array $mappers)
 	{
 		$mapping = [];
@@ -182,11 +128,12 @@ class CachingMapperFactory implements MapperFactoryInterface
 				$memberMapping[$method] = $mapper->{$method}();
 			}
 
-			$mapping[$mapper->getTarget()->name] = $memberMapping;
+			$mapping[] = $memberMapping;
 		}
 		
 		return $mapping;
 	}
+	*/
 
 	/**
 	 * @return CacheProvider
@@ -194,15 +141,6 @@ class CachingMapperFactory implements MapperFactoryInterface
 	public function getCache()
 	{
 		return $this->cache;
-	}
-
-	/**
-	 * @param CacheProvider $cache
-	 */
-	public function setCache(CacheProvider $cache)
-	{
-		$this->cache = clone $cache;
-		$this->cache->setNamespace(self::CACHE_NAMESPACE);
 	}
 }
 

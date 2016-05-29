@@ -8,6 +8,7 @@
 
 namespace OneOfZero\Json\Visitors;
 
+use OneOfZero\Json\Helpers\ObjectHelper;
 use OneOfZero\Json\Mappers\MemberMapperInterface;
 use OneOfZero\Json\Mappers\ObjectMapperInterface;
 use OneOfZero\Json\Nodes\AbstractNode;
@@ -55,14 +56,11 @@ class DeserializingVisitor extends AbstractVisitor
 
 			$objectReflector = new ReflectionClass($type);
 
-			$object = $this->containerHas($type)
-				? $this->containerGet($type)
-				: $objectReflector->newInstanceWithoutConstructor()
-			;
+			$object = ObjectHelper::getInstance($type, $this->container, true);
 
 			$objectNode = (new ObjectNode)
 				->withReflector($objectReflector)
-				->withMapper($this->mapperFactory->mapObject($objectReflector))
+				->withMapper($this->chain->mapObject($objectReflector))
 				->withInstance($object)
 				->withSerializedInstance($serializedValue)
 				->withParent($parent)
@@ -130,10 +128,10 @@ class DeserializingVisitor extends AbstractVisitor
 		
 		$mapper = $node->getMapper();
 
-		if ($mapper->hasDeserializingConverter())
+		$objectType = get_class($node->getInstance());
+		
+		foreach ($this->getObjectConverters($mapper->getDeserializingConverterType(), $objectType) as $converter)
 		{
-			$converter = $this->resolveObjectConverter($mapper->getDeserializingConverterType());
-
 			try
 			{
 				return $node->withInstance($converter->deserialize($node));
@@ -143,14 +141,14 @@ class DeserializingVisitor extends AbstractVisitor
 			}
 		}
 
-		foreach ($mapper->getMembers() as $memberMapper)
+		foreach ($mapper->mapMembers() as $memberMapperChain)
 		{
-			$serializedValue = $node->getSerializedMemberValue($memberMapper->getSerializedName());
+			$serializedValue = $node->getSerializedMemberValue($memberMapperChain->getTop()->getSerializedName());
 			
 			$memberNode = (new MemberNode)
 				->withSerializedValue($serializedValue)
-				->withReflector($memberMapper->getTarget())
-				->withMapper($memberMapper)
+				->withReflector($memberMapperChain->getTarget())
+				->withMapper($memberMapperChain->getTop())
 				->withParent($node)
 			;
 
@@ -183,19 +181,19 @@ class DeserializingVisitor extends AbstractVisitor
 		}
 		
 		$mapper = $node->getMapper();
-
+		
 		if (!$mapper->isIncluded() || !$mapper->isDeserializable())
 		{
 			return $node;
 		}
 
-		if ($mapper->hasDeserializingConverter())
+		$memberType = $this->getType($node->getSerializedValue(), $node);
+		
+		foreach ($this->getMemberConverters($mapper->getDeserializingConverterType(), $memberType) as $converter)
 		{
-			$converter = $this->resolveMemberConverter($mapper->getDeserializingConverterType());
-
 			try
 			{
-				return $node->withValue($converter->deserialize($node));
+				return $node->withValue($converter->deserialize($node, $memberType));
 			}
 			catch (ResumeSerializationException $e)
 			{
@@ -221,8 +219,12 @@ class DeserializingVisitor extends AbstractVisitor
 		
 		if ($mapper !== null)
 		{
-			$mapper->setBase($node->getMapper());
-			$mapper->setTarget($node->getMapper()->getTarget());
+			$mapper->setChain($node->getMapper()->getChain());
+
+			if ($node->getMapper()->getTarget() !== null)
+			{
+				$mapper->setTarget($node->getMapper()->getTarget());
+			}
 		}
 		
 		return $mapper;
@@ -239,15 +241,12 @@ class DeserializingVisitor extends AbstractVisitor
 
 		if ($mapper !== null)
 		{
-			$mapper->setBase($node->getMapper());
-			$mapper->setTarget($node->getMapper()->getTarget());
+			$mapper->setChain($node->getMapper()->getChain());
 
-			$parentContractMapper = $this->createContractObjectMapper($node->getParent());
-
-			$mapper->setMemberParent($parentContractMapper !== null
-				? $parentContractMapper
-				: $node->getParent()->getMapper()
-			);
+			if ($node->getMapper()->getTarget() !== null)
+			{
+				$mapper->setTarget($node->getMapper()->getTarget());
+			}
 		}
 		
 		return $mapper;

@@ -20,7 +20,7 @@ class DummyObjectMapper implements ObjectMapperInterface
 	 */
 	public function isExplicitInclusionEnabled()
 	{
-		return $this->getBase()->isExplicitInclusionEnabled();
+		return $this->getChain()->isExplicitInclusionEnabled();
 	}
 
 	/**
@@ -28,7 +28,7 @@ class DummyObjectMapper implements ObjectMapperInterface
 	 */
 	public function isMetadataDisabled()
 	{
-		return $this->getBase()->isMetadataDisabled();
+		return $this->getChain()->isMetadataDisabled();
 	}
 
 	/**
@@ -36,7 +36,7 @@ class DummyObjectMapper implements ObjectMapperInterface
 	 */
 	public function getSerializingConverterType()
 	{
-		return $this->getBase()->getSerializingConverterType();
+		return $this->getChain()->getSerializingConverterType();
 	}
 
 	/**
@@ -44,7 +44,7 @@ class DummyObjectMapper implements ObjectMapperInterface
 	 */
 	public function getDeserializingConverterType()
 	{
-		return $this->getBase()->getDeserializingConverterType();
+		return $this->getChain()->getDeserializingConverterType();
 	}
 
 	/**
@@ -52,7 +52,7 @@ class DummyObjectMapper implements ObjectMapperInterface
 	 */
 	public function hasSerializingConverter()
 	{
-		return $this->getBase()->hasSerializingConverter();
+		return $this->getChain()->hasSerializingConverter();
 	}
 
 	/**
@@ -60,6 +60,6 @@ class DummyObjectMapper implements ObjectMapperInterface
 	 */
 	public function hasDeserializingConverter()
 	{
-		return $this->getBase()->hasDeserializingConverter();
+		return $this->getChain()->hasDeserializingConverter();
 	}
 }

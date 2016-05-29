@@ -8,7 +8,9 @@
 
 namespace OneOfZero\Json\Converters;
 
+use Carbon\Carbon;
 use DateTime;
+use OneOfZero\Json\Exceptions\ResumeSerializationException;
 use OneOfZero\Json\Nodes\MemberNode;
 
 class DateTimeConverter extends AbstractMemberConverter
@@ -16,25 +18,41 @@ class DateTimeConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function serialize(MemberNode $node)
+	public function serialize(MemberNode $node, $typeHint = null)
 	{
 		$value = $node->getValue();
 		
-		return ($value instanceof DateTime) ? $value->getTimestamp() : null;
+		if ($value === null || !($value instanceof DateTime))
+		{
+			throw new ResumeSerializationException();
+		}
+		
+		return $value->getTimestamp();
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function deserialize(MemberNode $node)
+	public function deserialize(MemberNode $node, $typeHint = null)
 	{
-		if (ctype_digit($node->getSerializedValue()))
+		if ($typeHint === null || !ctype_digit($node->getSerializedValue()))
 		{
-			$date = new DateTime();
-			$date->setTimestamp($node->getSerializedValue());
-			return $date;
+			throw new ResumeSerializationException();	
 		}
 		
-		return null;
+		if ($typeHint !== DateTime::class && !is_subclass_of($typeHint, DateTime::class))
+		{
+			throw new ResumeSerializationException();
+		}
+		
+		if (class_exists(Carbon::class) && $typeHint === Carbon::class)
+		{
+			return Carbon::createFromTimestamp($node->getSerializedValue());
+		}
+		
+		$date = new DateTime();
+		$date->setTimestamp($node->getSerializedValue());
+		
+		return $date;
 	}
 }

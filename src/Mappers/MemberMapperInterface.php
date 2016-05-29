@@ -14,13 +14,6 @@ namespace OneOfZero\Json\Mappers;
 interface MemberMapperInterface extends MapperInterface
 {
 	/**
-	 * Should set the provided mapper as member parent.
-	 *
-	 * @param ObjectMapperInterface $parent
-	 */
-	public function setMemberParent(ObjectMapperInterface $parent);
-
-	/**
 	 * Should return the name for the deserialized property or method.
 	 *
 	 * @return string

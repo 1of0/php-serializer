@@ -16,7 +16,7 @@ class PropertyDependentMemberConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function serialize(MemberNode $node)
+	public function serialize(MemberNode $node, $typeHint = null)
 	{
 		$memberName = $node->getReflector()->name;
 		
@@ -36,7 +36,7 @@ class PropertyDependentMemberConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function deserialize(MemberNode $node)
+	public function deserialize(MemberNode $node, $typeHint = null)
 	{
 		$memberName = $node->getReflector()->name;
 		

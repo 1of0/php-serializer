@@ -8,59 +8,47 @@
 
 namespace OneOfZero\Json\Mappers;
 
-use OneOfZero\Json\Configuration;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
+use Reflector;
 
 interface MapperInterface
 {
 	/**
-	 * @return Configuration
+	 * Should return the mapping source.
+	 * 
+	 * @return SourceInterface
 	 */
-	public function getConfiguration();
-
+	public function getSource();
+	
 	/**
-	 * Should return the base mapper.
+	 * Should return the reflection target of the mapper.
 	 *
-	 * @return self
-	 */
-	public function getBase();
-
-	/**
-	 * Should set the provided mapper as base mapper.
-	 *
-	 * @param MapperInterface $mapper
-	 */
-	public function setBase(MapperInterface $mapper);
-
-	/**
-	 * Should return the mapper factory.
-	 *
-	 * @return MapperFactoryInterface
-	 */
-	public function getFactory();
-
-	/**
-	 * Should store the provided mapper factory.
-	 *
-	 * @param MapperFactoryInterface $factory
-	 */
-	public function setFactory(MapperFactoryInterface $factory);
-
-	/**
-	 * Should return the reflection target of the member.
-	 *
-	 * @return ReflectionClass|ReflectionMethod|ReflectionProperty
+	 * @return Reflector|ReflectionClass|ReflectionMethod|ReflectionProperty
 	 */
 	public function getTarget();
 
 	/**
-	 * Should set the provided target as reflection target for the member.
-	 *
-	 * @param ReflectionClass|ReflectionMethod|ReflectionProperty $target
+	 * Should set the provided target as the reflection target of the mapper.
+	 * 
+	 * @param Reflector|ReflectionClass|ReflectionMethod|ReflectionProperty $reflector
 	 */
-	public function setTarget($target);
+	public function setTarget(Reflector $reflector);
+	
+	/**
+	 * Should return the mapper chain.
+	 *
+	 * @return MapperChainInterface|ObjectMapperChain|MemberMapperChain
+	 */
+	public function getChain();
+
+	/**
+	 * Should set the mapper chain to the provided chain.
+	 * 
+	 * @param MapperChainInterface|ObjectMapperChain|MemberMapperChain $chain
+	 */
+	public function setChain(MapperChainInterface $chain);
 
 	/**
 	 * Should return the type of the first serializing custom converter for the field.

@@ -8,9 +8,10 @@
 
 namespace OneOfZero\Json\Test;
 
-use OneOfZero\Json\Mappers\File\XmlMapperFactory;
-use OneOfZero\Json\Mappers\MapperPipeline;
-use OneOfZero\Json\Mappers\Reflection\ReflectionMapperFactory;
+use OneOfZero\Json\Mappers\AbstractArray\ArrayFactory;
+use OneOfZero\Json\Mappers\FactoryChainFactory;
+use OneOfZero\Json\Mappers\File\XmlFileSource;
+use OneOfZero\Json\Mappers\Reflection\ReflectionFactory;
 use RuntimeException;
 
 class XmlMapperTest extends AbstractMapperTest
@@ -20,11 +21,11 @@ class XmlMapperTest extends AbstractMapperTest
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function getPipeline()
+	protected function getChain()
 	{
-		return (new MapperPipeline)
-			->withFactory(new XmlMapperFactory(self::XML_MAPPING_FILE))
-			->withFactory(new ReflectionMapperFactory())
+		return (new FactoryChainFactory)
+			->addFactory(new ArrayFactory(new XmlFileSource(self::XML_MAPPING_FILE)))
+			->addFactory(new ReflectionFactory())
 			->build($this->defaultConfiguration)
 		;
 	}
@@ -32,6 +33,6 @@ class XmlMapperTest extends AbstractMapperTest
 	public function testInvalidMapperFile()
 	{
 		$this->setExpectedException(RuntimeException::class);
-		new XmlMapperFactory('non-existing.xml');
+		new XmlFileSource('non-existing.xml');
 	}
 }

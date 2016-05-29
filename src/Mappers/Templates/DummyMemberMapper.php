@@ -20,7 +20,7 @@ class DummyMemberMapper implements MemberMapperInterface
 	 */
 	public function getSerializedName()
 	{
-		return $this->getBase()->getSerializedName();
+		return $this->getChain()->getSerializedName();
 	}
 
 	/**
@@ -28,7 +28,7 @@ class DummyMemberMapper implements MemberMapperInterface
 	 */
 	public function getType()
 	{
-		return $this->getBase()->getType();
+		return $this->getChain()->getType();
 	}
 
 	/**
@@ -36,7 +36,7 @@ class DummyMemberMapper implements MemberMapperInterface
 	 */
 	public function isIncluded()
 	{
-		return $this->getBase()->isIncluded();
+		return $this->getChain()->isIncluded();
 	}
 
 	/**
@@ -44,7 +44,7 @@ class DummyMemberMapper implements MemberMapperInterface
 	 */
 	public function isGetter()
 	{
-		return $this->getBase()->isGetter();
+		return $this->getChain()->isGetter();
 	}
 
 	/**
@@ -52,7 +52,7 @@ class DummyMemberMapper implements MemberMapperInterface
 	 */
 	public function isSetter()
 	{
-		return $this->getBase()->isSetter();
+		return $this->getChain()->isSetter();
 	}
 
 	/**
@@ -60,7 +60,7 @@ class DummyMemberMapper implements MemberMapperInterface
 	 */
 	public function isArray()
 	{
-		return $this->getBase()->isArray();
+		return $this->getChain()->isArray();
 	}
 
 	/**
@@ -68,7 +68,7 @@ class DummyMemberMapper implements MemberMapperInterface
 	 */
 	public function isReference()
 	{
-		return $this->getBase()->isReference();
+		return $this->getChain()->isReference();
 	}
 
 	/**
@@ -76,7 +76,7 @@ class DummyMemberMapper implements MemberMapperInterface
 	 */
 	public function isReferenceLazy()
 	{
-		return $this->getBase()->isReferenceLazy();
+		return $this->getChain()->isReferenceLazy();
 	}
 
 	/**
@@ -84,7 +84,7 @@ class DummyMemberMapper implements MemberMapperInterface
 	 */
 	public function isSerializable()
 	{
-		return $this->getBase()->isSerializable();
+		return $this->getChain()->isSerializable();
 	}
 
 	/**
@@ -92,7 +92,7 @@ class DummyMemberMapper implements MemberMapperInterface
 	 */
 	public function isDeserializable()
 	{
-		return $this->getBase()->isDeserializable();
+		return $this->getChain()->isDeserializable();
 	}
 
 	/**
@@ -100,7 +100,7 @@ class DummyMemberMapper implements MemberMapperInterface
 	 */
 	public function getSerializingConverterType()
 	{
-		return $this->getBase()->getSerializingConverterType();
+		return $this->getChain()->getSerializingConverterType();
 	}
 
 	/**
@@ -108,7 +108,7 @@ class DummyMemberMapper implements MemberMapperInterface
 	 */
 	public function getDeserializingConverterType()
 	{
-		return $this->getBase()->getDeserializingConverterType();
+		return $this->getChain()->getDeserializingConverterType();
 	}
 
 	/**
@@ -116,7 +116,7 @@ class DummyMemberMapper implements MemberMapperInterface
 	 */
 	public function hasSerializingConverter()
 	{
-		return $this->getBase()->hasSerializingConverter();
+		return $this->getChain()->hasSerializingConverter();
 	}
 
 	/**
@@ -124,6 +124,6 @@ class DummyMemberMapper implements MemberMapperInterface
 	 */
 	public function hasDeserializingConverter()
 	{
-		return $this->getBase()->hasDeserializingConverter();
+		return $this->getChain()->hasDeserializingConverter();
 	}
 }

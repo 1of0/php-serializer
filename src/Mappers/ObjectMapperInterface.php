@@ -29,23 +29,9 @@ interface ObjectMapperInterface extends MapperInterface
 	public function isMetadataDisabled();
 
 	/**
-	 * Returns member mappers for all class properties and methods.
+	 * Should return a MemberMapperChain instance for each member of this object.
 	 *
-	 * @return MemberMapperInterface[]
+	 * @return MemberMapperChain[]
 	 */
-	public function getMembers();
-
-	/**
-	 * Returns member mappers for all class properties.
-	 *
-	 * @return MemberMapperInterface[]
-	 */
-	public function getProperties();
-
-	/**
-	 * Returns member mappers for all class methods.
-	 *
-	 * @return MemberMapperInterface[]
-	 */
-	public function getMethods();
+	public function mapMembers();
 }

@@ -16,7 +16,7 @@ abstract class AbstractMemberConverter implements MemberConverterInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function serialize(MemberNode $node)
+	public function serialize(MemberNode $node, $typeHint = null)
 	{
 		throw new ResumeSerializationException();
 	}
@@ -24,7 +24,7 @@ abstract class AbstractMemberConverter implements MemberConverterInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function deserialize(MemberNode $node)
+	public function deserialize(MemberNode $node, $typeHint = null)
 	{
 		throw new ResumeSerializationException();
 	}

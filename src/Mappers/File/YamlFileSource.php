@@ -8,17 +8,18 @@
 
 namespace OneOfZero\Json\Mappers\File;
 
-use OneOfZero\Json\Mappers\AbstractArray\ArrayMapperFactory;
 use RuntimeException;
 use Symfony\Component\Yaml\Parser;
 
-class YamlMapperFactory extends ArrayMapperFactory
+class YamlFileSource extends FileSource
 {
 	/**
-	 * @param string $mappingFile
+	 * @param string $file
 	 */
-	public function __construct($mappingFile)
+	public function __construct($file)
 	{
+		parent::__construct($file);
+
 		if (!class_exists(Parser::class))
 		{
 			// @codeCoverageIgnoreStart
@@ -26,14 +27,9 @@ class YamlMapperFactory extends ArrayMapperFactory
 			// @codeCoverageIgnoreEnd
 		}
 
-		if (!file_exists($mappingFile))
-		{
-			throw new RuntimeException("File \"$mappingFile\" does not exist");
-		}
-
 		$parser = new Parser();
 		
-		$this->mapping = $parser->parse(file_get_contents($mappingFile));
+		$this->mapping = $parser->parse(file_get_contents($file));
 		$this->aliases = array_key_exists('@use', $this->mapping) ? $this->mapping['@use'] : [];
 	}
 }

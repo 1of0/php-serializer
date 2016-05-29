@@ -16,7 +16,7 @@ class DeserializingMemberConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function deserialize(MemberNode $node)
+	public function deserialize(MemberNode $node, $typeHint = null)
 	{
 		return 'bar';
 	}

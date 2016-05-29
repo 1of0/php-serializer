@@ -15,10 +15,12 @@ use OneOfZero\Json\Converters\MemberConverterInterface;
 use OneOfZero\Json\Converters\ObjectConverterInterface;
 use OneOfZero\Json\Exceptions\ConverterException;
 use OneOfZero\Json\Exceptions\NotSupportedException;
+use OneOfZero\Json\Helpers\ObjectHelper;
 use OneOfZero\Json\Helpers\ProxyHelper;
-use OneOfZero\Json\Mappers\MapperFactoryInterface;
+use OneOfZero\Json\Mappers\FactoryInterface;
+use OneOfZero\Json\Mappers\FactoryChain;
 use OneOfZero\Json\ReferenceResolverInterface;
-use ReflectionClass;
+use RuntimeException;
 
 abstract class AbstractVisitor
 {
@@ -28,9 +30,9 @@ abstract class AbstractVisitor
 	protected $configuration;
 
 	/**
-	 * @var MapperFactoryInterface $mapperFactory
+	 * @var FactoryChain $chain
 	 */
-	protected $mapperFactory;
+	protected $chain;
 
 	/**
 	 * @var ContainerInterface $container
@@ -54,18 +56,18 @@ abstract class AbstractVisitor
 
 	/**
 	 * @param Configuration $configuration
-	 * @param MapperFactoryInterface $mapperFactory
+	 * @param FactoryChain $chain
 	 * @param ContainerInterface|null $container
 	 * @param ReferenceResolverInterface|null $referenceResolver
 	 */
 	public function __construct(
 		Configuration $configuration,
-		MapperFactoryInterface $mapperFactory,
+		FactoryChain $chain,
 		ContainerInterface $container = null,
 		ReferenceResolverInterface $referenceResolver = null
 	) {
 		$this->configuration = $configuration;
-		$this->mapperFactory = $mapperFactory;
+		$this->chain = $chain;
 		$this->container = $container;
 		$this->referenceResolver = $referenceResolver;
 		
@@ -94,93 +96,70 @@ abstract class AbstractVisitor
 	}
 
 	/**
-	 * @param string $converterClass
-	 *
-	 * @return ObjectConverterInterface|null
-	 *
+	 * @param string $mappedConverterClass
+	 * @param string $objectType
+	 * 
+	 * @return ObjectConverterInterface[]
+	 * 
 	 * @throws ConverterException
+	 *
 	 */
-	protected function resolveObjectConverter($converterClass)
+	protected function getObjectConverters($mappedConverterClass, $objectType)
 	{
-		$instance = $this->resolveConverter($converterClass);
-
-		if ($instance instanceof ObjectConverterInterface)
+		$converters = [];
+		
+		if ($mappedConverterClass !== null)
 		{
-			return $instance;
-		}
-
-		throw new ConverterException('Converters for objects must implement ObjectConverterInterface');
-	}
-
-	/**
-	 * @param string $converterClass
-	 *
-	 * @return MemberConverterInterface|null
-	 *
-	 * @throws ConverterException
-	 */
-	protected function resolveMemberConverter($converterClass)
-	{
-		$instance = $this->resolveConverter($converterClass);
-
-		if ($instance instanceof MemberConverterInterface)
-		{
-			return $instance;
-		}
-
-		throw new ConverterException('Converters for class members must implement MemberConverterInterface');
-	}
-
-	/**
-	 * @param string $converterClass
-	 *
-	 * @return mixed
-	 *
-	 * @throws ConverterException
-	 */
-	private function resolveConverter($converterClass)
-	{
-		if ($converterClass === null)
-		{
-			throw new ConverterException("No converter type specified");
-		}
-
-		if (!class_exists($converterClass) && !$this->containerHas($converterClass))
-		{
-			throw new ConverterException("Cannot resolve converter of type \"$converterClass\"");
-		}
-
-		if ($this->containerHas($converterClass))
-		{
-			return $this->containerGet($converterClass);
+			$converters[] = $this->resolveConverter($mappedConverterClass, ObjectConverterInterface::class);
 		}
 		
-		$reflector = new ReflectionClass($converterClass);
-		
-		return $reflector->newInstanceWithoutConstructor();
+		return array_merge($converters, $this->configuration->converters->getObjectConverters($objectType));
 	}
 
 	/**
-	 * @param string $id
+	 * @param string $mappedConverterClass
+	 * @param string $memberType
 	 *
-	 * @return mixed|null
+	 * @return MemberConverterInterface[]
+	 *
+	 * @throws ConverterException
 	 */
-	protected function containerGet($id)
+	protected function getMemberConverters($mappedConverterClass, $memberType)
 	{
-		if (!$this->containerHas($id))
+		$converters = [];
+
+		if ($mappedConverterClass !== null)
 		{
-			return null;
+			$converters[] = $this->resolveConverter($mappedConverterClass, MemberConverterInterface::class);
 		}
-		return $this->container->get($id);
+
+		return array_merge($converters, $this->configuration->converters->getMemberConverters($memberType));
 	}
 
 	/**
-	 * @param string $id
-	 *
-	 * @return bool
+	 * @param string $converterClass
+	 * @param string $typeConstraint
+	 * 
+	 * @return MemberConverterInterface|ObjectConverterInterface
+	 * 
+	 * @throws ConverterException
 	 */
-	protected function containerHas($id)
+	private function resolveConverter($converterClass, $typeConstraint)
 	{
-		return $this->container !== null && $this->container->has($id);
+		try
+		{
+			$converter = ObjectHelper::getInstance($converterClass, $this->container);
+			
+			if (!is_subclass_of($converter, $typeConstraint))
+			{
+				throw new ConverterException("Converters for objects must implement $typeConstraint");
+			}
+			
+			return $converter;
+		}
+		catch (RuntimeException $e)
+		{
+			throw new ConverterException($e->getMessage());
+		}
 	}
 }

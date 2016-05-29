@@ -8,8 +8,8 @@
 
 namespace OneOfZero\Json\Test;
 
-use OneOfZero\Json\Mappers\MapperPipeline;
-use OneOfZero\Json\Mappers\Reflection\ReflectionMapperFactory;
+use OneOfZero\Json\Mappers\FactoryChainFactory;
+use OneOfZero\Json\Mappers\Reflection\ReflectionFactory;
 use OneOfZero\Json\Serializer;
 
 class ReflectionMemberInclusionStrategyTest extends AbstractMemberInclusionStrategyTest
@@ -22,7 +22,7 @@ class ReflectionMemberInclusionStrategyTest extends AbstractMemberInclusionStrat
 		$configuration = $this->defaultConfiguration;
 		$configuration->defaultMemberInclusionStrategy = $strategy;
 		
-		$pipeline = (new MapperPipeline)->withFactory(new ReflectionMapperFactory());
+		$pipeline = (new FactoryChainFactory)->addFactory(new ReflectionFactory());
 
 		return new Serializer($configuration, null, $pipeline);
 	}

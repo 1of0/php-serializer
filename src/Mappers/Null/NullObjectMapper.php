@@ -8,16 +8,13 @@
 
 namespace OneOfZero\Json\Mappers\Null;
 
-use OneOfZero\Json\Mappers\BaseObjectMapperTrait;
-use OneOfZero\Json\Mappers\ObjectMapperInterface;
+use OneOfZero\Json\Mappers\AbstractObjectMapper;
 
 /**
  * @codeCoverageIgnore Not much to test here...
  */
-class NullObjectMapper implements ObjectMapperInterface
+class NullObjectMapper extends AbstractObjectMapper
 {
-	use BaseObjectMapperTrait;
-	
 	/**
 	 * {@inheritdoc}
 	 */

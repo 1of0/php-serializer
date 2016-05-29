@@ -8,6 +8,7 @@
 
 namespace OneOfZero\Json;
 
+use Interop\Container\ContainerInterface;
 use OneOfZero\Json\ContractResolvers\ContractResolverInterface;
 use OneOfZero\Json\Enums\IncludeStrategy;
 use OneOfZero\Json\Enums\OnMaxDepth;
@@ -100,9 +101,21 @@ class Configuration
 	 */
 	public $metaHintWhitelist;
 
-	public function __construct()
+	/**
+	 * Allows configuration of global and type-assigned converters.
+	 * 
+	 * @var ConverterConfiguration $converters
+	 */
+	public $converters;
+
+	/**
+	 * @param ContainerInterface|null $container
+	 * @param bool $loadDefaultConverters
+	 */
+	public function __construct(ContainerInterface $container = null, $loadDefaultConverters = true)
 	{
 		$this->metaHintWhitelist = new MetaHintWhitelist();
+		$this->converters = new ConverterConfiguration($container, $loadDefaultConverters);
 	}
 
 	/**
@@ -112,6 +125,6 @@ class Configuration
 	 */
 	public function getHash()
 	{
-		return sha1(serialize($this));
+		return sha1(json_encode($this));
 	}
 }

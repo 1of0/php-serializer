@@ -8,13 +8,10 @@
 
 namespace OneOfZero\Json\Mappers\Caching;
 
-use OneOfZero\Json\Mappers\BaseMemberMapperTrait;
-use OneOfZero\Json\Mappers\MemberMapperInterface;
+use OneOfZero\Json\Mappers\AbstractMemberMapper;
 
-class CachedMemberMapper implements MemberMapperInterface
+class CachedMemberMapper extends AbstractMemberMapper
 {
-	use BaseMemberMapperTrait;
-
 	/**
 	 * @var array $mapping
 	 */
@@ -25,6 +22,8 @@ class CachedMemberMapper implements MemberMapperInterface
 	 */
 	public function __construct(array $mapping)
 	{
+		parent::__construct();
+		
 		$this->mapping = $mapping;
 	}
 

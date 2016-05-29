@@ -11,10 +11,13 @@ namespace OneOfZero\Json\Test;
 use Exception;
 use OneOfZero\Json\Configuration;
 use OneOfZero\Json\Helpers\Environment;
-use OneOfZero\Json\Mappers\Annotation\AnnotationMapperFactory;
-use OneOfZero\Json\Mappers\MapperFactoryInterface;
+use OneOfZero\Json\Mappers\Annotation\AnnotationFactory;
+use OneOfZero\Json\Mappers\Annotation\AnnotationSource;
+use OneOfZero\Json\Mappers\FactoryInterface;
 use OneOfZero\Json\Mappers\MapperPipeline;
-use OneOfZero\Json\Mappers\Reflection\ReflectionMapperFactory;
+use OneOfZero\Json\Mappers\FactoryChain;
+use OneOfZero\Json\Mappers\FactoryChainFactory;
+use OneOfZero\Json\Mappers\Reflection\ReflectionFactory;
 use OneOfZero\Json\Serializer;
 use OneOfZero\Json\Test\FixtureClasses\EqualityInterface;
 use PHPUnit_Framework_TestCase;
@@ -27,7 +30,7 @@ abstract class AbstractTest extends PHPUnit_Framework_TestCase
 	protected $defaultConfiguration;
 
 	/**
-	 * @var MapperFactoryInterface $defaultPipeline
+	 * @var FactoryChain $defaultPipeline
 	 */
 	protected $defaultPipeline;
 
@@ -36,11 +39,11 @@ abstract class AbstractTest extends PHPUnit_Framework_TestCase
 	 */
 	protected function setUp()
 	{
-		$this->defaultConfiguration = new Configuration();
+		$this->defaultConfiguration = new Configuration(null, false);
 
-		$this->defaultPipeline = (new MapperPipeline)
-			->withFactory(new AnnotationMapperFactory(Environment::getAnnotationReader()))
-			->withFactory(new ReflectionMapperFactory())
+		$this->defaultPipeline = (new FactoryChainFactory)
+			->addFactory(new AnnotationFactory(new AnnotationSource(Environment::getAnnotationReader())))
+			->addFactory(new ReflectionFactory())
 			->build($this->defaultConfiguration)
 		;
 
@@ -60,6 +63,8 @@ abstract class AbstractTest extends PHPUnit_Framework_TestCase
 		{
 			throw new Exception("Expected value is not a sequence");
 		}
+		
+		$this->assertNotNull($actual, "Actual sequence is null");
 
 		foreach ($expected as $key => $value)
 		{

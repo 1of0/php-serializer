@@ -9,22 +9,47 @@
 namespace OneOfZero\Json\Mappers\Null;
 
 use OneOfZero\Json\Enums\ReferenceResolutionStrategy;
-use OneOfZero\Json\Mappers\BaseMemberMapperTrait;
-use OneOfZero\Json\Mappers\MemberMapperInterface;
+use OneOfZero\Json\Mappers\AbstractMemberMapper;
 
 /**
  * @codeCoverageIgnore Not much to test here...
  */
-class NullMemberMapper implements MemberMapperInterface
+class NullMemberMapper extends AbstractMemberMapper
 {
-	use BaseMemberMapperTrait;
-
 	/**
 	 * {@inheritdoc}
 	 */
 	public function getSerializedName()
 	{
+		if ($this->getTarget() !== null)
+		{
+			return $this->getTarget()->name;
+		}
+		
 		return null;
+	}
+	
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getDeserializedName()
+	{
+		if ($this->getTarget() !== null)
+		{
+			return $this->getTarget()->name;
+		}
+		
+		return null;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function isReferenceLazy()
+	{
+		$configuration = $this->getChain()->getConfiguration();
+
+		return $configuration->defaultReferenceResolutionStrategy == ReferenceResolutionStrategy::LAZY;
 	}
 
 	/**
@@ -65,14 +90,6 @@ class NullMemberMapper implements MemberMapperInterface
 	public function isReference()
 	{
 		return false;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function isReferenceLazy()
-	{
-		return $this->getConfiguration()->defaultReferenceResolutionStrategy == ReferenceResolutionStrategy::LAZY;
 	}
 
 	/**

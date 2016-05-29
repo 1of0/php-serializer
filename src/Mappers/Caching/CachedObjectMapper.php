@@ -8,15 +8,12 @@
 
 namespace OneOfZero\Json\Mappers\Caching;
 
-use OneOfZero\Json\Mappers\BaseMapperTrait;
-use OneOfZero\Json\Mappers\ObjectMapperInterface;
+use OneOfZero\Json\Mappers\AbstractObjectMapper;
 use ReflectionMethod;
 use ReflectionProperty;
 
-class CachedObjectMapper implements ObjectMapperInterface
+class CachedObjectMapper extends AbstractObjectMapper
 {
-	use BaseMapperTrait;
-
 	/**
 	 * @var array $mapping
 	 */
@@ -27,6 +24,8 @@ class CachedObjectMapper implements ObjectMapperInterface
 	 */
 	public function __construct(array $mapping)
 	{
+		parent::__construct();
+		
 		$this->mapping = $mapping;
 	}
 	
@@ -83,44 +82,13 @@ class CachedObjectMapper implements ObjectMapperInterface
 	 */
 	public function getMembers()
 	{
-		return array_merge($this->getProperties(), $this->getMethods());
-	}
+		$members = [];
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getProperties()
-	{
-		$properties = [];
-		
-		foreach ($this->mapping['__properties'] as $name => $mapping)
+		foreach ($this->mapping['__members'] as $mapping)
 		{
-			$mapper = new CachedMemberMapper($mapping);
-			$mapper->setTarget(new ReflectionProperty($this->target->name, $name));
-			$mapper->setFactory($this->getFactory());
-			
-			$properties[] = $mapper;
-		}
-		
-		return $properties;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getMethods()
-	{
-		$methods = [];
-
-		foreach ($this->mapping['__methods'] as $name => $mapping)
-		{
-			$mapper = new CachedMemberMapper($mapping);
-			$mapper->setTarget(new ReflectionMethod($this->target->name, $name));
-			$mapper->setFactory($this->getFactory());
-
-			$methods[] = $mapper;
+			$members[] = new CachedMemberMapper($mapping);
 		}
 
-		return $methods;
+		return $members;
 	}
 }

@@ -108,9 +108,9 @@ class MetaHintWhitelist
 			return true;
 		}
 
-		foreach (class_parents($class) as $parent)
+		foreach ($this->classes as $potentialParent)
 		{
-			if (in_array($parent, $this->classes, true))
+			if (is_subclass_of($class, $potentialParent))
 			{
 				return true;
 			}
@@ -118,7 +118,7 @@ class MetaHintWhitelist
 
 		foreach ($this->interfaces as $interface)
 		{
-			if (in_array($interface, class_implements($class)))
+			if (is_subclass_of($class, $interface))
 			{
 				return true;
 			}

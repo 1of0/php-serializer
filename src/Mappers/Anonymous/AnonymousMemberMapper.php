@@ -8,42 +8,23 @@
 
 namespace OneOfZero\Json\Mappers\Anonymous;
 
-use OneOfZero\Json\Mappers\BaseMapperTrait;
-use OneOfZero\Json\Mappers\MemberMapperInterface;
-use OneOfZero\Json\Mappers\ObjectMapperInterface;
+use OneOfZero\Json\Mappers\AbstractMemberMapper;
 
-class AnonymousMemberMapper implements MemberMapperInterface
+class AnonymousMemberMapper extends AbstractMemberMapper
 {
-	use BaseMapperTrait;
-
 	/**
-	 * Holds the member parent.
-	 *
-	 * @var ObjectMapperInterface $memberParent
-	 */
-	protected $memberParent;
-
-	/**
-	 * Holds the member's name.
-	 * 
 	 * @var string $name
 	 */
 	protected $name;
-
+	
 	/**
 	 * @param string $name
 	 */
 	public function __construct($name)
 	{
+		parent::__construct();
+		
 		$this->name = $name;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function setMemberParent(ObjectMapperInterface $parent)
-	{
-		$this->memberParent = $parent;
 	}
 
 	/**

@@ -8,9 +8,10 @@
 
 namespace OneOfZero\Json\Test;
 
-use OneOfZero\Json\Mappers\File\PhpArrayMapperFactory;
-use OneOfZero\Json\Mappers\MapperPipeline;
-use OneOfZero\Json\Mappers\Reflection\ReflectionMapperFactory;
+use OneOfZero\Json\Mappers\AbstractArray\ArrayFactory;
+use OneOfZero\Json\Mappers\FactoryChainFactory;
+use OneOfZero\Json\Mappers\File\PhpFileSource;
+use OneOfZero\Json\Mappers\Reflection\ReflectionFactory;
 use RuntimeException;
 
 class PhpArrayMapperTest extends AbstractMapperTest
@@ -20,11 +21,11 @@ class PhpArrayMapperTest extends AbstractMapperTest
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function getPipeline()
+	protected function getChain()
 	{
-		return (new MapperPipeline)
-			->withFactory(new PhpArrayMapperFactory(self::PHP_ARRAY_MAPPING_FILE))
-			->withFactory(new ReflectionMapperFactory())
+		return (new FactoryChainFactory)
+			->addFactory(new ArrayFactory(new PhpFileSource(self::PHP_ARRAY_MAPPING_FILE)))
+			->addFactory(new ReflectionFactory())
 			->build($this->defaultConfiguration)
 		;
 	}
@@ -32,6 +33,6 @@ class PhpArrayMapperTest extends AbstractMapperTest
 	public function testInvalidMapperFile()
 	{
 		$this->setExpectedException(RuntimeException::class);
-		new PhpArrayMapperFactory('non-existing.php');
+		new PhpFileSource('non-existing.php');
 	}
 }

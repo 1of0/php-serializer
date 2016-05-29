@@ -9,24 +9,23 @@
 namespace OneOfZero\Json\Mappers\AbstractArray;
 
 use OneOfZero\Json\Exceptions\SerializationException;
-use OneOfZero\Json\Mappers\BaseMemberMapperTrait;
-use OneOfZero\Json\Mappers\MemberMapperInterface;
+use OneOfZero\Json\Mappers\AbstractMemberMapper;
 
-class ArrayMemberMapper extends ArrayAbstractMapper implements MemberMapperInterface
+class ArrayMemberMapper extends AbstractMemberMapper
 {
-	use BaseMemberMapperTrait;
+	use ArrayMapperTrait;
 	
 	/**
 	 * {@inheritdoc}
 	 */
 	public function getSerializedName()
 	{
-		if ($this->hasAttribute(self::NAME_ATTR))
+		if ($this->hasAttribute(self::$NAME_ATTR))
 		{
-			return $this->readAttribute(self::NAME_ATTR);
+			return $this->readAttribute(self::$NAME_ATTR);
 		}
 
-		return $this->getBase()->getSerializedName();
+		return parent::getSerializedName();
 	}
 
 	/**
@@ -34,12 +33,12 @@ class ArrayMemberMapper extends ArrayAbstractMapper implements MemberMapperInter
 	 */
 	public function getType()
 	{
-		if ($this->hasAttribute(self::TYPE_ATTR))
+		if ($this->hasAttribute(self::$TYPE_ATTR))
 		{
-			return $this->resolveAlias($this->readAttribute(self::TYPE_ATTR));
+			return $this->resolveAlias($this->readAttribute(self::$TYPE_ATTR));
 		}
 		
-		return $this->getBase()->getType();
+		return parent::getType();
 	}
 
 	/**
@@ -47,12 +46,12 @@ class ArrayMemberMapper extends ArrayAbstractMapper implements MemberMapperInter
 	 */
 	public function isArray()
 	{
-		if ($this->hasAttribute(self::ARRAY_ATTR) && $this->readAttribute(self::ARRAY_ATTR))
+		if ($this->hasAttribute(self::$ARRAY_ATTR) && $this->readAttribute(self::$ARRAY_ATTR))
 		{
 			return true;
 		}
 		
-		return $this->getBase()->isArray();
+		return parent::isArray();
 	}
 
 	/**
@@ -62,13 +61,13 @@ class ArrayMemberMapper extends ArrayAbstractMapper implements MemberMapperInter
 	 */
 	public function isGetter()
 	{
-		if ($this->hasAttribute(self::GETTER_ATTR) && $this->readAttribute(self::GETTER_ATTR))
+		if ($this->hasAttribute(self::$GETTER_ATTR) && $this->readAttribute(self::$GETTER_ATTR))
 		{
 			$this->validateGetterSignature();
 			return true;
 		}
 		
-		return $this->getBase()->isGetter();
+		return parent::isGetter();
 	}
 
 	/**
@@ -78,13 +77,13 @@ class ArrayMemberMapper extends ArrayAbstractMapper implements MemberMapperInter
 	 */
 	public function isSetter()
 	{
-		if ($this->hasAttribute(self::SETTER_ATTR) && $this->readAttribute(self::SETTER_ATTR))
+		if ($this->hasAttribute(self::$SETTER_ATTR) && $this->readAttribute(self::$SETTER_ATTR))
 		{
 			$this->validateSetterSignature();
 			return true;
 		}
 		
-		return $this->getBase()->isSetter();
+		return parent::isSetter();
 	}
 
 	/**
@@ -92,12 +91,12 @@ class ArrayMemberMapper extends ArrayAbstractMapper implements MemberMapperInter
 	 */
 	public function isReference()
 	{
-		if ($this->hasAttribute(self::REFERENCE_ATTR) && $this->readAttribute(self::REFERENCE_ATTR))
+		if ($this->hasAttribute(self::$REFERENCE_ATTR) && $this->readAttribute(self::$REFERENCE_ATTR))
 		{
 			return true;
 		}
 		
-		return $this->getBase()->isReference();
+		return parent::isReference();
 	}
 
 	/**
@@ -105,12 +104,12 @@ class ArrayMemberMapper extends ArrayAbstractMapper implements MemberMapperInter
 	 */
 	public function isReferenceLazy()
 	{
-		if ($this->hasAttribute(self::REFERENCE_ATTR) && strtolower($this->readAttribute(self::REFERENCE_ATTR)) === 'lazy')
+		if ($this->hasAttribute(self::$REFERENCE_ATTR) && strtolower($this->readAttribute(self::$REFERENCE_ATTR)) === 'lazy')
 		{
 			return true;
 		}
 		
-		return $this->getBase()->isReferenceLazy();
+		return parent::isReferenceLazy();
 	}
 
 	/**
@@ -118,17 +117,17 @@ class ArrayMemberMapper extends ArrayAbstractMapper implements MemberMapperInter
 	 */
 	public function isSerializable()
 	{
-		if ($this->hasAttribute(self::SERIALIZABLE_ATTR))
+		if ($this->hasAttribute(self::$SERIALIZABLE_ATTR))
 		{
-			return (bool)$this->readAttribute(self::SERIALIZABLE_ATTR);
+			return (bool)$this->readAttribute(self::$SERIALIZABLE_ATTR);
 		}
 		
-		if ($this->isClassMethod() && $this->isGetter())
+		if ($this->isClassMethod() && $this->getChain()->getTop()->isGetter())
 		{
 			return true;
 		}
 		
-		return $this->getBase()->isSerializable();
+		return parent::isSerializable();
 	}
 
 	/**
@@ -136,17 +135,17 @@ class ArrayMemberMapper extends ArrayAbstractMapper implements MemberMapperInter
 	 */
 	public function isDeserializable()
 	{
-		if ($this->hasAttribute(self::DESERIALIZABLE_ATTR))
+		if ($this->hasAttribute(self::$DESERIALIZABLE_ATTR))
 		{
-			return (bool)$this->readAttribute(self::DESERIALIZABLE_ATTR);
+			return (bool)$this->readAttribute(self::$DESERIALIZABLE_ATTR);
 		}
 
-		if ($this->isClassMethod() && $this->isGetter())
+		if ($this->isClassMethod() && $this->getChain()->getTop()->isGetter())
 		{
 			return false;
 		}
 		
-		return $this->getBase()->isDeserializable();
+		return parent::isDeserializable();
 	}
 
 	/**
@@ -154,31 +153,31 @@ class ArrayMemberMapper extends ArrayAbstractMapper implements MemberMapperInter
 	 */
 	public function isIncluded()
 	{
-		if ($this->hasAttribute(self::IGNORE_ATTR))
+		if ($this->hasAttribute(self::$IGNORE_ATTR))
 		{
 			return false;
 		}
 
-		if ($this->isGetter() || $this->isSetter())
+		if ($this->getChain()->getTop()->isGetter() || $this->getChain()->getTop()->isSetter())
 		{
 			return true;
 		}
 
-		if ($this->hasAttribute(self::INCLUDE_ATTR) && $this->readAttribute(self::INCLUDE_ATTR))
+		if ($this->hasAttribute(self::$INCLUDE_ATTR) && $this->readAttribute(self::$INCLUDE_ATTR))
 		{
 			return true;
 		}
 
-		if ($this->hasAttribute(self::NAME_ATTR) && $this->readAttribute(self::INCLUDE_ATTR) !== '')
+		if ($this->hasAttribute(self::$NAME_ATTR) && $this->readAttribute(self::$INCLUDE_ATTR) !== '')
 		{
 			return true;
 		}
 		
-		if ($this->memberParent->isExplicitInclusionEnabled())
+		if ($this->getChain()->getParent()->getTop()->isExplicitInclusionEnabled())
 		{
 			return false;
 		}
 
-		return $this->getBase()->isIncluded();
+		return parent::isIncluded();
 	}
 }

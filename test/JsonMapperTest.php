@@ -8,9 +8,10 @@
 
 namespace OneOfZero\Json\Test;
 
-use OneOfZero\Json\Mappers\File\JsonMapperFactory;
-use OneOfZero\Json\Mappers\MapperPipeline;
-use OneOfZero\Json\Mappers\Reflection\ReflectionMapperFactory;
+use OneOfZero\Json\Mappers\AbstractArray\ArrayFactory;
+use OneOfZero\Json\Mappers\FactoryChainFactory;
+use OneOfZero\Json\Mappers\File\JsonFileSource;
+use OneOfZero\Json\Mappers\Reflection\ReflectionFactory;
 use RuntimeException;
 
 class JsonMapperTest extends AbstractMapperTest
@@ -20,11 +21,11 @@ class JsonMapperTest extends AbstractMapperTest
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function getPipeline()
+	protected function getChain()
 	{
-		return (new MapperPipeline)
-			->withFactory(new JsonMapperFactory(self::JSON_MAPPING_FILE))
-			->withFactory(new ReflectionMapperFactory())
+		return (new FactoryChainFactory)
+			->addFactory(new ArrayFactory(new JsonFileSource(self::JSON_MAPPING_FILE)))
+			->addFactory(new ReflectionFactory())
 			->build($this->defaultConfiguration)
 		;
 	}
@@ -32,6 +33,6 @@ class JsonMapperTest extends AbstractMapperTest
 	public function testInvalidMapperFile()
 	{
 		$this->setExpectedException(RuntimeException::class);
-		new JsonMapperFactory('non-existing.json');
+		new JsonFileSource('non-existing.json');
 	}
 }

@@ -8,13 +8,11 @@
 
 namespace OneOfZero\Json\Mappers\Contract;
 
-use OneOfZero\Json\Mappers\BaseMemberMapperTrait;
-use OneOfZero\Json\Mappers\MemberMapperInterface;
+use OneOfZero\Json\Mappers\AbstractMemberMapper;
+use OneOfZero\Json\Mappers\MemberMapperChain;
 
-class ContractMemberMapper implements MemberMapperInterface
+class ContractMemberMapper extends AbstractMemberMapper
 {
-	use BaseMemberMapperTrait;
-	
 	/**
 	 * @var string|null $deserializedName
 	 */
@@ -81,9 +79,9 @@ class ContractMemberMapper implements MemberMapperInterface
 	private $deserializingConverter;
 
 	/**
-	 * @param null|string $deserializedName
-	 * @param null|string $serializedName
-	 * @param null|string $type
+	 * @param string|null $deserializedName
+	 * @param string|null $serializedName
+	 * @param string|null $type
 	 * @param bool|null $isIncluded
 	 * @param bool|null $isGetter
 	 * @param bool|null $isSetter
@@ -92,8 +90,8 @@ class ContractMemberMapper implements MemberMapperInterface
 	 * @param bool|null $isReferenceLazy
 	 * @param bool|null $isSerializable
 	 * @param bool|null $isDeserializable
-	 * @param null|string $serializingConverter
-	 * @param null|string $deserializingConverter
+	 * @param string|null $serializingConverter
+	 * @param string|null $deserializingConverter
 	 */
 	public function __construct(
 		$deserializedName = null,
@@ -110,6 +108,8 @@ class ContractMemberMapper implements MemberMapperInterface
 		$serializingConverter = null,
 		$deserializingConverter = null
 	) {
+		parent::__construct();
+		
 		$this->deserializedName = $deserializedName;
 		$this->serializedName = $serializedName;
 		$this->type = $type;
@@ -132,7 +132,10 @@ class ContractMemberMapper implements MemberMapperInterface
 	 */
 	public function getDeserializedName()
 	{
-		return ($this->deserializedName !== null) ? $this->deserializedName : $this->getBase()->getDeserializedName();
+		return ($this->deserializedName !== null) 
+			? $this->deserializedName 
+			: parent::getDeserializedName()
+		;
 	}
 
 	/**
@@ -140,7 +143,10 @@ class ContractMemberMapper implements MemberMapperInterface
 	 */
 	public function getSerializedName()
 	{
-		return ($this->serializedName !== null) ? $this->serializedName : $this->getBase()->getSerializedName();
+		return ($this->serializedName !== null)
+			? $this->serializedName
+			: parent::getSerializedName()
+		;
 	}
 
 	/**
@@ -148,7 +154,10 @@ class ContractMemberMapper implements MemberMapperInterface
 	 */
 	public function getType()
 	{
-		return ($this->type !== null) ? $this->type : $this->getBase()->getType();
+		return ($this->type !== null)
+			? $this->type
+			: parent::getType()
+		;
 	}
 
 	/**
@@ -156,7 +165,10 @@ class ContractMemberMapper implements MemberMapperInterface
 	 */
 	public function isIncluded()
 	{
-		return ($this->isIncluded !== null) ? $this->isIncluded : $this->getBase()->isIncluded();
+		return ($this->isIncluded !== null)
+			? $this->isIncluded
+			: parent::isIncluded()
+		;
 	}
 
 	/**
@@ -164,7 +176,10 @@ class ContractMemberMapper implements MemberMapperInterface
 	 */
 	public function isGetter()
 	{
-		return ($this->isGetter !== null) ? $this->isGetter : $this->getBase()->isGetter();
+		return ($this->isGetter !== null)
+			? $this->isGetter
+			: parent::isGetter()
+		;
 	}
 
 	/**
@@ -172,7 +187,10 @@ class ContractMemberMapper implements MemberMapperInterface
 	 */
 	public function isSetter()
 	{
-		return ($this->isSetter !== null) ? $this->isSetter : $this->getBase()->isSetter();
+		return ($this->isSetter !== null)
+			? $this->isSetter
+			: parent::isSetter()
+		;
 	}
 
 	/**
@@ -180,7 +198,10 @@ class ContractMemberMapper implements MemberMapperInterface
 	 */
 	public function isArray()
 	{
-		return ($this->isArray !== null) ? $this->isArray : $this->getBase()->isArray();
+		return ($this->isArray !== null)
+			? $this->isArray
+			: parent::isArray()
+		;
 	}
 
 	/**
@@ -188,7 +209,10 @@ class ContractMemberMapper implements MemberMapperInterface
 	 */
 	public function isReference()
 	{
-		return ($this->isReference !== null) ? $this->isReference : $this->getBase()->isReference();
+		return ($this->isReference !== null)
+			? $this->isReference
+			: parent::isReference()
+		;
 	}
 
 	/**
@@ -196,7 +220,10 @@ class ContractMemberMapper implements MemberMapperInterface
 	 */
 	public function isReferenceLazy()
 	{
-		return ($this->isReferenceLazy !== null) ? $this->isReferenceLazy : $this->getBase()->isReferenceLazy();
+		return ($this->isReferenceLazy !== null)
+			? $this->isReferenceLazy
+			: parent::isReferenceLazy()
+		;
 	}
 
 	/**
@@ -204,7 +231,10 @@ class ContractMemberMapper implements MemberMapperInterface
 	 */
 	public function isSerializable()
 	{
-		return ($this->isSerializable !== null) ? $this->isSerializable : $this->getBase()->isSerializable();
+		return ($this->isSerializable !== null)
+			? $this->isSerializable
+			: parent::isSerializable()
+		;
 	}
 
 	/**
@@ -212,7 +242,10 @@ class ContractMemberMapper implements MemberMapperInterface
 	 */
 	public function isDeserializable()
 	{
-		return ($this->isDeserializable !== null) ? $this->isDeserializable : $this->getBase()->isDeserializable();
+		return ($this->isDeserializable !== null)
+			? $this->isDeserializable
+			: parent::isDeserializable()
+		;
 	}
 
 	/**
@@ -220,7 +253,10 @@ class ContractMemberMapper implements MemberMapperInterface
 	 */
 	public function getSerializingConverterType()
 	{
-		return ($this->serializingConverter !== null) ? $this->serializingConverter : $this->getBase()->getSerializingConverterType();
+		return ($this->serializingConverter !== null)
+			? $this->serializingConverter
+			: parent::getSerializingConverterType()
+		;
 	}
 
 	/**
@@ -228,7 +264,10 @@ class ContractMemberMapper implements MemberMapperInterface
 	 */
 	public function getDeserializingConverterType()
 	{
-		return ($this->deserializingConverter !== null) ? $this->deserializingConverter : $this->getBase()->getDeserializingConverterType();
+		return ($this->deserializingConverter !== null)
+			? $this->deserializingConverter
+			: parent::getDeserializingConverterType()
+		;
 	}
 
 	/**
@@ -236,7 +275,10 @@ class ContractMemberMapper implements MemberMapperInterface
 	 */
 	public function hasSerializingConverter()
 	{
-		return ($this->serializingConverter !== null) ? true : $this->getBase()->hasSerializingConverter();
+		return ($this->serializingConverter !== null)
+			? true
+			: parent::hasSerializingConverter()
+		;
 	}
 
 	/**
@@ -244,7 +286,10 @@ class ContractMemberMapper implements MemberMapperInterface
 	 */
 	public function hasDeserializingConverter()
 	{
-		return ($this->deserializingConverter !== null) ? true : $this->getBase()->hasDeserializingConverter();
+		return ($this->deserializingConverter !== null)
+			? true
+			: parent::hasDeserializingConverter()
+		;
 	}
 	
 	#endregion

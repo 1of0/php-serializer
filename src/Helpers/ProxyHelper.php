@@ -39,7 +39,7 @@ class ProxyHelper
 	{
 		foreach (self::$proxyInterfaces as $proxyInterface)
 		{
-			if (in_array($proxyInterface, class_implements($classOrInstance)))
+			if (is_subclass_of($classOrInstance, $proxyInterface))
 			{
 				return true;
 			}
@@ -78,7 +78,7 @@ class ProxyHelper
 			return $this->referenceResolver->resolve($this->getClassBeneath($instance), $instance->getId(), false);
 		}
 
-		if (in_array('Doctrine\Common\Persistence\Proxy', class_implements($instance)))
+		if (is_subclass_of($instance, 'Doctrine\Common\Persistence\Proxy'))
 		{
 			if (!call_user_func([ $instance, '__isInitialized' ]))
 			{
@@ -86,7 +86,7 @@ class ProxyHelper
 			}
 		}
 
-		if (in_array('ProxyManager\Proxy\LazyLoadingInterface', class_implements($instance)))
+		if (is_subclass_of($instance, 'ProxyManager\Proxy\LazyLoadingInterface'))
 		{
 			if (!call_user_func([ $instance, 'isProxyInitialized' ]))
 			{
@@ -94,7 +94,7 @@ class ProxyHelper
 			}
 		}
 
-		if (in_array('ProxyManager\Proxy\ValueHolderInterface', class_implements($instance)))
+		if (is_subclass_of($instance, 'ProxyManager\Proxy\ValueHolderInterface'))
 		{
 			return call_user_func([$instance, 'getWrappedValueHolderValue']);
 		}

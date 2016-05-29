@@ -8,13 +8,10 @@
 
 namespace OneOfZero\Json\Mappers\Contract;
 
-use OneOfZero\Json\Mappers\BaseMapperTrait;
-use OneOfZero\Json\Mappers\ObjectMapperInterface;
+use OneOfZero\Json\Mappers\AbstractObjectMapper;
 
-class ContractObjectMapper implements ObjectMapperInterface
+class ContractObjectMapper extends AbstractObjectMapper
 {
-	use BaseMapperTrait;
-
 	/**
 	 * @var bool|null $isExplicitInclusionEnabled
 	 */
@@ -47,38 +44,14 @@ class ContractObjectMapper implements ObjectMapperInterface
 		$serializingConverter = null,
 		$deserializingConverter = null
 	) {
+		parent::__construct();
+		
 		$this->isExplicitInclusionEnabled = $isExplicitInclusionEnabled;
 		$this->isMetadataDisabled = $isMetadataDisabled;
 		$this->serializingConverter = $serializingConverter;
 		$this->deserializingConverter = $deserializingConverter;
 	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getMembers()
-	{
-		return $this->getBase()->getMembers();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getProperties()
-	{
-		return $this->getBase()->getProperties();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getMethods()
-	{
-		return $this->getBase()->getMethods();
-	}
-
-
-
+	
 	#region // Getters
 	
 	/**
@@ -88,7 +61,7 @@ class ContractObjectMapper implements ObjectMapperInterface
 	{
 		return ($this->isExplicitInclusionEnabled !== null)
 			? $this->isExplicitInclusionEnabled 
-			: $this->getBase()->isExplicitInclusionEnabled()
+			: parent::isExplicitInclusionEnabled()
 		;
 	}
 
@@ -99,7 +72,7 @@ class ContractObjectMapper implements ObjectMapperInterface
 	{
 		return ($this->isMetadataDisabled !== null) 
 			? $this->isMetadataDisabled 
-			: $this->getBase()->isMetadataDisabled()
+			: parent::isMetadataDisabled()
 		;
 	}
 
@@ -110,7 +83,7 @@ class ContractObjectMapper implements ObjectMapperInterface
 	{
 		return ($this->serializingConverter !== null) 
 			? $this->serializingConverter 
-			: $this->getBase()->getSerializingConverterType()
+			: parent::getSerializingConverterType()
 		;
 	}
 
@@ -121,7 +94,7 @@ class ContractObjectMapper implements ObjectMapperInterface
 	{
 		return ($this->deserializingConverter !== null) 
 			? $this->deserializingConverter 
-			: $this->getBase()->getDeserializingConverterType()
+			: parent::getDeserializingConverterType()
 		;
 	}
 
@@ -130,7 +103,10 @@ class ContractObjectMapper implements ObjectMapperInterface
 	 */
 	public function hasSerializingConverter()
 	{
-		return ($this->serializingConverter !== null) ? true : $this->getBase()->hasSerializingConverter();
+		return ($this->serializingConverter !== null)
+			? true 
+			: parent::hasSerializingConverter()
+		;
 	}
 
 	/**
@@ -138,7 +114,10 @@ class ContractObjectMapper implements ObjectMapperInterface
 	 */
 	public function hasDeserializingConverter()
 	{
-		return ($this->deserializingConverter !== null) ? true : $this->getBase()->hasDeserializingConverter();
+		return ($this->deserializingConverter !== null) 
+			? true
+			: parent::hasDeserializingConverter()
+		;
 	}
 	
 	#endregion

@@ -11,34 +11,32 @@ namespace OneOfZero\Json\Mappers\Annotation;
 use Doctrine\Common\Annotations\Annotation;
 use OneOfZero\Json\Annotations\ExplicitInclusion;
 use OneOfZero\Json\Annotations\NoMetadata;
-use OneOfZero\Json\Mappers\BaseObjectMapperTrait;
-use OneOfZero\Json\Mappers\ObjectMapperInterface;
+use OneOfZero\Json\Mappers\AbstractObjectMapper;
 
 /**
  * Implementation of a mapper that maps the serialization metadata for a class using annotations.
  */
-class AnnotationObjectMapper implements ObjectMapperInterface
+class AnnotationObjectMapper extends AbstractObjectMapper
 {
-	use BaseObjectMapperTrait;
 	use AnnotationMapperTrait;
 
 	public function isExplicitInclusionEnabled()
 	{
-		if ($this->annotations->has($this->target, ExplicitInclusion::class))
+		if ($this->getAnnotations()->has($this->getTarget(), ExplicitInclusion::class))
 		{
 			return true;
 		}
 		
-		return $this->getBase()->isExplicitInclusionEnabled();
+		return parent::isExplicitInclusionEnabled();
 	}
 
 	public function isMetadataDisabled()
 	{
-		if ($this->annotations->has($this->target, NoMetadata::class))
+		if ($this->getAnnotations()->has($this->getTarget(), NoMetadata::class))
 		{
 			return true;
 		}
 		
-		return $this->getBase()->isMetadataDisabled();
+		return parent::isMetadataDisabled();
 	}
 }

@@ -11,7 +11,7 @@ namespace OneOfZero\Json\Test;
 use DateTime;
 use OneOfZero\Json\Exceptions\SerializationException;
 use OneOfZero\Json\Helpers\Metadata;
-use OneOfZero\Json\Mappers\MapperFactoryInterface;
+use OneOfZero\Json\Mappers\FactoryInterface;
 use OneOfZero\Json\Test\FixtureClasses\ClassWithGetterAndSetter;
 use OneOfZero\Json\Test\FixtureClasses\ClassWithGetterAndSetterOnProperty;
 use OneOfZero\Json\Test\FixtureClasses\ClassWithInvalidGetterAndSetter;
@@ -26,9 +26,9 @@ use OneOfZero\Json\Visitors\SerializingVisitor;
 abstract class AbstractMapperTest extends AbstractTest
 {
 	/**
-	 * @return MapperFactoryInterface
+	 * @return FactoryInterface
 	 */
-	protected abstract function getPipeline();
+	protected abstract function getChain();
 
 	public function testSerialization()
 	{
@@ -173,11 +173,11 @@ abstract class AbstractMapperTest extends AbstractTest
 	
 	private function createSerializingVisitor()
 	{
-		return new SerializingVisitor(clone $this->defaultConfiguration, $this->getPipeline());
+		return new SerializingVisitor(clone $this->defaultConfiguration, $this->getChain());
 	}
 
 	private function createDeserializingVisitor()
 	{
-		return new DeserializingVisitor(clone $this->defaultConfiguration, $this->getPipeline());
+		return new DeserializingVisitor(clone $this->defaultConfiguration, $this->getChain());
 	}
 }

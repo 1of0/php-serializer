@@ -18,13 +18,10 @@ use OneOfZero\Json\Annotations\Property;
 use OneOfZero\Json\Annotations\Setter;
 use OneOfZero\Json\Annotations\Type;
 use OneOfZero\Json\Exceptions\SerializationException;
-use OneOfZero\Json\Mappers\BaseMemberMapperTrait;
-use OneOfZero\Json\Mappers\MemberMapperInterface;
-use ReflectionParameter;
+use OneOfZero\Json\Mappers\AbstractMemberMapper;
 
-class AnnotationMemberMapper implements MemberMapperInterface
+class AnnotationMemberMapper extends AbstractMemberMapper
 {
-	use BaseMemberMapperTrait;
 	use AnnotationMapperTrait;
 		
 	/**
@@ -33,14 +30,14 @@ class AnnotationMemberMapper implements MemberMapperInterface
 	public function getSerializedName()
 	{
 		/** @var AbstractName $nameAnnotation */
-		$nameAnnotation = $this->annotations->get($this->target, AbstractName::class);
+		$nameAnnotation = $this->getAnnotations()->get($this->getTarget(), AbstractName::class);
 
 		if ($nameAnnotation && $nameAnnotation->name !== null)
 		{
 			return $nameAnnotation->name;
 		}
 		
-		return $this->getBase()->getSerializedName();
+		return parent::getSerializedName();
 	}
 
 	/**
@@ -48,45 +45,12 @@ class AnnotationMemberMapper implements MemberMapperInterface
 	 */
 	public function getType()
 	{
-		// Try determining from @Type annotation
-		if ($typeAnnotation = $this->annotations->get($this->target, Type::class))
+		if ($typeAnnotation = $this->getAnnotations()->get($this->getTarget(), Type::class))
 		{
 			return $typeAnnotation->value;
 		}
 
-		// Try determining from phpdoc (@var, @return and @param)
-		if ($this->isClassProperty())
-		{
-			$type = $this->docReader->getPropertyClass($this->target);
-			if ($type !== null)
-			{
-				return $type;
-			}
-		}
-
-		if ($this->isGetter())
-		{
-			$type = $this->docReader->getMethodReturnClass($this->target);
-			if ($type !== null)
-			{
-				return $type;
-			}
-		}
-
-		if ($this->isSetter())
-		{
-			/** @var ReflectionParameter $setter */
-			list($setter) = $this->target->getParameters();
-
-			$type = $this->docReader->getParameterClass($setter);
-			if ($type !== null)
-			{
-				return $type;
-			}
-		}
-
-		// Fallback to parent strategy
-		return $this->getBase()->getType();
+		return parent::getType();
 	}
 
 	/**
@@ -94,12 +58,12 @@ class AnnotationMemberMapper implements MemberMapperInterface
 	 */
 	public function isArray()
 	{
-		if ($this->annotations->has($this->target, IsArray::class))
+		if ($this->getAnnotations()->has($this->getTarget(), IsArray::class))
 		{
 			return true;
 		}
 		
-		return $this->getBase()->isArray();
+		return parent::isArray();
 	}
 
 	/**
@@ -109,13 +73,13 @@ class AnnotationMemberMapper implements MemberMapperInterface
 	 */
 	public function isGetter()
 	{
-		if ($this->annotations->has($this->target, Getter::class))
+		if ($this->getAnnotations()->has($this->getTarget(), Getter::class))
 		{
 			$this->validateGetterSignature();
 			return true;
 		}
 
-		return $this->getBase()->isGetter();
+		return parent::isGetter();
 	}
 
 	/**
@@ -125,13 +89,13 @@ class AnnotationMemberMapper implements MemberMapperInterface
 	 */
 	public function isSetter()
 	{
-		if ($this->annotations->has($this->target, Setter::class))
+		if ($this->getAnnotations()->has($this->getTarget(), Setter::class))
 		{
 			$this->validateSetterSignature();
 			return true;
 		}
 
-		return $this->getBase()->isSetter();
+		return parent::isSetter();
 	}
 
 	/**
@@ -139,30 +103,30 @@ class AnnotationMemberMapper implements MemberMapperInterface
 	 */
 	public function isIncluded()
 	{
-		if ($this->annotations->has($this->target, Ignore::class))
+		if ($this->getAnnotations()->has($this->getTarget(), Ignore::class))
 		{
 			return false;
 		}
 
 		if ($this->isClassMethod())
 		{
-			if ($this->isGetter() || $this->isSetter())
+			if ($this->getChain()->getTop()->isGetter() || $this->getChain()->getTop()->isSetter())
 			{
 				return true;
 			}
 		}
 
-		if ($this->annotations->has($this->target, AbstractName::class))
+		if ($this->getAnnotations()->has($this->getTarget(), AbstractName::class))
 		{
 			return true;
 		}
 
-		if ($this->memberParent->isExplicitInclusionEnabled()/* && !$this->annotations->has($this->target, AbstractName::class) */)
+		if ($this->getChain()->getParent()->getTop()->isExplicitInclusionEnabled())
 		{
 			return false;
 		}
 		
-		return $this->getBase()->isIncluded();
+		return parent::isIncluded();
 	}
 
 	/**
@@ -170,12 +134,12 @@ class AnnotationMemberMapper implements MemberMapperInterface
 	 */
 	public function isReference()
 	{
-		if ($this->annotations->has($this->target, IsReference::class))
+		if ($this->getAnnotations()->has($this->getTarget(), IsReference::class))
 		{
 			return true;
 		}
 		
-		return $this->getBase()->isReference();
+		return parent::isReference();
 	}
 
 	/**
@@ -184,12 +148,12 @@ class AnnotationMemberMapper implements MemberMapperInterface
 	public function isReferenceLazy()
 	{
 		/** @var IsReference $referenceAnnotation */
-		if ($referenceAnnotation = $this->annotations->get($this->target, IsReference::class))
+		if ($referenceAnnotation = $this->getAnnotations()->get($this->getTarget(), IsReference::class))
 		{
 			return $referenceAnnotation->lazy;
 		}
 		
-		return $this->getBase()->isReferenceLazy();
+		return parent::isReferenceLazy();
 	}
 
 	/**
@@ -200,18 +164,18 @@ class AnnotationMemberMapper implements MemberMapperInterface
 		if ($this->isClassProperty())
 		{
 			/** @var Property $annotation */
-			if ($annotation = $this->annotations->get($this->target, Property::class))
+			if ($annotation = $this->getAnnotations()->get($this->getTarget(), Property::class))
 			{
 				return $annotation->serialize;
 			}
 		}
 
-		if ($this->isClassMethod() && $this->isGetter())
+		if ($this->isClassMethod() && $this->getChain()->getTop()->isGetter())
 		{
 			return true;
 		}
 		
-		return $this->getBase()->isSerializable();
+		return parent::isSerializable();
 	}
 
 	/**
@@ -222,18 +186,18 @@ class AnnotationMemberMapper implements MemberMapperInterface
 		if ($this->isClassProperty())
 		{
 			/** @var Property $annotation */
-			if ($annotation = $this->annotations->get($this->target, Property::class))
+			if ($annotation = $this->getAnnotations()->get($this->getTarget(), Property::class))
 			{
 				return $annotation->deserialize;
 			}
 		}
 
-		if ($this->isClassMethod() && $this->isSetter())
+		if ($this->isClassMethod() && $this->getChain()->getTop()->isSetter())
 		{
 			return true;
 		}
 
-		return $this->getBase()->isDeserializable();
+		return parent::isDeserializable();
 	}
 }
 

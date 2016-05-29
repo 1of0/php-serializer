@@ -8,6 +8,7 @@
 
 namespace OneOfZero\Json\ContractResolvers;
 
+use OneOfZero\Json\Mappers\Contract\ContractMemberMapper;
 use OneOfZero\Json\Mappers\Contract\ContractObjectMapper;
 use OneOfZero\Json\Mappers\MemberMapperInterface;
 use OneOfZero\Json\Mappers\ObjectMapperInterface;
@@ -48,7 +49,7 @@ interface ContractResolverInterface
 	 * 
 	 * @param MemberNode $member
 	 * 
-	 * @return MemberMapperInterface|\OneOfZero\Json\Mappers\Contract\ContractMemberMapper|null
+	 * @return MemberMapperInterface|ContractMemberMapper|null
 	 */
 	public function createSerializingMemberContract(MemberNode $member);
 
@@ -57,7 +58,7 @@ interface ContractResolverInterface
 	 * 
 	 * @param MemberNode $member
 	 *
-	 * @return MemberMapperInterface|\OneOfZero\Json\Mappers\Contract\ContractMemberMapper|null
+	 * @return MemberMapperInterface|ContractMemberMapper|null
 	 */
 	public function createDeserializingMemberContract(MemberNode $member);
 }

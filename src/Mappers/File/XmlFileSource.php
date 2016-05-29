@@ -13,26 +13,22 @@ use DOMDocument;
 use DOMElement;
 use DOMXPath;
 use Exception;
-use OneOfZero\Json\Mappers\AbstractArray\ArrayMapperFactory;
 use RuntimeException;
 
-class XmlMapperFactory extends ArrayMapperFactory
+class XmlFileSource extends FileSource
 {
 	/**
-	 * @param string $mappingFile
+	 * @param string $file
 	 */
-	public function __construct($mappingFile)
+	public function __construct($file)
 	{
-		if (!file_exists($mappingFile))
-		{
-			throw new RuntimeException("File \"$mappingFile\" does not exist");
-		}
+		parent::__construct($file);
 
 		$document = new DOMDocument();
 		
-		if ($document->load($mappingFile) === false)
+		if ($document->load($file) === false)
 		{
-			throw new RuntimeException("Failed parsing XML in \"$mappingFile\"");
+			throw new RuntimeException("Failed parsing XML in \"$file\"");
 		}
 
 		try
@@ -99,7 +95,7 @@ class XmlMapperFactory extends ArrayMapperFactory
 		}
 		catch (Exception $e)
 		{
-			throw new RuntimeException("Failed parsing XML in \"$mappingFile\"");
+			throw new RuntimeException("Failed parsing XML in \"$file\"");
 		}
 	}
 }

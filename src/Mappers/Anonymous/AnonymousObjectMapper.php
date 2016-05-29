@@ -8,24 +8,14 @@
 
 namespace OneOfZero\Json\Mappers\Anonymous;
 
-use OneOfZero\Json\Mappers\BaseMapperTrait;
-use OneOfZero\Json\Mappers\ObjectMapperInterface;
+use OneOfZero\Json\Mappers\AbstractObjectMapper;
+use OneOfZero\Json\Mappers\FactoryInterface;
+use OneOfZero\Json\Mappers\MapperInterface;
 use stdClass;
 
-class AnonymousObjectMapper implements ObjectMapperInterface
+class AnonymousObjectMapper extends AbstractObjectMapper
 {
-	use BaseMapperTrait;
-	
 	/**
-	 * Holds cached field mappers for the class properties.
-	 *
-	 * @var AnonymousMemberMapper[]|null $members
-	 */
-	protected $members = null;
-
-	/**
-	 * Holds the object that is to be mapped.
-	 * 
 	 * @var stdClass $object
 	 */
 	protected $object;
@@ -35,28 +25,18 @@ class AnonymousObjectMapper implements ObjectMapperInterface
 	 */
 	public function __construct(stdClass $object)
 	{
+		parent::__construct();
+		
 		$this->object = $object;
+		$this->setChain(new AnonymousMapperChain($this));
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public final function getMembers()
+	public function mapMembers()
 	{
-		return $this->getProperties();
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getProperties()
-	{
-		if ($this->members !== null)
-		{
-			return $this->members;
-		}
-
-		$this->members = [];
+		$members = [];
 
 		foreach (array_keys(get_object_vars($this->object)) as $memberName)
 		{
@@ -66,21 +46,15 @@ class AnonymousObjectMapper implements ObjectMapperInterface
 				continue;
 			}
 
-			$this->members[] = new AnonymousMemberMapper($memberName);
+			$mapper = new AnonymousMemberMapper($memberName);
+			$chain = new AnonymousMapperChain($mapper);
+			$mapper->setChain($chain);
+			
+			$members[] = $chain;
 		}
 
-		return $this->members;
+		return $members;
 	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function getMethods()
-	{
-		return [];
-	}
-
-
 
 	#region // Null getters
 

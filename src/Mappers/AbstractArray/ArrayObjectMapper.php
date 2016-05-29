@@ -8,27 +8,26 @@
 
 namespace OneOfZero\Json\Mappers\AbstractArray;
 
-use OneOfZero\Json\Mappers\BaseObjectMapperTrait;
-use OneOfZero\Json\Mappers\ObjectMapperInterface;
+use OneOfZero\Json\Mappers\AbstractObjectMapper;
 
-class ArrayObjectMapper extends ArrayAbstractMapper implements ObjectMapperInterface
+class ArrayObjectMapper extends AbstractObjectMapper
 {
-	use BaseObjectMapperTrait;
+	use ArrayMapperTrait;
 
-	const METADATA_ATTR = 'metadata';
-	const EXPLICIT_INCLUSION_ATTR = 'explicit';
+	public static $METADATA_ATTR = 'metadata';
+	public static $EXPLICIT_INCLUSION_ATTR = 'explicit';
 	
 	/**
 	 * {@inheritdoc}
 	 */
 	public function isExplicitInclusionEnabled()
 	{
-		if ($this->hasAttribute(self::EXPLICIT_INCLUSION_ATTR))
+		if ($this->hasAttribute(self::$EXPLICIT_INCLUSION_ATTR))
 		{
-			return (bool)$this->readAttribute(self::EXPLICIT_INCLUSION_ATTR);
+			return (bool)$this->readAttribute(self::$EXPLICIT_INCLUSION_ATTR);
 		}
 		
-		return $this->getBase()->isExplicitInclusionEnabled();
+		return parent::isExplicitInclusionEnabled();
 	}
 
 	/**
@@ -36,11 +35,11 @@ class ArrayObjectMapper extends ArrayAbstractMapper implements ObjectMapperInter
 	 */
 	public function isMetadataDisabled()
 	{
-		if ($this->hasAttribute(self::METADATA_ATTR))
+		if ($this->hasAttribute(self::$METADATA_ATTR))
 		{
-			return ((bool)$this->readAttribute(self::METADATA_ATTR)) === false;
+			return ((bool)$this->readAttribute(self::$METADATA_ATTR)) === false;
 		}
 		
-		return $this->getBase()->isMetadataDisabled();
+		return parent::isMetadataDisabled();
 	}
 }

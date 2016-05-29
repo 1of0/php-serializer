@@ -17,7 +17,7 @@ class ContextSensitiveMemberConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function serialize(MemberNode $node)
+	public function serialize(MemberNode $node, $typeHint = null)
 	{
 		/** @var ClassUsingConverters $parentInstance */
 		$parentInstance = $node->getParent()->getInstance();
@@ -28,7 +28,7 @@ class ContextSensitiveMemberConverter extends AbstractMemberConverter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function deserialize(MemberNode $node)
+	public function deserialize(MemberNode $node, $typeHint = null)
 	{
 		/** @var ClassUsingConverters $deserializedParent */
 		$deserializedParent = $node->getParent()->getInstance();
