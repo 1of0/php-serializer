@@ -11,7 +11,7 @@ namespace OneOfZero\Json\Test;
 use DateTime;
 use OneOfZero\Json\Exceptions\SerializationException;
 use OneOfZero\Json\Helpers\Metadata;
-use OneOfZero\Json\Mappers\FactoryInterface;
+use OneOfZero\Json\Mappers\FactoryChain;
 use OneOfZero\Json\Test\FixtureClasses\ClassWithGetterAndSetter;
 use OneOfZero\Json\Test\FixtureClasses\ClassWithGetterAndSetterOnProperty;
 use OneOfZero\Json\Test\FixtureClasses\ClassWithInvalidGetterAndSetter;
@@ -26,7 +26,7 @@ use OneOfZero\Json\Visitors\SerializingVisitor;
 abstract class AbstractMapperTest extends AbstractTest
 {
 	/**
-	 * @return FactoryInterface
+	 * @return FactoryChain
 	 */
 	protected abstract function getChain();
 

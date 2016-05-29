@@ -9,7 +9,6 @@
 namespace OneOfZero\Json\Mappers\Contract;
 
 use OneOfZero\Json\Mappers\AbstractMemberMapper;
-use OneOfZero\Json\Mappers\MemberMapperChain;
 
 class ContractMemberMapper extends AbstractMemberMapper
 {

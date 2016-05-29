@@ -9,8 +9,6 @@
 namespace OneOfZero\Json\Mappers\Anonymous;
 
 use OneOfZero\Json\Mappers\AbstractObjectMapper;
-use OneOfZero\Json\Mappers\FactoryInterface;
-use OneOfZero\Json\Mappers\MapperInterface;
 use stdClass;
 
 class AnonymousObjectMapper extends AbstractObjectMapper

@@ -13,8 +13,6 @@ use OneOfZero\Json\Configuration;
 use OneOfZero\Json\Helpers\Environment;
 use OneOfZero\Json\Mappers\Annotation\AnnotationFactory;
 use OneOfZero\Json\Mappers\Annotation\AnnotationSource;
-use OneOfZero\Json\Mappers\FactoryInterface;
-use OneOfZero\Json\Mappers\MapperPipeline;
 use OneOfZero\Json\Mappers\FactoryChain;
 use OneOfZero\Json\Mappers\FactoryChainFactory;
 use OneOfZero\Json\Mappers\Reflection\ReflectionFactory;

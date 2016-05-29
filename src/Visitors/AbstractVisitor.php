@@ -17,7 +17,6 @@ use OneOfZero\Json\Exceptions\ConverterException;
 use OneOfZero\Json\Exceptions\NotSupportedException;
 use OneOfZero\Json\Helpers\ObjectHelper;
 use OneOfZero\Json\Helpers\ProxyHelper;
-use OneOfZero\Json\Mappers\FactoryInterface;
 use OneOfZero\Json\Mappers\FactoryChain;
 use OneOfZero\Json\ReferenceResolverInterface;
 use RuntimeException;

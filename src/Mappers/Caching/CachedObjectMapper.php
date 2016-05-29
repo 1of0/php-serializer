@@ -10,7 +10,6 @@ namespace OneOfZero\Json\Mappers\Caching;
 
 use OneOfZero\Json\Mappers\AbstractMapperChain;
 use OneOfZero\Json\Mappers\AbstractObjectMapper;
-use OneOfZero\Json\Mappers\SourceInterface;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;

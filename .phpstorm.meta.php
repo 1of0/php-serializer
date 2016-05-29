@@ -8,9 +8,5 @@ namespace PHPSTORM_META
 		[
 			"" == "@",
 		],
-		\OneOfZero\Json\Mappers\BaseFactoryTrait::getCachedMapper('', '') =>
-		[
-			"" == "@",
-		],
 	];
 }
