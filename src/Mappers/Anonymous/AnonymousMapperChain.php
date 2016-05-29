@@ -2,6 +2,7 @@
 
 namespace OneOfZero\Json\Mappers\Anonymous;
 
+use OneOfZero\Json\Mappers\FactoryChain;
 use OneOfZero\Json\Mappers\MapperChainInterface;
 use OneOfZero\Json\Mappers\MapperInterface;
 
@@ -39,7 +40,15 @@ class AnonymousMapperChain implements MapperChainInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getTop()
+	public function getFactoryChain()
+	{
+		return null;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getTop($noCache = false)
 	{
 		return $this->mapper;
 	}

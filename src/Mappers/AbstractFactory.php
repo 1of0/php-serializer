@@ -30,4 +30,14 @@ abstract class AbstractFactory implements FactoryInterface
 			$this->source = clone $this->source;
 		}
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getSource()
+	{
+		return $this->source;
+	}
+
+
 }

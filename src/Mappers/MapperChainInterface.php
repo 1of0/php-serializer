@@ -19,11 +19,18 @@ interface MapperChainInterface
 	 * @return Reflector|ReflectionClass|ReflectionMethod|ReflectionProperty
 	 */
 	public function getTarget();
-	
+
 	/**
-	 * @return MapperInterface|ObjectMapperInterface|MemberMapperInterface
+	 * @return FactoryChain
 	 */
-	public function getTop();
+	public function getFactoryChain();
+
+	/**
+	 * @param bool $noCache
+	 * 
+	 * @return MapperInterface|MemberMapperInterface|ObjectMapperInterface
+	 */
+	public function getTop($noCache = true);
 	
 	/**
 	 * @param MapperInterface|ObjectMapperInterface|MemberMapperInterface $caller

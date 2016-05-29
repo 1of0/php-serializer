@@ -18,17 +18,15 @@ use RuntimeException;
 class XmlFileSource extends FileSource
 {
 	/**
-	 * @param string $file
+	 * {@inheritdoc}
 	 */
-	public function __construct($file)
+	protected function load()
 	{
-		parent::__construct($file);
-
 		$document = new DOMDocument();
 		
-		if ($document->load($file) === false)
+		if ($document->load($this->getFile()) === false)
 		{
-			throw new RuntimeException("Failed parsing XML in \"$file\"");
+			throw new RuntimeException("Failed parsing XML in \"{$this->getFile()}\"");
 		}
 
 		try
@@ -95,7 +93,7 @@ class XmlFileSource extends FileSource
 		}
 		catch (Exception $e)
 		{
-			throw new RuntimeException("Failed parsing XML in \"$file\"");
+			throw new RuntimeException("Failed parsing XML in \"{$this->getFile()}\"");
 		}
 	}
 }

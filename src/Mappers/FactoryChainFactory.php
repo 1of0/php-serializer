@@ -11,7 +11,7 @@ namespace OneOfZero\Json\Mappers;
 use Doctrine\Common\Cache\CacheProvider;
 use OneOfZero\Json\Configuration;
 use OneOfZero\Json\Mappers\Caching\CacheSource;
-use OneOfZero\Json\Mappers\Caching\CachingMapperFactory;
+use OneOfZero\Json\Mappers\Caching\CacheFactory;
 use RuntimeException;
 
 class FactoryChainFactory
@@ -33,7 +33,7 @@ class FactoryChainFactory
 	 */
 	public function addFactory(FactoryInterface $factory)
 	{
-		if ($factory instanceof CachingMapperFactory)
+		if ($factory instanceof CacheFactory)
 		{
 			throw new RuntimeException('Caching must be enabled with the withCache() method');
 		}
@@ -67,13 +67,13 @@ class FactoryChainFactory
 			throw new RuntimeException('There are no mapper factories in the chain');
 		}
 
-		$chain = array_reverse($this->chain);
+		$cacheFactory = null;
 		
 		if ($this->cache !== null)
 		{
-			$chain[] = new CachingMapperFactory(new CacheSource($this->cache));
+			$cacheFactory = new CacheFactory(new CacheSource($this->cache));
 		}
 		
-		return new FactoryChain($chain, $configuration);
+		return new FactoryChain(array_reverse($this->chain), $configuration, $cacheFactory);
 	}
 }

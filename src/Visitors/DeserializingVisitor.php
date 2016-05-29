@@ -143,12 +143,12 @@ class DeserializingVisitor extends AbstractVisitor
 
 		foreach ($mapper->mapMembers() as $memberMapperChain)
 		{
-			$serializedValue = $node->getSerializedMemberValue($memberMapperChain->getTop()->getSerializedName());
+			$serializedValue = $node->getSerializedMemberValue($memberMapperChain->getTop(false)->getSerializedName());
 			
 			$memberNode = (new MemberNode)
 				->withSerializedValue($serializedValue)
 				->withReflector($memberMapperChain->getTarget())
-				->withMapper($memberMapperChain->getTop())
+				->withMapper($memberMapperChain->getTop(false))
 				->withParent($node)
 			;
 

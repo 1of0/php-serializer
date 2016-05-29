@@ -11,13 +11,11 @@ namespace OneOfZero\Json\Mappers\File;
 class PhpFileSource extends FileSource
 {
 	/**
-	 * @param string $file
+	 * {@inheritdoc}
 	 */
-	public function __construct($file)
+	protected function load()
 	{
-		parent::__construct($file);
-
 		/** @noinspection PhpIncludeInspection */
-		$this->mapping = include($file);
+		$this->mapping = include($this->getFile());
 	}
 }

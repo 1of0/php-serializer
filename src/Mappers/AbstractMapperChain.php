@@ -9,6 +9,7 @@ use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
 use Reflector;
+use RuntimeException;
 
 abstract class AbstractMapperChain implements MapperChainInterface
 {
@@ -35,7 +36,7 @@ abstract class AbstractMapperChain implements MapperChainInterface
 	{
 		$this->target = $target;
 		$this->factoryChain = $factoryChain;
-		$this->chain = array_fill(0, $factoryChain->getChainLength(true), null);
+		$this->chain = array_fill(0, $factoryChain->getChainLength(), null);
 	}
 	
 	/**
@@ -69,8 +70,32 @@ abstract class AbstractMapperChain implements MapperChainInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getTop()
+	public function getFactoryChain()
 	{
+		return $this->factoryChain;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getTop($noCache = true)
+	{
+		if (!$noCache && $this->factoryChain->getCacheFactory() !== null)
+		{
+			$factory = $this->factoryChain->getCacheFactory();
+			
+			if ($this instanceof ObjectMapperChain)
+			{
+				return $factory->mapObject($this->target, $this);
+			}
+			elseif ($this instanceof MemberMapperChain)
+			{
+				return $factory->mapMember($this->target, $this);
+			}
+			
+			throw new RuntimeException('Unsupported mapper chain');
+		}
+		
 		return $this->getMapper(count($this->chain) - 1);
 	}
 

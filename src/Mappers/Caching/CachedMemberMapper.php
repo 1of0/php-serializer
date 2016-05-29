@@ -8,7 +8,12 @@
 
 namespace OneOfZero\Json\Mappers\Caching;
 
+use OneOfZero\Json\Mappers\AbstractMapperChain;
 use OneOfZero\Json\Mappers\AbstractMemberMapper;
+use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
+use Reflector;
 
 class CachedMemberMapper extends AbstractMemberMapper
 {
@@ -19,11 +24,17 @@ class CachedMemberMapper extends AbstractMemberMapper
 
 	/**
 	 * @param array $mapping
+	 * @param Reflector|ReflectionClass|ReflectionProperty|ReflectionMethod $target
+	 * @param AbstractMapperChain|null $chain
 	 */
-	public function __construct(array $mapping)
+	public function __construct(
+		array $mapping,
+		Reflector $target = null,
+		AbstractMapperChain $chain = null
+	)
 	{
-		parent::__construct();
-		
+		parent::__construct(null, $target, $chain);
+
 		$this->mapping = $mapping;
 	}
 

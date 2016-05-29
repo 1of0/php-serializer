@@ -11,13 +11,11 @@ namespace OneOfZero\Json\Mappers\File;
 class JsonFileSource extends FileSource
 {
 	/**
-	 * @param string $file
+	 * {@inheritdoc}
 	 */
-	public function __construct($file)
+	protected function load()
 	{
-		parent::__construct($file);
-		
-		$this->mapping = json_decode(file_get_contents($file), true);
+		$this->mapping = json_decode(file_get_contents($this->getFile()), true);
 		$this->aliases = array_key_exists('@use', $this->mapping) ? $this->mapping['@use'] : [];
 	}
 }

@@ -16,25 +16,21 @@ use OneOfZero\Json\Mappers\ObjectMapperChain;
 use OneOfZero\Json\Mappers\ObjectMapperInterface;
 use OneOfZero\Json\Mappers\SourceInterface;
 use ReflectionClass;
+use ReflectionProperty;
 use Reflector;
 use RuntimeException;
 
-class CachingMapperFactory extends AbstractFactory
+class CacheFactory extends AbstractFactory
 {
 	const CACHE_NAMESPACE = '1of0_json_mapper';
 	
 	private static $excludedMapperMethods = [
-		'getConfiguration',
-		'getBase',
-		'setBase',
-		'getTop',
-		'setTop',
-		'getFactory',
+		'getSource',
 		'getTarget',
 		'setTarget',
-		'getMembers',
-		'getMemberParent',
-		'setMemberParent',
+		'getChain',
+		'setChain',
+		'mapMembers',
 	];
 
 	/**
@@ -81,7 +77,6 @@ class CachingMapperFactory extends AbstractFactory
 		
 		$this->cache = clone $source->getCache();
 		$this->cache->setNamespace(self::CACHE_NAMESPACE);
-		
 	}
 
 	/**
@@ -89,7 +84,18 @@ class CachingMapperFactory extends AbstractFactory
 	 */
 	public function mapObject(ReflectionClass $target, ObjectMapperChain $chain)
 	{
-		// TODO: Implement mapObject() method.
+		$cacheKey = "{$chain->getFactoryChain()->getHash()}_{$target->name}";
+
+		$mapping = $this->cache->fetch($cacheKey);
+		
+		if ($mapping === false)
+		{
+			$mapping = $this->cacheObjectMapper($chain->getTop());
+			
+			$this->cache->save($cacheKey, $mapping);
+		}
+		
+		return new CachedObjectMapper($mapping, $target, $chain);
 	}
 
 	/**
@@ -97,10 +103,26 @@ class CachingMapperFactory extends AbstractFactory
 	 */
 	public function mapMember(Reflector $target, MemberMapperChain $chain)
 	{
-		// TODO: Implement mapMember() method.
+		$memberType = $target instanceof ReflectionProperty ? 'property' : 'method';
+		$cacheKey = "{$chain->getFactoryChain()->getHash()}/{$memberType}/{$target->name}";
+
+		$mapping = $this->cache->fetch($cacheKey);
+
+		if ($mapping === false)
+		{
+			$mapping = $this->cacheMemberMapper($chain->getTop());
+
+			$this->cache->save($cacheKey, $mapping);
+		}
+
+		return new CachedMemberMapper($mapping, $target, $chain);
 	}
 
-	/*
+	/**
+	 * @param ObjectMapperInterface $mapper
+	 * 
+	 * @return array
+	 */
 	private function cacheObjectMapper(ObjectMapperInterface $mapper)
 	{
 		$mapping = [];
@@ -110,31 +132,26 @@ class CachingMapperFactory extends AbstractFactory
 			$mapping[$method] = $mapper->{$method}();
 		}
 		
-		$mapping['__members'] = $this->cacheMemberMappers($mapper->getMembers());
-		
 		return $mapping;
 	}
-	
-	private function cacheMemberMappers(array $mappers)
+
+	/**
+	 * @param MemberMapperInterface $mapper
+	 * 
+	 * @return array
+	 */
+	private function cacheMemberMapper(MemberMapperInterface $mapper)
 	{
 		$mapping = [];
 		
-		foreach ($mappers as $mapper)
+		foreach (self::$memberMapperMethods as $method)
 		{
-			$memberMapping = [];
-
-			foreach (self::$memberMapperMethods as $method)
-			{
-				$memberMapping[$method] = $mapper->{$method}();
-			}
-
-			$mapping[] = $memberMapping;
+			$mapping[$method] = $mapper->{$method}();
 		}
 		
 		return $mapping;
 	}
-	*/
-
+	
 	/**
 	 * @return CacheProvider
 	 */
@@ -144,4 +161,4 @@ class CachingMapperFactory extends AbstractFactory
 	}
 }
 
-CachingMapperFactory::__constructStatic();
+CacheFactory::__constructStatic();

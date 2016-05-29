@@ -28,4 +28,9 @@ class AnnotationSource implements SourceInterface
 	{
 		return $this->annotations;
 	}
+
+	public function getHash()
+	{
+		return sha1(__CLASS__);
+	}
 }

@@ -26,10 +26,16 @@ class YamlFileSource extends FileSource
 			throw new RuntimeException('The package symfony/yaml is required to be able to use the yaml mapper');
 			// @codeCoverageIgnoreEnd
 		}
-
+	}
+	
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function load()
+	{
 		$parser = new Parser();
 		
-		$this->mapping = $parser->parse(file_get_contents($file));
+		$this->mapping = $parser->parse(file_get_contents($this->getFile()));
 		$this->aliases = array_key_exists('@use', $this->mapping) ? $this->mapping['@use'] : [];
 	}
 }

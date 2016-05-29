@@ -16,7 +16,7 @@ use OneOfZero\Json\Mappers\FactoryChainFactory;
 use OneOfZero\Json\Mappers\File\PhpFileSource;
 use OneOfZero\Json\Mappers\Reflection\ReflectionFactory;
 
-class CachingMapperTest// extends AbstractMapperTest
+class CachingMapperTest extends AbstractMapperTest
 {
 	const PHP_ARRAY_MAPPING_FILE = __DIR__ . '/Assets/mapping.php';
 	
@@ -26,10 +26,10 @@ class CachingMapperTest// extends AbstractMapperTest
 		[ 7, 4 ],
 		[ 10, 5 ],
 		[ 13, 6 ],
-		[ 13, 8 ],
-		[ 13, 10 ],
-		[ 13, 12 ],
-		[ 13, 14 ],
+		[ 14, 7 ],
+		[ 16, 7 ],
+		[ 17, 8 ],
+		[ 19, 8 ],
 	];
 
 	/**
@@ -59,14 +59,14 @@ class CachingMapperTest// extends AbstractMapperTest
 	
 	public function assertPostConditions()
 	{
-		/*parent::assertPostConditions();
+		parent::assertPostConditions();
 		$this->runTest();
 		
 		$expectedStats = self::EXPECTED_CACHE_STATS[self::$testCounter++];
-		$actualStats = self::$chain->get()->getStats();
+		$actualStats = self::$chain->getCacheFactory()->getCache()->getStats();
 		
 		$this->assertEquals($expectedStats[0], $actualStats['hits']);
-		$this->assertEquals($expectedStats[1], $actualStats['misses']);*/
+		$this->assertEquals($expectedStats[1], $actualStats['misses']);
 	}
 
 	/**

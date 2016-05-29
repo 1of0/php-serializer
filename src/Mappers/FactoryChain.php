@@ -9,7 +9,7 @@
 namespace OneOfZero\Json\Mappers;
 
 use OneOfZero\Json\Configuration;
-use OneOfZero\Json\Mappers\Caching\CachingMapperFactory;
+use OneOfZero\Json\Mappers\Caching\CacheFactory;
 use ReflectionClass;
 
 class FactoryChain
@@ -25,17 +25,26 @@ class FactoryChain
 	private $configuration;
 
 	/**
+	 * @var CacheFactory $cacheFactory
+	 */
+	private $cacheFactory;
+
+	/**
 	 * @param FactoryInterface[] $chain
 	 * @param Configuration $configuration
+	 * @param CacheFactory $cacheFactory
 	 */
-	public function __construct(array $chain, Configuration $configuration)
+	public function __construct(array $chain, Configuration $configuration, CacheFactory $cacheFactory = null)
 	{
+		$this->chain = [];
+		
 		foreach ($chain as $factory)
 		{
 			$this->chain[] = clone $factory;
 		}
 		
 		$this->configuration = $configuration;
+		$this->cacheFactory = $cacheFactory;
 	}
 
 	/**
@@ -45,11 +54,9 @@ class FactoryChain
 	 */
 	public function mapObject(ReflectionClass $target)
 	{
-		// TODO: Work in cache here
-		
 		$chain = new ObjectMapperChain($target, $this);
 		
-		return $chain->getTop();
+		return $chain->getTop(false);
 	}
 
 	/**
@@ -57,14 +64,19 @@ class FactoryChain
 	 */
 	public function getHash()
 	{
-		$pipelineHash = '';
+		$chainHash = '';
 		
 		foreach ($this->chain as $factory)
 		{
-			$pipelineHash = sha1($pipelineHash . get_class($factory));
+			$chainHash = sha1($chainHash . get_class($factory));
+			
+			if ($factory->getSource() !== null)
+			{
+				$chainHash = sha1($chainHash . $factory->getSource()->getHash());
+			}
 		}
 		
-		return sha1($this->configuration->getHash() . $pipelineHash);
+		return sha1($this->configuration->getHash() . $chainHash);
 	}
 
 	/**
@@ -86,19 +98,18 @@ class FactoryChain
 	}
 
 	/**
-	 * @param bool $noCache
-	 * 
+	 * @return CacheFactory
+	 */
+	public function getCacheFactory()
+	{
+		return $this->cacheFactory;
+	}
+
+	/**
 	 * @return int
 	 */
-	public function getChainLength($noCache = false)
-	{
-		$chainLength = count($this->chain);
-				
-		if ($noCache && $this->chain[$chainLength - 1] instanceof CachingMapperFactory)
-		{
-			return $chainLength - 1;
-		}
-		
-		return $chainLength;
+	public function getChainLength()
+	{		
+		return count($this->chain);
 	}
 }

@@ -9,10 +9,17 @@
 namespace OneOfZero\Json\Mappers;
 
 use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
 use Reflector;
 
 interface FactoryInterface
 {
+	/**
+	 * @return SourceInterface
+	 */
+	public function getSource();
+	
 	/**
 	 * @param ReflectionClass $target
 	 * @param ObjectMapperChain $chain
@@ -22,7 +29,7 @@ interface FactoryInterface
 	public function mapObject(ReflectionClass $target, ObjectMapperChain $chain);
 
 	/**
-	 * @param Reflector $target
+	 * @param Reflector|ReflectionClass|ReflectionProperty|ReflectionMethod $target
 	 * @param MemberMapperChain $chain
 	 * 
 	 * @return MemberMapperInterface

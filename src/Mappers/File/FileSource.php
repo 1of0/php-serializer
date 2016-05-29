@@ -37,4 +37,12 @@ abstract class FileSource extends ArrayAbstractSource
 	{
 		return $this->file;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getHash()
+	{
+		return sha1(__CLASS__ . $this->file);
+	}
 }

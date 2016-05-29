@@ -27,4 +27,12 @@ class CacheSource implements SourceInterface
 	{
 		return $this->cache;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getHash()
+	{
+		return sha1(__CLASS__ . $this->cache->getNamespace());
+	}
 }

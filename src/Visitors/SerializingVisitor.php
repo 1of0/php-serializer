@@ -176,8 +176,8 @@ class SerializingVisitor extends AbstractVisitor
 		foreach ($node->getMapper()->mapMembers() as $memberMapperChain)
 		{
 			$memberNode = (new MemberNode)
-				->withReflector($memberMapperChain->getTop()->getTarget())
-				->withMapper($memberMapperChain->getTop())
+				->withReflector($memberMapperChain->getTop(false)->getTarget())
+				->withMapper($memberMapperChain->getTop(false))
 				->withParent($node)
 			;
 			
