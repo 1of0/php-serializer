@@ -48,7 +48,7 @@ class MemberMapperChain extends AbstractMapperChain
 		if ($this->chain[$index] === null)
 		{
 			$factory = $this->factoryChain->getFactory($index);
-			$this->chain[$index] = $factory->mapMember($this->target, $this);
+			$this->chain[$index] = $factory->getMemberMapper($this->target, $this);
 		}
 
 		return $this->chain[$index];

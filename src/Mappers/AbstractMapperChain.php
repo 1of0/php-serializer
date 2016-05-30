@@ -92,11 +92,11 @@ abstract class AbstractMapperChain implements MapperChainInterface
 			
 			if ($this instanceof ObjectMapperChain)
 			{
-				return $factory->mapObject($this->target, $this);
+				return $factory->getObjectMapper($this->target, $this);
 			}
 			elseif ($this instanceof MemberMapperChain)
 			{
-				return $factory->mapMember($this->target, $this);
+				return $factory->getMemberMapper($this->target, $this);
 			}
 			
 			throw new RuntimeException('Unsupported mapper chain');

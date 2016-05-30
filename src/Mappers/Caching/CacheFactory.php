@@ -75,8 +75,7 @@ class CacheFactory extends AbstractFactory
 			throw new RuntimeException('The CacheMapperFactory requires a CacheSource instance as source');
 		}
 		
-		$this->cache = clone $source->getCache();
-		$this->cache->setNamespace(self::CACHE_NAMESPACE);
+		$this->cache = $source->getCache();
 	}
 
 	/**
@@ -84,7 +83,7 @@ class CacheFactory extends AbstractFactory
 	 */
 	public function mapObject(ReflectionClass $target, ObjectMapperChain $chain)
 	{
-		$cacheKey = "{$chain->getFactoryChain()->getHash()}_{$target->name}";
+		$cacheKey = "{$chain->getFactoryChain()->getHash()}/{$target->name}";
 
 		$mapping = $this->cache->fetch($cacheKey);
 		
@@ -104,7 +103,8 @@ class CacheFactory extends AbstractFactory
 	public function mapMember(Reflector $target, MemberMapperChain $chain)
 	{
 		$memberType = $target instanceof ReflectionProperty ? 'property' : 'method';
-		$cacheKey = "{$chain->getFactoryChain()->getHash()}/{$memberType}/{$target->name}";
+		$memberClass = $target->getDeclaringClass()->name;
+		$cacheKey = "{$chain->getFactoryChain()->getHash()}/{$memberClass}/{$memberType}/{$target->name}";
 
 		$mapping = $this->cache->fetch($cacheKey);
 
