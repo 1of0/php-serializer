@@ -27,6 +27,11 @@ class ObjectHelper
 			throw new RuntimeException("No type specified");
 		}
 		
+		if (is_object($type))
+		{
+			return $type;
+		}
+		
 		if ($container !== null)
 		{
 			if ($container->has($type))

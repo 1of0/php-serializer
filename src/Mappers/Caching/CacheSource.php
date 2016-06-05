@@ -13,8 +13,6 @@ use OneOfZero\Json\Mappers\SourceInterface;
 
 class CacheSource implements SourceInterface
 {
-	const CACHE_NAMESPACE = '1of0_json_mapper';
-	
 	/**
 	 * @var CacheProvider $cache
 	 */
@@ -25,8 +23,7 @@ class CacheSource implements SourceInterface
 	 */
 	public function __construct(CacheProvider $cache)
 	{
-		$this->cache = clone $cache;
-		$this->cache->setNamespace(self::CACHE_NAMESPACE);
+		$this->cache = $cache;
 	}
 
 	/**

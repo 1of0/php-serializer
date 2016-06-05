@@ -9,80 +9,23 @@
 namespace OneOfZero\Json\Test;
 
 use Doctrine\Common\Cache\ArrayCache;
-use OneOfZero\Json\Configuration;
 use OneOfZero\Json\Mappers\AbstractArray\ArrayFactory;
-use OneOfZero\Json\Mappers\FactoryChain;
 use OneOfZero\Json\Mappers\FactoryChainFactory;
 use OneOfZero\Json\Mappers\File\PhpFileSource;
 use OneOfZero\Json\Mappers\Reflection\ReflectionFactory;
 
 class CachingMapperTest extends AbstractMapperTest
 {
-	const PHP_ARRAY_MAPPING_FILE = __DIR__ . '/Assets/mapping.php';
-	
-	const EXPECTED_CACHE_STATS = [
-		[ 1, 2 ],
-		[ 4, 3 ],
-		[ 7, 4 ],
-		[ 10, 5 ],
-		[ 13, 6 ],
-		[ 14, 7 ],
-		[ 16, 7 ],
-		[ 17, 8 ],
-		[ 19, 8 ],
-	];
-
-	/**
-	 * @var int $testCounter
-	 */
-	private static $testCounter = 0;
-
-	/**
-	 * @var FactoryChainFactory $chainFactory
-	 */
-	private static $chainFactory;
-
-	/**
-	 * @var FactoryChain $chain
-	 */
-	private $chain;
-
-	public static function setUpBeforeClass()
-	{
-		parent::setUpBeforeClass();
-		
-		self::$chainFactory = (new FactoryChainFactory)
-			->setCache(new ArrayCache())
-			->addFactory(new ArrayFactory(new PhpFileSource(self::PHP_ARRAY_MAPPING_FILE)))
-			->addFactory(new ReflectionFactory())
-		;
-	}
-	
-	protected function setUp()
-	{
-		parent::setUp();
-		
-	}
-
-
-	public function assertPostConditions()
-	{
-		parent::assertPostConditions();
-		$this->runTest();
-		
-		$expectedStats = self::EXPECTED_CACHE_STATS[self::$testCounter++];
-		$actualStats = self::$chainFactory->build($this->defaultConfiguration)->getCacheFactory()->getCache()->getStats();
-		
-		/*$this->assertEquals($expectedStats[0], $actualStats['hits']);
-		$this->assertEquals($expectedStats[1], $actualStats['misses']);*/
-		echo "$actualStats[hits]\t$actualStats[misses]\n";
-	}
-
 	/**
 	 * {@inheritdoc}
 	 */
 	protected function getChain()
 	{
-		return self::$chainFactory->build($this->defaultConfiguration);
+		return (new FactoryChainFactory)
+			->withAddedFactory(new ArrayFactory(new PhpFileSource(PhpArrayMapperTest::PHP_ARRAY_MAPPING_FILE)))
+			->withAddedFactory(new ReflectionFactory())
+			->withCache(new ArrayCache())
+			->build($this->defaultConfiguration)
+		;
 	}
 }

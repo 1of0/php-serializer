@@ -23,7 +23,9 @@ use OneOfZero\Json\Visitors\SerializingVisitor;
  * The serializer class provides methods to serialize and deserialize JSON data.
  */
 class Serializer implements SerializerInterface
-{	
+{
+	const CACHE_NAMESPACE = '1of0_json_mapper';
+
 	/**
 	 * @var self $instance
 	 */
@@ -88,7 +90,7 @@ class Serializer implements SerializerInterface
 		$this->container = $container;
 		$this->chainFactory = $chainFactory ?: $this->createDefaultChainFactory();
 		$this->referenceResolver = $referenceResolver;
-		$this->cacheProvider = $cacheProvider;
+		$this->setCacheProvider($cacheProvider);
 	}
 
 	/**
@@ -135,6 +137,25 @@ class Serializer implements SerializerInterface
 	}
 
 	/**
+	 * @param CacheProvider $cacheProvider
+	 */
+	public function setCacheProvider(CacheProvider $cacheProvider = null)
+	{
+		if ($cacheProvider === null)
+		{
+			$this->cacheProvider = null;
+			return;
+		}
+		
+		$this->cacheProvider = clone $cacheProvider;
+
+		if ($this->cacheProvider->getNamespace() !== self::CACHE_NAMESPACE)
+		{
+			$this->cacheProvider->setNamespace(self::CACHE_NAMESPACE);
+		}
+	}
+
+	/**
 	 * @param mixed $data
 	 *
 	 * @return string
@@ -169,8 +190,8 @@ class Serializer implements SerializerInterface
 	private function createDefaultChainFactory()
 	{
 		return (new FactoryChainFactory)
-			->addFactory(new AnnotationFactory(new AnnotationSource(Environment::getAnnotationReader($this->container))))
-			->addFactory(new ReflectionFactory())
+			->withAddedFactory(new AnnotationFactory(new AnnotationSource(Environment::getAnnotationReader($this->container))))
+			->withAddedFactory(new ReflectionFactory())
 		;
 	}
 
@@ -179,10 +200,14 @@ class Serializer implements SerializerInterface
 	 */
 	private function buildChain()
 	{
-		$pipeline = $this->chainFactory;
-		$pipeline->setCache($this->cacheProvider);
+		$chain = $this->chainFactory;
 		
-		return $pipeline->build(clone $this->configuration);
+		if ($this->cacheProvider !== null)
+		{
+			$chain = $chain->withCache($this->cacheProvider);
+		}
+		
+		return $chain->build(clone $this->configuration);
 	}
 
 	#region // Generic getters and setters
@@ -215,7 +240,7 @@ class Serializer implements SerializerInterface
 	/**
 	 * @param ContainerInterface $container
 	 */
-	public function setContainer(ContainerInterface $container)
+	public function setContainer(ContainerInterface $container = null)
 	{
 		$this->container = $container;
 	}
@@ -247,7 +272,7 @@ class Serializer implements SerializerInterface
 	/**
 	 * @param ReferenceResolverInterface $referenceResolver
 	 */
-	public function setReferenceResolver(ReferenceResolverInterface $referenceResolver)
+	public function setReferenceResolver(ReferenceResolverInterface $referenceResolver = null)
 	{
 		$this->referenceResolver = $referenceResolver;
 	}
@@ -258,14 +283,6 @@ class Serializer implements SerializerInterface
 	public function getCacheProvider()
 	{
 		return $this->cacheProvider;
-	}
-
-	/**
-	 * @param CacheProvider $cacheProvider
-	 */
-	public function setCacheProvider(CacheProvider $cacheProvider)
-	{
-		$this->cacheProvider = $cacheProvider;
 	}
 
 	// @codeCoverageIgnoreEnd

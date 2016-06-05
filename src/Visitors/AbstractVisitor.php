@@ -112,7 +112,7 @@ abstract class AbstractVisitor
 			$converters[] = $this->resolveConverter($mappedConverterClass, ObjectConverterInterface::class);
 		}
 		
-		return array_merge($converters, $this->configuration->converters->getObjectConverters($objectType));
+		return array_merge($converters, $this->configuration->getConverters()->getObjectConverters($objectType));
 	}
 
 	/**
@@ -132,7 +132,7 @@ abstract class AbstractVisitor
 			$converters[] = $this->resolveConverter($mappedConverterClass, MemberConverterInterface::class);
 		}
 
-		return array_merge($converters, $this->configuration->converters->getMemberConverters($memberType));
+		return array_merge($converters, $this->configuration->getConverters()->getMemberConverters($memberType));
 	}
 
 	/**

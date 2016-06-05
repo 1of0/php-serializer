@@ -22,7 +22,7 @@ class ReflectionMemberInclusionStrategyTest extends AbstractMemberInclusionStrat
 		$configuration = $this->defaultConfiguration;
 		$configuration->defaultMemberInclusionStrategy = $strategy;
 		
-		$pipeline = (new FactoryChainFactory)->addFactory(new ReflectionFactory());
+		$pipeline = (new FactoryChainFactory)->withAddedFactory(new ReflectionFactory());
 
 		return new Serializer($configuration, null, $pipeline);
 	}

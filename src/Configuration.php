@@ -21,6 +21,16 @@ use OneOfZero\Json\Enums\ReferenceResolutionStrategy;
 class Configuration
 {
 	/**
+	 * @var MetaHintWhitelist $metaHintWhitelist
+	 */
+	private $metaHintWhitelist;
+
+	/**
+	 * @var ConverterConfiguration $converters
+	 */
+	private $converters;
+	
+	/**
 	 * When enabled, a MissingTypeException will be thrown if the provided type hint or embedded type cannot be found.
 	 * Otherwise the type information will be disregarded.
 	 *
@@ -96,17 +106,39 @@ class Configuration
 	/**
 	 * Configures the whitelist that should be used to determine which classes may be used as meta type hints during
 	 * deserialization.
-	 *
-	 * @var MetaHintWhitelist $metaHintWhitelist
+	 * 
+	 * @return MetaHintWhitelist
 	 */
-	public $metaHintWhitelist;
+	public function getMetaHintWhitelist()
+	{
+		return $this->metaHintWhitelist;
+	}
 
 	/**
 	 * Allows configuration of global and type-assigned converters.
 	 * 
-	 * @var ConverterConfiguration $converters
+	 * @return ConverterConfiguration
 	 */
-	public $converters;
+	public function getConverters()
+	{
+		return $this->converters;
+	}
+
+	/**
+	 * @param MetaHintWhitelist $metaHintWhitelist
+	 */
+	public function setMetaHintWhitelist(MetaHintWhitelist $metaHintWhitelist)
+	{
+		$this->metaHintWhitelist = $metaHintWhitelist;
+	}
+
+	/**
+	 * @param ConverterConfiguration $converters
+	 */
+	public function setConverters(ConverterConfiguration $converters)
+	{
+		$this->converters = $converters;
+	}
 
 	/**
 	 * @param ContainerInterface|null $container
@@ -116,6 +148,12 @@ class Configuration
 	{
 		$this->metaHintWhitelist = new MetaHintWhitelist();
 		$this->converters = new ConverterConfiguration($container, $loadDefaultConverters);
+	}
+	
+	public function __clone()
+	{
+		$this->metaHintWhitelist = clone $this->metaHintWhitelist;
+		$this->converters = clone $this->converters;
 	}
 
 	/**

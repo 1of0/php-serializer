@@ -11,6 +11,7 @@ namespace OneOfZero\Json;
 use Carbon\Carbon;
 use DateTime;
 use Interop\Container\ContainerInterface;
+use InvalidArgumentException;
 use OneOfZero\Json\Converters\DateTimeConverter;
 use OneOfZero\Json\Converters\MemberConverterInterface;
 use OneOfZero\Json\Converters\ObjectConverterInterface;
@@ -20,8 +21,7 @@ use RuntimeException;
 class ConverterConfiguration
 {
 	private static $defaultTypeMemberConverters = [
-		DateTime::class => [ DateTimeConverter::class ],
-		Carbon::class => [ DateTimeConverter::class ],
+		DateTimeConverter::class => [ DateTime::class, Carbon::class ],
 	];
 	
 	/**
@@ -59,7 +59,10 @@ class ConverterConfiguration
 				
 		if ($loadDefaultConverters)
 		{
-			$this->typeMemberConverters = self::$defaultTypeMemberConverters;
+			foreach (self::$defaultTypeMemberConverters as $converter => $types)
+			{
+				$this->addForTypes($converter, $types);
+			}
 		}
 	}
 
@@ -91,21 +94,28 @@ class ConverterConfiguration
 	 */
 	public function addForType($converterClassOrInstance, $type)
 	{
+		if (!is_string($type))
+		{
+			throw new InvalidArgumentException('Argument $type must be a string');
+		}
+		
 		$instance = ObjectHelper::getInstance($converterClassOrInstance, $this->container);
 
 		if ($instance instanceof ObjectConverterInterface)
 		{
-			if (array_key_exists($type, $this->typeObjectConverters))
+			if (!array_key_exists($type, $this->typeObjectConverters))
 			{
-				$this->addIfNotExist($instance, $this->typeObjectConverters[$type]);
+				$this->typeObjectConverters[$type] = [];
 			}
+			$this->addIfNotExist($instance, $this->typeObjectConverters[$type]);
 		}
 		elseif ($instance instanceof MemberConverterInterface)
 		{
-			if (array_key_exists($type, $this->typeMemberConverters))
+			if (!array_key_exists($type, $this->typeMemberConverters))
 			{
-				$this->addIfNotExist($instance, $this->typeMemberConverters[$type]);
+				$this->typeMemberConverters[$type] = [];
 			}
+			$this->addIfNotExist($instance, $this->typeMemberConverters[$type]);
 		}
 		else
 		{
@@ -120,9 +130,11 @@ class ConverterConfiguration
 	 */
 	public function addForTypes($converterClassOrInstance, array $types)
 	{
+		$instance = ObjectHelper::getInstance($converterClassOrInstance, $this->container);
+		
 		foreach ($types as $type)
 		{
-			$this->addForType($converterClassOrInstance, $type);
+			$this->addForType($instance, $type);
 		}
 	}
 
@@ -147,6 +159,11 @@ class ConverterConfiguration
 	 */
 	public function removeForType($class, $type)
 	{
+		if (!is_string($type))
+		{
+			throw new InvalidArgumentException('Argument $type must be a string');
+		}
+		
 		if (is_subclass_of($class, ObjectConverterInterface::class))
 		{
 			if (array_key_exists($type, $this->typeObjectConverters))

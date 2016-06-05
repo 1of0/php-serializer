@@ -331,7 +331,7 @@ class DeserializingVisitor extends AbstractVisitor
 			$metaHint = Metadata::get($serializedValue, Metadata::TYPE);
 
 			// Check meta hints with the whitelist
-			if ($this->configuration->metaHintWhitelist->isWhitelisted($metaHint))
+			if ($this->configuration->getMetaHintWhitelist()->isWhitelisted($metaHint))
 			{
 				$typeHint = $metaHint;
 			}

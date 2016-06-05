@@ -28,9 +28,9 @@ abstract class AbstractTest extends PHPUnit_Framework_TestCase
 	protected $defaultConfiguration;
 
 	/**
-	 * @var FactoryChain $defaultPipeline
+	 * @var FactoryChain $defaultFactoryChain
 	 */
-	protected $defaultPipeline;
+	protected $defaultFactoryChain;
 
 	/**
 	 *
@@ -39,13 +39,13 @@ abstract class AbstractTest extends PHPUnit_Framework_TestCase
 	{
 		$this->defaultConfiguration = new Configuration(null, false);
 
-		$this->defaultPipeline = (new FactoryChainFactory)
-			->addFactory(new AnnotationFactory(new AnnotationSource(Environment::getAnnotationReader())))
-			->addFactory(new ReflectionFactory())
+		$this->defaultFactoryChain = (new FactoryChainFactory)
+			->withAddedFactory(new AnnotationFactory(new AnnotationSource(Environment::getAnnotationReader())))
+			->withAddedFactory(new ReflectionFactory())
 			->build($this->defaultConfiguration)
 		;
 
-		$this->defaultConfiguration->metaHintWhitelist->allowClassesInNamespace('OneOfZero\\Json\\Test\\FixtureClasses');
+		$this->defaultConfiguration->getMetaHintWhitelist()->allowClassesInNamespace('OneOfZero\\Json\\Test\\FixtureClasses');
 
 		Serializer::get()->setConfiguration($this->defaultConfiguration);
 	}

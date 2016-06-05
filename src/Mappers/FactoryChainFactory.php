@@ -31,16 +31,18 @@ class FactoryChainFactory
 	 * 
 	 * @return self
 	 */
-	public function addFactory(FactoryInterface $factory)
+	public function withAddedFactory(FactoryInterface $factory)
 	{
+		$new = clone $this;
+		
 		if ($factory instanceof CacheFactory)
 		{
 			throw new RuntimeException('Caching must be enabled with the withCache() method');
 		}
 
-		$this->chain[] = $factory;
+		$new->chain[] = $factory;
 		
-		return $this;
+		return $new;
 	}
 
 	/**
@@ -48,11 +50,11 @@ class FactoryChainFactory
 	 *
 	 * @return self
 	 */
-	public function setCache(CacheProvider $cache = null)
+	public function withCache(CacheProvider $cache = null)
 	{
-		$this->cache = $cache;
-		
-		return $this;
+		$new = clone $this;
+		$new->cache = $cache;
+		return $new;
 	}
 
 	/**

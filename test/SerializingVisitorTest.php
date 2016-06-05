@@ -92,6 +92,6 @@ class SerializingVisitorTest extends AbstractTest
 
 	private function createVisitor()
 	{
-		return new SerializingVisitor(clone $this->defaultConfiguration, clone $this->defaultPipeline);
+		return new SerializingVisitor(clone $this->defaultConfiguration, clone $this->defaultFactoryChain);
 	}
 }

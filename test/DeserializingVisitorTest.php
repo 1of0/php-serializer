@@ -96,6 +96,6 @@ class DeserializingVisitorTest extends AbstractTest
 
 	private function createVisitor()
 	{
-		return new DeserializingVisitor(clone $this->defaultConfiguration, clone $this->defaultPipeline);
+		return new DeserializingVisitor(clone $this->defaultConfiguration, clone $this->defaultFactoryChain);
 	}
 }

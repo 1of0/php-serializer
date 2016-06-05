@@ -33,7 +33,7 @@ class WhitelistTest extends AbstractTest
 	{
 		$serializer = new Serializer();
 
-		$serializer->getConfiguration()->metaHintWhitelist->allowClass(SimpleClass::class);
+		$serializer->getConfiguration()->getMetaHintWhitelist()->allowClass(SimpleClass::class);
 		
 		$simpleClass = new SimpleClass('1234', 'abcd', 'efgh');
 		$altClass = new AlternativeSimpleClass('1234', 'abcd', 'efgh');
@@ -51,7 +51,7 @@ class WhitelistTest extends AbstractTest
 	{
 		$serializer = new Serializer();
 
-		$serializer->getConfiguration()->metaHintWhitelist->allowClass(SimpleClass::class);
+		$serializer->getConfiguration()->getMetaHintWhitelist()->allowClass(SimpleClass::class);
 		
 		$simpleClass = new SimpleClass('1234', 'abcd', 'efgh');
 		$extender = new SimpleClassExtender('1234', 'abcd', 'efgh', '5678');
@@ -68,7 +68,7 @@ class WhitelistTest extends AbstractTest
 	public function testWhitelistedInterface()
 	{
 		$serializer = new Serializer();
-		$serializer->getConfiguration()->metaHintWhitelist->allowClassesImplementing(TypeHintableInterface::class);
+		$serializer->getConfiguration()->getMetaHintWhitelist()->allowClassesImplementing(TypeHintableInterface::class);
 
 		$simpleClass = new SimpleClass('1234', 'abcd', 'efgh');
 		$typeHintableImplementing = new ClassImplementingTypeHintableInterface('1234', 'abcd', 'efgh');
@@ -85,7 +85,7 @@ class WhitelistTest extends AbstractTest
 	public function testWhitelistedNamespace()
 	{
 		$serializer = new Serializer();
-		$serializer->getConfiguration()->metaHintWhitelist->allowClassesInNamespace('OneOfZero\Json\Test\FixtureClasses\SubNamespace');
+		$serializer->getConfiguration()->getMetaHintWhitelist()->allowClassesInNamespace('OneOfZero\Json\Test\FixtureClasses\SubNamespace');
 
 		$simpleClass = new SimpleClass('1234', 'abcd', 'efgh');
 		$simpleClassInSubNamespace = new SimpleClassInSubNamespace('1234', 'abcd', 'efgh');
@@ -102,7 +102,7 @@ class WhitelistTest extends AbstractTest
 	public function testWhitelistedPattern()
 	{
 		$serializer = new Serializer();
-		$serializer->getConfiguration()->metaHintWhitelist->allowClassesMatchingPattern('/^OneOfZero\\\\Json\\\\Test\\\\FixtureClasses\\\\Simple/');
+		$serializer->getConfiguration()->getMetaHintWhitelist()->allowClassesMatchingPattern('/^OneOfZero\\\\Json\\\\Test\\\\FixtureClasses\\\\Simple/');
 
 		$simpleClass = new SimpleClass('1234', 'abcd', 'efgh');
 		$altClass = new AlternativeSimpleClass('1234', 'abcd', 'efgh');
