@@ -79,6 +79,28 @@ class DeserializingVisitor extends AbstractVisitor
 
 			return $this->visitArray($valueNode)->getArray();
 		}
+		
+		if ($typeHint !== null)
+		{
+			$object = ObjectHelper::getInstance($typeHint, $this->container, true);
+			
+			$node = (new ObjectNode)
+				->withInstance($object)
+				->withSerializedInstance($serializedValue)
+				->withParent($parent)
+			;
+			
+			foreach ($this->getObjectConverters(null, $typeHint) as $converter)
+			{
+				try
+				{
+					return $converter->deserialize($node);
+				}
+				catch (ResumeSerializationException $e)
+				{
+				}
+			}
+		}
 
 		return $serializedValue;
 	}
@@ -316,7 +338,7 @@ class DeserializingVisitor extends AbstractVisitor
 	}
 
 	/**
-	 * @param stdClass $serializedValue
+	 * @param mixed $serializedValue
 	 * @param MemberNode|null $node
 	 * @param string|null $typeHint
 	 *
@@ -324,7 +346,7 @@ class DeserializingVisitor extends AbstractVisitor
 	 * @throws MissingTypeException
 	 */
 	protected function getType($serializedValue, $node = null, $typeHint = null)
-	{
+	{		
 		if ($typeHint === null && Metadata::contains($serializedValue, Metadata::TYPE))
 		{
 			// Type hint is not explicitly provided, try to retrieve it from the serialized value's metadata

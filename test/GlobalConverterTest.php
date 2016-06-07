@@ -8,13 +8,13 @@
 
 namespace OneOfZero\Json\Test;
 
-use DateTime;
 use OneOfZero\Json\Configuration;
 use OneOfZero\Json\Mappers\FactoryChainFactory;
 use OneOfZero\Json\Mappers\Reflection\ReflectionFactory;
 use OneOfZero\Json\Serializer;
-use OneOfZero\Json\Test\FixtureClasses\ClassUsingConverters;
-use OneOfZero\Json\Test\FixtureClasses\Converters\ClassDependentMemberConverter;
+use OneOfZero\Json\Test\FixtureClasses\ClassReferencingReferableClass;
+use OneOfZero\Json\Test\FixtureClasses\Converters\GlobalMemberTypeConverter;
+use OneOfZero\Json\Test\FixtureClasses\Converters\GlobalObjectTypeConverter;
 use OneOfZero\Json\Test\FixtureClasses\ReferableClass;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
 
@@ -37,40 +37,77 @@ class GlobalConverterTest extends AbstractTest
 		
 	}
 
-	public function testTypeConverters()
+	public function testObjectTypeConverter()
 	{
-		$date = new DateTime();
+		$converters = $this->serializer->getConfiguration()->getConverters();
 		
-		$this->serializer->getConfiguration()->getConverters()->addForTypes(
-			ClassDependentMemberConverter::class, 
-			[ SimpleClass::class, ReferableClass::class ]
-		);
+		$converters->addForType(GlobalObjectTypeConverter::class, SimpleClass::class);
 
-		$expectedJson = json_encode([
-			'@class'                => ClassUsingConverters::class,
-			'dateObject'            => $date->getTimestamp(),
-			'simpleClass'           => '1234|abcd|5678',
-			'referableClass'        => 1337,
-			'foo'                   => 123,
-			'bar'                   => 123,
-			'contextSensitive'      => 2,
-		]);
-
-		$object = new ClassUsingConverters();
-		$object->dateObject         = $date;
-		$object->simpleClass        = new SimpleClass('1234', 'abcd', '5678');
-		$object->referableClass     = new ReferableClass(1337);
-		$object->foo                = 123;
-		$object->bar                = 123;
-		$object->contextSensitive   = 2;
-		$object->setPrivateDateObject($date);
+		$object = new SimpleClass('foo', 'bar', 'baz');
+		$expectedJson = json_encode(serialize($object));
 
 		$json = $this->serializer->serialize($object);
 		$this->assertEquals($expectedJson, $json);
+		
+		$deserializedObject = $this->serializer->deserialize($json, SimpleClass::class);
+		$this->assertObjectEquals($object, $deserializedObject);
+	}
 
-		/** @var ClassUsingConverters $deserialized */
-		$deserialized = $this->serializer->deserialize($json);
+	public function testMemberTypeConverter()
+	{
+		$converters = $this->serializer->getConfiguration()->getConverters();
+		
+		$converters->addForType(GlobalMemberTypeConverter::class, ReferableClass::class);
 
-		$this->assertObjectEquals($object, $deserialized);
+		$object = new ClassReferencingReferableClass();
+		$object->reference = new ReferableClass(1234);
+		$expectedJson = json_encode([
+			'@class' => ClassReferencingReferableClass::class,
+			'reference' => base64_encode(serialize($object->reference)),
+		]);
+
+		$json = $this->serializer->serialize($object);
+		$this->assertEquals($expectedJson, $json);
+		
+		$deserializedObject = $this->serializer->deserialize($json);
+		$this->assertObjectEquals($object, $deserializedObject);
+	}
+
+	public function testObjectConverter()
+	{
+		$converters = $this->serializer->getConfiguration()->getConverters();
+		
+		$converters->add(GlobalObjectTypeConverter::class);
+
+		$object = new SimpleClass('foo', 'bar', 'baz');
+		$expectedJson = json_encode(serialize($object));
+
+		$json = $this->serializer->serialize($object);
+		$this->assertEquals($expectedJson, $json);
+		
+		$deserializedObject = $this->serializer->deserialize($json, SimpleClass::class);
+		$this->assertObjectEquals($object, $deserializedObject);
+	}
+
+	public function testMemberConverter()
+	{
+		$converters = $this->serializer->getConfiguration()->getConverters();
+		
+		$converters->add(GlobalMemberTypeConverter::class);
+
+		$object = new ClassReferencingReferableClass();
+		$object->reference = new ReferableClass(1234);
+		$expectedJson = json_encode([
+			'@class' => ClassReferencingReferableClass::class,
+			'foo' => base64_encode(serialize(null)),
+			'bar' => base64_encode(serialize(null)),
+			'reference' => base64_encode(serialize($object->reference)),
+		]);
+
+		$json = $this->serializer->serialize($object);
+		$this->assertEquals($expectedJson, $json);
+		
+		$deserializedObject = $this->serializer->deserialize($json);
+		$this->assertObjectEquals($object, $deserializedObject);
 	}
 }
