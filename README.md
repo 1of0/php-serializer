@@ -18,6 +18,8 @@ class is a static facade around the singleton instance of the Serializer class.
 
 
 ```php
+<?php
+
 use OneOfZero\Json\Convert;
 use OneOfZero\Json\Serializer;
 
@@ -28,7 +30,7 @@ $json = Convert::toJson($myObject);
 $object = Convert::fromJson($json);
 
 // Type hint example
-$object = Convert::fromJson($json, MyNamespace\MyClass::class);
+$object = Convert::fromJson($json, \MyNamespace\MyClass::class);
 
 // The same as Convert::toJson($myObject)
 $json = Serializer::get()->serialize($myObject);
@@ -50,9 +52,9 @@ When an object is serialized, by default, a metadata property will be appended w
 can be properly deserialized by this library (this feature was inspired by the 
 [zumba/json-serializer](https://github.com/zumba/json-serializer) library).
 
-```
+```json
 {
-	"@class": "MyNamespace\MyClass",
+	"@class": "MyNamespace\\MyClass",
 	"propertyA": "valueA",
 	"propertyB": "valueB",
 	...
