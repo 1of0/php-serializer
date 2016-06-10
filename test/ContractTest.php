@@ -19,13 +19,13 @@ class ContractTest extends AbstractTest
 {
 	public function testPascalCaseContract()
 	{
-		$serializer = new Serializer($this->defaultConfiguration);
+		$serializer = new Serializer($this->configuration);
 		$serializer->getConfiguration()->contractResolver = new PropertyNameContractResolver();
 
 		$input = new SimpleClassExtender('abcd', '1234', 'efgh', '5678');
 
 		$expectedOutput = json_encode([
-			'@class'            => SimpleClassExtender::class,
+			'@type'            => SimpleClassExtender::class,
 			'ExtensionProperty' => '5678',
 			'Foo'               => 'abcd',
 			'Bar'               => '1234',
@@ -41,7 +41,7 @@ class ContractTest extends AbstractTest
 	
 	public function testAnonymousObjectContract()
 	{
-		$serializer = new Serializer($this->defaultConfiguration);
+		$serializer = new Serializer($this->configuration);
 		$serializer->getConfiguration()->contractResolver = new PropertyNameContractResolver();
 
 		$input = new stdClass();

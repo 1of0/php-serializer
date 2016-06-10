@@ -26,7 +26,7 @@ class JsonMapperTest extends AbstractMapperTest
 		return (new FactoryChainFactory)
 			->withAddedFactory(new ArrayFactory(new JsonFileSource(self::JSON_MAPPING_FILE)))
 			->withAddedFactory(new ReflectionFactory())
-			->build($this->defaultConfiguration)
+			->build($this->configuration)
 		;
 	}
 

@@ -26,7 +26,7 @@ class YamlMapperTest extends AbstractMapperTest
 		return (new FactoryChainFactory)
 			->withAddedFactory(new ArrayFactory(new YamlFileSource(self::YAML_MAPPING_FILE)))
 			->withAddedFactory(new ReflectionFactory())
-			->build($this->defaultConfiguration)
+			->build($this->configuration)
 		;
 	}
 

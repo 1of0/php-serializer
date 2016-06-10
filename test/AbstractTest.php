@@ -23,31 +23,31 @@ use PHPUnit_Framework_TestCase;
 abstract class AbstractTest extends PHPUnit_Framework_TestCase
 {
 	/**
-	 * @var Configuration $defaultConfiguration
+	 * @var Configuration $configuration
 	 */
-	protected $defaultConfiguration;
+	protected $configuration;
 
 	/**
-	 * @var FactoryChain $defaultFactoryChain
+	 * @var FactoryChain $factoryChain
 	 */
-	protected $defaultFactoryChain;
+	protected $factoryChain;
 
 	/**
 	 *
 	 */
 	protected function setUp()
 	{
-		$this->defaultConfiguration = new Configuration(null, false);
+		$this->configuration = new Configuration(null, false);
 
-		$this->defaultFactoryChain = (new FactoryChainFactory)
+		$this->factoryChain = (new FactoryChainFactory)
 			->withAddedFactory(new AnnotationFactory(new AnnotationSource(Environment::getAnnotationReader())))
 			->withAddedFactory(new ReflectionFactory())
-			->build($this->defaultConfiguration)
+			->build($this->configuration)
 		;
 
-		$this->defaultConfiguration->getMetaHintWhitelist()->allowClassesInNamespace('OneOfZero\\Json\\Test\\FixtureClasses');
+		$this->configuration->getMetaHintWhitelist()->allowClassesInNamespace('OneOfZero\\Json\\Test\\FixtureClasses');
 
-		Serializer::get()->setConfiguration($this->defaultConfiguration);
+		Serializer::get()->setConfiguration($this->configuration);
 	}
 	
 	/**

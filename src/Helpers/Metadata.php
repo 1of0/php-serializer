@@ -13,7 +13,7 @@ use stdClass;
 
 class Metadata
 {
-	const TYPE = '@class';
+	const TYPE = '@type';
 	const ID = 'id';
 
 	/**

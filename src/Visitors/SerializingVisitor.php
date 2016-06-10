@@ -134,7 +134,7 @@ class SerializingVisitor extends AbstractVisitor
 
 		if ($node instanceof ObjectNode)
 		{
-			if (!$mapper->isMetadataDisabled())
+			if ($this->configuration->embedTypeMetadata && !$mapper->isMetadataDisabled())
 			{
 				/** @var ObjectNode $node */
 				$node = $node->withMetadata(Metadata::TYPE, $objectType);

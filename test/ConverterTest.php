@@ -29,7 +29,7 @@ class ConverterTests extends AbstractTest
 		$date = new DateTime();
 
 		$expectedJson = json_encode([
-			'@class'                => ClassUsingConverters::class,
+			'@type'                => ClassUsingConverters::class,
 			'dateObject'            => $date->getTimestamp(),
 			'simpleClass'           => '1234|abcd|5678',
 			'referableClass'        => 1337,
@@ -67,7 +67,7 @@ class ConverterTests extends AbstractTest
 		$object->foo = 1234;
 
 		$expectedJson = json_encode([
-			'@class'    => ClassUsingClassLevelConverter::class,
+			'@type'    => ClassUsingClassLevelConverter::class,
 			'abcd'       => 1234,
 		]);
 
@@ -84,7 +84,7 @@ class ConverterTests extends AbstractTest
 		$object->foo = 1234;
 
 		$expectedJson = json_encode([
-			'@class'    => ClassUsingDifferentClassLevelConverters::class,
+			'@type'    => ClassUsingDifferentClassLevelConverters::class,
 			'abcd'       => 1234,
 		]);
 
@@ -100,7 +100,7 @@ class ConverterTests extends AbstractTest
 		$object = new ClassUsingNullObjectConverter('abcd', '1234');
 		
 		$expectedJson = json_encode([
-			'@class'    => ClassUsingNullObjectConverter::class,
+			'@type'    => ClassUsingNullObjectConverter::class,
 			'foo'       => 'abcd',
 			'bar'       => '1234',
 		]);
@@ -117,7 +117,7 @@ class ConverterTests extends AbstractTest
 		$object = new ClassUsingNullMemberConverter('abcd', '1234');
 		
 		$expectedJson = json_encode([
-			'@class'    => ClassUsingNullMemberConverter::class,
+			'@type'    => ClassUsingNullMemberConverter::class,
 			'foo'       => 'abcd',
 			'bar'       => '1234',
 		]);

@@ -14,11 +14,23 @@ use OneOfZero\Json\Visitors\SerializingVisitor;
 
 class SerializingVisitorTest extends AbstractTest
 {
+	/**
+	 * @var SerializingVisitor $visitor
+	 */
+	private $visitor;
+	
+	public function setUp()
+	{
+		parent::setUp();
+
+		$this->visitor = new SerializingVisitor($this->configuration, $this->factoryChain);
+	}
+
 	public function testScalarValueArray()
 	{
 		$input = [ 'a', 'b', 'c' ];
 
-		$output = $this->createVisitor()->visit($input);
+		$output = $this->visitor->visit($input);
 		$this->assertSequenceEquals($input, $output);
 	}
 	
@@ -36,7 +48,7 @@ class SerializingVisitorTest extends AbstractTest
 			[ Metadata::TYPE => SimpleClass::class, 'foo' => 'baz' ],
 		];
 
-		$output = $this->createVisitor()->visit($input);
+		$output = $this->visitor->visit($input);
 		$this->assertSequenceEquals($expectedOutput, $output);
 	}
 
@@ -54,7 +66,7 @@ class SerializingVisitorTest extends AbstractTest
 			[ Metadata::TYPE => SimpleClass::class, 'foo' => 'baz' ],
 		];
 
-		$output = $this->createVisitor()->visit($input);
+		$output = $this->visitor->visit($input);
 		$this->assertSequenceEquals($expectedOutput, $output);
 	}
 
@@ -69,7 +81,7 @@ class SerializingVisitorTest extends AbstractTest
 			'baz'           => '456',
 		];
 
-		$output = $this->createVisitor()->visit($input);
+		$output = $this->visitor->visit($input);
 		$this->assertSequenceEquals($expectedOutput, $output);
 	}
 
@@ -86,12 +98,23 @@ class SerializingVisitorTest extends AbstractTest
 			]
 		];
 
-		$output = $this->createVisitor()->visit($input);
+		$output = $this->visitor->visit($input);
 		$this->assertSequenceEquals($expectedOutput, $output);
 	}
 
-	private function createVisitor()
+	public function testNoMetadataConfiguration()
 	{
-		return new SerializingVisitor(clone $this->defaultConfiguration, clone $this->defaultFactoryChain);
+		$this->configuration->embedTypeMetadata = false;
+
+		$input = new SimpleClass('abc', '123', '456');
+
+		$expectedOutput = [
+			'foo'           => 'abc',
+			'bar'           => '123',
+			'baz'           => '456',
+		];
+
+		$output = $this->visitor->visit($input);
+		$this->assertSequenceEquals($expectedOutput, $output);
 	}
 }

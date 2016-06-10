@@ -19,7 +19,7 @@ class ReflectionMemberInclusionStrategyTest extends AbstractMemberInclusionStrat
 	 */
 	protected function createSerializer($strategy)
 	{
-		$configuration = $this->defaultConfiguration;
+		$configuration = $this->configuration;
 		$configuration->defaultMemberInclusionStrategy = $strategy;
 		
 		$pipeline = (new FactoryChainFactory)->withAddedFactory(new ReflectionFactory());

@@ -33,12 +33,12 @@ class CacheEfficacyTest extends AbstractTest
 	{
 		parent::setUp();
 				
-		$this->serializer = new Serializer($this->defaultConfiguration);
+		$this->serializer = new Serializer($this->configuration);
 		$this->serializer->setCacheProvider(new StaticArrayCache());
 		
 		$this->instanceFixture = new SimpleClass('abcd', 1234, true);
 		$this->jsonFixture = json_encode([
-			'@class'    => SimpleClass::class,
+			'@type'    => SimpleClass::class,
 			'food'      => 'abcd',
 			'bar'       => 1234,
 		]);

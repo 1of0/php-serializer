@@ -25,7 +25,7 @@ class CachingMapperTest extends AbstractMapperTest
 			->withAddedFactory(new ArrayFactory(new PhpFileSource(PhpArrayMapperTest::PHP_ARRAY_MAPPING_FILE)))
 			->withAddedFactory(new ReflectionFactory())
 			->withCache(new ArrayCache())
-			->build($this->defaultConfiguration)
+			->build($this->configuration)
 		;
 	}
 }

@@ -17,7 +17,7 @@ class MemberInclusionStrategyTest extends AbstractMemberInclusionStrategyTest
 	 */
 	protected function createSerializer($strategy)
 	{
-		$configuration = $this->defaultConfiguration;
+		$configuration = $this->configuration;
 		$configuration->defaultMemberInclusionStrategy = $strategy;
 
 		return new Serializer($configuration);

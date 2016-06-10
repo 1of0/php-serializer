@@ -29,10 +29,10 @@ class GlobalConverterTest extends AbstractTest
 	{
 		parent::setUp();
 
-		$this->defaultConfiguration = new Configuration();
-		$this->defaultConfiguration->getMetaHintWhitelist()->allowClassesInNamespace('OneOfZero\\Json\\Test\\FixtureClasses');
+		$this->configuration = new Configuration();
+		$this->configuration->getMetaHintWhitelist()->allowClassesInNamespace('OneOfZero\\Json\\Test\\FixtureClasses');
 		
-		$this->serializer = new Serializer($this->defaultConfiguration);
+		$this->serializer = new Serializer($this->configuration);
 		$this->serializer->setChainFactory((new FactoryChainFactory)->withAddedFactory(new ReflectionFactory()));
 		
 	}
@@ -62,7 +62,7 @@ class GlobalConverterTest extends AbstractTest
 		$object = new ClassReferencingReferableClass();
 		$object->reference = new ReferableClass(1234);
 		$expectedJson = json_encode([
-			'@class' => ClassReferencingReferableClass::class,
+			'@type' => ClassReferencingReferableClass::class,
 			'reference' => base64_encode(serialize($object->reference)),
 		]);
 
@@ -98,7 +98,7 @@ class GlobalConverterTest extends AbstractTest
 		$object = new ClassReferencingReferableClass();
 		$object->reference = new ReferableClass(1234);
 		$expectedJson = json_encode([
-			'@class' => ClassReferencingReferableClass::class,
+			'@type' => ClassReferencingReferableClass::class,
 			'foo' => base64_encode(serialize(null)),
 			'bar' => base64_encode(serialize(null)),
 			'reference' => base64_encode(serialize($object->reference)),

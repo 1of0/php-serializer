@@ -20,7 +20,7 @@ class GetterSetterTest extends AbstractTest
 	public function testGetterAndSetter()
 	{
 		$expectedJson = json_encode([
-			'@class'    => ClassWithGetterAndSetter::class,
+			'@type'    => ClassWithGetterAndSetter::class,
 			'foo'       => '1234'
 		]);
 
@@ -45,7 +45,7 @@ class GetterSetterTest extends AbstractTest
 		$this->setExpectedException(SerializationException::class);
 		/** @var ClassWithInvalidGetterAndSetter $deserialized */
 		Serializer::get()->deserialize(json_encode([
-			'@class'    => ClassWithInvalidGetterAndSetter::class,
+			'@type'    => ClassWithInvalidGetterAndSetter::class,
 			'foo'       => '1234',
 		]));
 	}
@@ -61,7 +61,7 @@ class GetterSetterTest extends AbstractTest
 		$this->setExpectedException(AnnotationException::class);
 		/** @var ClassWithInvalidGetterAndSetter $deserialized */
 		Serializer::get()->deserialize(json_encode([
-			'@class'    => ClassWithGetterAndSetterOnProperty::class,
+			'@type'    => ClassWithGetterAndSetterOnProperty::class,
 			'foo'       => '1234',
 			'bar'       => '5678',
 		]));

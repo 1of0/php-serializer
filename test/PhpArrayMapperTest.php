@@ -26,7 +26,7 @@ class PhpArrayMapperTest extends AbstractMapperTest
 		return (new FactoryChainFactory)
 			->withAddedFactory(new ArrayFactory(new PhpFileSource(self::PHP_ARRAY_MAPPING_FILE)))
 			->withAddedFactory(new ReflectionFactory())
-			->build($this->defaultConfiguration)
+			->build($this->configuration)
 		;
 	}
 

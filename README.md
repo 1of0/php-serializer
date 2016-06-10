@@ -38,41 +38,74 @@ $json = Serializer::get()->serialize($myObject);
 
 ## How does it work?
 
-The serializer takes annotated or XML/YAML/JSON mapped objects, and pre-processes them before feeding them to the 
+The serializer takes annotated or XML/YAML/JSON/PHP mapped objects, and pre-processes them before feeding them to the
 `json_encode()` function. Inversely, the deserializer feeds the JSON to the `json_decode()` function, and 
 post-processes the result to get as close a match to the original object (assuming it's properly mapped/annotated).
 
-Behaviour is mostly defined through the annotations; see the [documentation](documentation.md) page for a reference. 
-
 ## Features
 
-### Serialized type information
+### Mappers and mapper chaining
 
-When an object is serialized, by default, a metadata property will be appended with the object's class name so that it 
-can be properly deserialized by this library (this feature was inspired by the 
-[zumba/json-serializer](https://github.com/zumba/json-serializer) library).
+The serializer and deserializer behaviour can be influenced with mappings on classes and class members. This library
+supports mappings with:
 
+- Annotations
+- XML
+- YAML
+- JSON
+- PHP
+
+These mappers can be chained in any order to provide a single merged mapping.
+
+### Embedded type information
+
+This is a feature inspired by the [zumba/json-serializer](https://github.com/zumba/json-serializer) library.
+
+By default the serializer will embed type information in serialized objects. The type information allows the
+deserializer to deserialize a JSON object into its original type without PHPDoc, annotations or mappings.
+
+
+The embedded data is the additional `@type` property that holds the fully qualified class name of the serialized
+object:
 ```json
 {
-	"@class": "MyNamespace\\MyClass",
+	"@type": "MyNamespace\\MyClass",
 	"propertyA": "valueA",
 	"propertyB": "valueB",
 	...
 }
 ```
 
-This feature can be disabled with the `@NoMetadata` annotation, if for instance a receiving side is very strict with the
-input. For most purposes this shouldn't be harmful though.
+##### Serialization
 
-Additionally, the deserialization methods also allow you to provide an optional type hint, if there is no metadata
-available.
+The embedding of type information can be disabled for individual classes with class-level mappings, or can disabled
+globally in the configuration:
+```php
+<?php
+$configuration->embedTypeMetadata = false;
+```
 
-### Custom property converters
+##### Deserialization
+
+Due to security concerns the deserializer only deserializes whitelisted types (by default this whitelist is empty).
+Classes can be added to the whitelist through the configuration:
+```php
+<?php
+$configuration->getMetaHintWhitelist()->allowClass(MyClass::class);
+```
+You can also whitelist by namespace, class inheritance, or regex. See the API documentation of the `MetaHintWhiteList`
+class for details.
+
+### Object and member converters
 
 Much like [Json.NET's custom converters](http://www.newtonsoft.com/json/help/html/CustomJsonConverter.htm), this library
-also allows you to build and specify custom converters for specified properties. Refer to the
-`CustomMemberConverterInterface` interface, `CustomObjectConverterInterface` interface and `@Converter` annotation
-in the [documentation](documentation.md) for this feature.
+also allows you to build and specify custom converters for specified properties.
+
+### Contract resolver(s)
+
+### Serialization groups
+
+***(not implemented yet)***
 
 ### Reference properties
 
@@ -84,10 +117,10 @@ serialize and deserialize references like that. To achieve this:
 - A reference resolver needs to exist that supports the referenced object (and needs to implement the 
   `ReferenceResolverInterface` interface)
 
-## Roadmap
+## Bugs and feature requests
 
-Development is currently frozen (this was the minimum viable product needed for another project), but the 
-[TODO page](todo.md) holds a list of tasks and ideas that might get implemented if I get around to it.
+Please post any bugs and feature requests to the issue tracker on
+[Bitbucket](https://bitbucket.org/1of0/json/issues?status=new&status=open).
 
 ## License
 

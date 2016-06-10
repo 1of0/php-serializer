@@ -21,11 +21,11 @@ class ReferencePropertyTest extends AbstractTest
 	public function testReference()
 	{
 		$expectedJson = json_encode([
-			'@class'    => ClassReferencingReferableClass::class,
+			'@type'    => ClassReferencingReferableClass::class,
 			'foo'       => 'String value',
 			'bar'       => 1.337,
 			'reference' => [
-				'@class'    => ReferableClass::class,
+				'@type'    => ReferableClass::class,
 				'id'        => 9001
 			]
 		]);
@@ -35,7 +35,7 @@ class ReferencePropertyTest extends AbstractTest
 		$object->bar        = 1.337;
 		$object->reference  = new ReferableClass(9001);
 
-		$serializer = new Serializer($this->defaultConfiguration);
+		$serializer = new Serializer($this->configuration);
 		$serializer->setReferenceResolver(new ReferableClassResolver());
 
 		$json = $serializer->serialize($object);
@@ -53,11 +53,11 @@ class ReferencePropertyTest extends AbstractTest
 	public function testMultipleReferences()
 	{
 		$expectedJson = json_encode([
-			'@class'        => ClassReferencingArray::class,
+			'@type'        => ClassReferencingArray::class,
 			'references'    => [
-				[ '@class' => ReferableClass::class, 'id' => 1 ],
-				[ '@class' => ReferableClass::class, 'id' => 2 ],
-				[ '@class' => ReferableClass::class, 'id' => 3 ]
+				[ '@type' => ReferableClass::class, 'id' => 1 ],
+				[ '@type' => ReferableClass::class, 'id' => 2 ],
+				[ '@type' => ReferableClass::class, 'id' => 3 ]
 			]
 		]);
 
@@ -68,7 +68,7 @@ class ReferencePropertyTest extends AbstractTest
 			new ReferableClass(3)
 		];
 
-		$serializer = new Serializer($this->defaultConfiguration);
+		$serializer = new Serializer($this->configuration);
 		$serializer->setReferenceResolver(new ReferableClassResolver());
 
 		$json = $serializer->serialize($object);
@@ -90,9 +90,9 @@ class ReferencePropertyTest extends AbstractTest
 		$proxyHelper = new ProxyHelper($resolver);
 
 		$expectedJson = json_encode([
-			'@class'    => ClassWithLazyReference::class,
+			'@type'    => ClassWithLazyReference::class,
 			'reference' => [
-				'@class'    => ReferableClass::class,
+				'@type'    => ReferableClass::class,
 				'id'        => 9001
 			]
 		]);
@@ -100,7 +100,7 @@ class ReferencePropertyTest extends AbstractTest
 		$object = new ClassWithLazyReference();
 		$object->reference = new ReferableClass(9001);
 
-		$serializer = new Serializer($this->defaultConfiguration);
+		$serializer = new Serializer($this->configuration);
 		$serializer->setReferenceResolver($resolver);
 
 		$json = $serializer->serialize($object);

@@ -14,11 +14,23 @@ use OneOfZero\Json\Visitors\DeserializingVisitor;
 
 class DeserializingVisitorTest extends AbstractTest
 {
+	/**
+	 * @var DeserializingVisitor $visitor
+	 */
+	private $visitor;
+
+	public function setUp()
+	{
+		parent::setUp();
+
+		$this->visitor = new DeserializingVisitor($this->configuration, $this->factoryChain);
+	}
+
 	public function testScalarValueArray()
 	{
 		$input = [ 'a', 'b', 'c' ];
 
-		$output = $this->createVisitor()->visit($input);
+		$output = $this->visitor->visit($input);
 		$this->assertSequenceEquals($input, $output);
 	}
 	
@@ -30,7 +42,7 @@ class DeserializingVisitorTest extends AbstractTest
 			(object)[ Metadata::TYPE => SimpleClass::class, 'foo' => 'baz' ],
 		];
 
-		$output = $this->createVisitor()->visit($input);
+		$output = $this->visitor->visit($input);
 
 		$this->assertInstanceOf(SimpleClass::class, $output[0]);
 		$this->assertInstanceOf(SimpleClass::class, $output[1]);
@@ -49,7 +61,7 @@ class DeserializingVisitorTest extends AbstractTest
 			(object)[ Metadata::TYPE => SimpleClass::class, 'foo' => 'baz' ],
 		];
 
-		$output = $this->createVisitor()->visit($input);
+		$output = $this->visitor->visit($input);
 
 		$this->assertInstanceOf(SimpleClass::class, $output[2]);
 
@@ -66,7 +78,7 @@ class DeserializingVisitorTest extends AbstractTest
 			'bar'           => '123',
 		];
 
-		$output = $this->createVisitor()->visit($input);
+		$output = $this->visitor->visit($input);
 
 		$this->assertInstanceOf(SimpleClass::class, $output);
 		$this->assertEquals('abc', $output->foo);
@@ -85,17 +97,12 @@ class DeserializingVisitorTest extends AbstractTest
 			]
 		];
 
-		$output = $this->createVisitor()->visit($input);
+		$output = $this->visitor->visit($input);
 
 		$this->assertInstanceOf(SimpleClass::class, $output);
 		$this->assertInstanceOf(SimpleClass::class, $output->bar);
 
 		$this->assertSequenceEquals([ 'foo', 'bar', 'baz' ], $output->foo);
 		$this->assertEquals(123, $output->bar->foo);
-	}
-
-	private function createVisitor()
-	{
-		return new DeserializingVisitor(clone $this->defaultConfiguration, clone $this->defaultFactoryChain);
 	}
 }

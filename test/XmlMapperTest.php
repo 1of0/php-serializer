@@ -26,7 +26,7 @@ class XmlMapperTest extends AbstractMapperTest
 		return (new FactoryChainFactory)
 			->withAddedFactory(new ArrayFactory(new XmlFileSource(self::XML_MAPPING_FILE)))
 			->withAddedFactory(new ReflectionFactory())
-			->build($this->defaultConfiguration)
+			->build($this->configuration)
 		;
 	}
 

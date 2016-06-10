@@ -121,7 +121,7 @@ class WhitelistTest extends AbstractTest
 		$serializer = new Serializer();
 
 		$input = json_encode([
-			'@class'    => 'NonExistingClass',
+			'@type'    => 'NonExistingClass',
 			'foo'       => 'bar',
 		]);
 

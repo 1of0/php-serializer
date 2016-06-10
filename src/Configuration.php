@@ -39,6 +39,13 @@ class Configuration
 	public $strictTypeResolution = false;
 
 	/**
+	 * When enabled, type information will be embedded in serialized objects. This type information can be  
+	 *
+	 * @var bool $embedTypeMetadata
+	 */
+	public $embedTypeMetadata = true;
+
+	/**
 	 * Enable/disable pretty JSON printing.
 	 *
 	 * @var bool $prettyPrint

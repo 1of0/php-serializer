@@ -58,7 +58,7 @@ abstract class AbstractMapperTest extends AbstractTest
 		$input->setPrivateDateObject($date);
 
 		$expectedOutput = [
-			'@class'                => ClassUsingConverters::class,
+			'@type'                => ClassUsingConverters::class,
 			'dateObject'            => $date->getTimestamp(),
 			'simpleClass'           => '1234|abcd|5678',
 			'referableClass'        => 1337,
@@ -87,7 +87,7 @@ abstract class AbstractMapperTest extends AbstractTest
 		$object->foo = 1234;
 
 		$expectedOutput = [
-			'@class'    => ClassUsingClassLevelConverter::class,
+			'@type'    => ClassUsingClassLevelConverter::class,
 			'abcd'      => 1234,
 		];
 
@@ -103,7 +103,7 @@ abstract class AbstractMapperTest extends AbstractTest
 		$object = new ClassUsingDifferentClassLevelConverters();
 
 		$expectedOutput = [
-			'@class'    => ClassUsingDifferentClassLevelConverters::class,
+			'@type'    => ClassUsingDifferentClassLevelConverters::class,
 			'abcd'      => 1234,
 		];
 
@@ -124,7 +124,7 @@ abstract class AbstractMapperTest extends AbstractTest
 		$object = new ClassWithGetterAndSetter('bar');
 
 		$expectedOutput = [
-			'@class'    => ClassWithGetterAndSetter::class,
+			'@type'    => ClassWithGetterAndSetter::class,
 			'foo'       => 'bar',
 		];
 		
@@ -146,7 +146,7 @@ abstract class AbstractMapperTest extends AbstractTest
 		$this->setExpectedException(SerializationException::class);
 
 		$input = (object)[
-			'@class'    => ClassWithInvalidGetterAndSetter::class,
+			'@type'    => ClassWithInvalidGetterAndSetter::class,
 			'foo'       => 'bar',
 		];
 		
@@ -164,7 +164,7 @@ abstract class AbstractMapperTest extends AbstractTest
 		$this->setExpectedException(SerializationException::class);
 		
 		$input = (object)[
-			'@class'    => ClassWithInvalidGetterAndSetter::class,
+			'@type'    => ClassWithInvalidGetterAndSetter::class,
 			'foo'       => 'bar',
 		];
 		
@@ -173,11 +173,11 @@ abstract class AbstractMapperTest extends AbstractTest
 	
 	private function createSerializingVisitor()
 	{
-		return new SerializingVisitor(clone $this->defaultConfiguration, $this->getChain());
+		return new SerializingVisitor(clone $this->configuration, $this->getChain());
 	}
 
 	private function createDeserializingVisitor()
 	{
-		return new DeserializingVisitor(clone $this->defaultConfiguration, $this->getChain());
+		return new DeserializingVisitor(clone $this->configuration, $this->getChain());
 	}
 }

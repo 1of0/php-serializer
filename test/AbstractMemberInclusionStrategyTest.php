@@ -20,7 +20,7 @@ abstract class AbstractMemberInclusionStrategyTest extends AbstractTest
 		$input = $this->createInput();
 
 		$expectedOutput = json_encode([
-			'@class' => DifferentVisibilityClass::class,
+			'@type' => DifferentVisibilityClass::class,
 			'publicProperty' => 'foo',
 		]);
 
@@ -44,7 +44,7 @@ abstract class AbstractMemberInclusionStrategyTest extends AbstractTest
 		$input = $this->createInput();
 		
 		$expectedOutput = json_encode([
-			'@class' => DifferentVisibilityClass::class,
+			'@type' => DifferentVisibilityClass::class,
 			'protectedProperty' => 'bar',
 			'privateProperty' => 'baz',
 		]);
@@ -69,7 +69,7 @@ abstract class AbstractMemberInclusionStrategyTest extends AbstractTest
 		$input = $this->createInput();
 
 		$expectedOutput = json_encode([
-			'@class' => DifferentVisibilityClass::class,
+			'@type' => DifferentVisibilityClass::class,
 			'publicProperty' => 'foo',
 			'protectedProperty' => 'bar',
 			'privateProperty' => 'baz',
@@ -94,7 +94,7 @@ abstract class AbstractMemberInclusionStrategyTest extends AbstractTest
 		$input = $this->createInput();
 
 		$expectedOutput = json_encode([
-			'@class' => DifferentVisibilityClass::class,
+			'@type' => DifferentVisibilityClass::class,
 			'publicMethod' => '1234',
 		]);
 
@@ -118,7 +118,7 @@ abstract class AbstractMemberInclusionStrategyTest extends AbstractTest
 		$input = $this->createInput();
 
 		$expectedOutput = json_encode([
-			'@class' => DifferentVisibilityClass::class,
+			'@type' => DifferentVisibilityClass::class,
 			'protectedMethod' => '5678',
 			'privateMethod' => '9876',
 		]);
@@ -147,7 +147,7 @@ abstract class AbstractMemberInclusionStrategyTest extends AbstractTest
 
 		/** @var DifferentVisibilityClass $deserialized */
 		$deserialized = $serializer->deserialize(json_encode([
-			'@class' => DifferentVisibilityClass::class,
+			'@type' => DifferentVisibilityClass::class,
 			'publicMethod' => '1234',
 		]));
 
@@ -169,7 +169,7 @@ abstract class AbstractMemberInclusionStrategyTest extends AbstractTest
 
 		/** @var DifferentVisibilityClass $deserialized */
 		$deserialized = $serializer->deserialize(json_encode([
-			'@class' => DifferentVisibilityClass::class,
+			'@type' => DifferentVisibilityClass::class,
 			'protectedMethod' => '5678',
 			'privateMethod' => '9876',
 		]));
@@ -188,7 +188,7 @@ abstract class AbstractMemberInclusionStrategyTest extends AbstractTest
 		$input = $this->createInput();
 
 		$expectedOutput = json_encode([
-			'@class' => DifferentVisibilityClass::class,
+			'@type' => DifferentVisibilityClass::class,
 			'publicMethod' => '1234',
 			'protectedMethod' => '5678',
 			'privateMethod' => '9876',
@@ -214,7 +214,7 @@ abstract class AbstractMemberInclusionStrategyTest extends AbstractTest
 		$input = $this->createInput();
 
 		$expectedOutput = json_encode([
-			'@class' => DifferentVisibilityClass::class,
+			'@type' => DifferentVisibilityClass::class,
 			'publicProperty' => 'foo',
 			'publicMethod' => '1234',
 		]);
@@ -239,7 +239,7 @@ abstract class AbstractMemberInclusionStrategyTest extends AbstractTest
 		$input = $this->createInput();
 
 		$expectedOutput = json_encode([
-			'@class' => DifferentVisibilityClass::class,
+			'@type' => DifferentVisibilityClass::class,
 			'protectedProperty' => 'bar',
 			'privateProperty' => 'baz',
 			'protectedMethod' => '5678',
@@ -266,7 +266,7 @@ abstract class AbstractMemberInclusionStrategyTest extends AbstractTest
 		$input = $this->createInput();
 
 		$expectedOutput = json_encode([
-			'@class' => DifferentVisibilityClass::class,
+			'@type' => DifferentVisibilityClass::class,
 			'publicProperty' => 'foo',
 			'protectedProperty' => 'bar',
 			'privateProperty' => 'baz',

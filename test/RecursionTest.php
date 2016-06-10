@@ -43,11 +43,11 @@ class RecursionTest extends AbstractTest
 		$input->foo = new SimpleClass($input, 'bar', 'baz');
 		
 		$expectedOutput = json_encode([
-			'@class'    => RecursiveReferableClass::class,
+			'@type'    => RecursiveReferableClass::class,
 			'foo'       => [
-				'@class'    => SimpleClass::class,
+				'@type'    => SimpleClass::class,
 				'foo'       => [
-					'@class'    => RecursiveReferableClass::class,
+					'@type'    => RecursiveReferableClass::class,
 					'id'        => 123,
 				],
 				'bar'       => 'bar',
