@@ -1,0 +1,17 @@
+#!/usr/bin/env php
+<?php
+
+$projectRoot = realpath(__DIR__ . '/../');
+
+$apigenOutputDir = "$projectRoot/apigen-out";
+$apigenExecutable = "$projectRoot/vendor/bin/apigen";
+$apigenArgs = implode(' ', [
+	'generate',
+	"--source $projectRoot/src",
+	"--destination $apigenOutputDir",
+	"--template-theme bootstrap",
+	"--quiet",
+]);
+
+echo `rm -R $apigenOutputDir`;
+echo `$apigenExecutable $apigenArgs`;

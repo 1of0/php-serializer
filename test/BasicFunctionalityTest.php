@@ -1,7 +1,6 @@
 <?php
-
 /**
- * Copyright (c) 2015 Bernardo van der Wal
+ * Copyright (c) 2016 Bernardo van der Wal
  * MIT License
  *
  * Refer to the LICENSE file for the full copyright notice.
@@ -9,7 +8,7 @@
 
 namespace OneOfZero\Json\Test;
 
-use OneOfZero\Json\JsonConvert;
+use OneOfZero\Json\Convert;
 use OneOfZero\Json\Serializer;
 use OneOfZero\Json\Test\FixtureClasses\PrivatePropertiesClass;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
@@ -18,6 +17,34 @@ use stdClass;
 
 class BasicFunctionalityTest extends AbstractTest
 {
+	public function testSanity()
+	{
+		$this->assertTrue(true);
+	}
+
+	public function testScalars()
+	{
+		$json = Serializer::get()->serialize(null);
+		$deserialized = Serializer::get()->deserialize($json);
+		$this->assertEquals('null', $json);
+		$this->assertSame(null, $deserialized);
+
+		$json = Serializer::get()->serialize('foo');
+		$deserialized = Serializer::get()->deserialize($json);
+		$this->assertEquals('"foo"', $json);
+		$this->assertSame('foo', $deserialized);
+
+		$json = Serializer::get()->serialize(1.234);
+		$deserialized = Serializer::get()->deserialize($json);
+		$this->assertEquals('1.234', $json);
+		$this->assertSame(1.234, $deserialized);
+
+		$json = Serializer::get()->serialize(true);
+		$deserialized = Serializer::get()->deserialize($json);
+		$this->assertEquals('true', $json);
+		$this->assertSame(true, $deserialized);
+	}
+
 	public function testNumericArray()
 	{
 		$expectedJson = '[1,2,3,4]';
@@ -33,12 +60,13 @@ class BasicFunctionalityTest extends AbstractTest
 	public function testSimpleObject()
 	{
 		$expectedJson = json_encode([
-			'@class' => SimpleClass::class,
-			'foo' => '1234',
-			'bar' => 'abcd'
+			'@type'    => SimpleClass::class,
+			'foo'       => '1234',
+			'bar'       => 'abcd',
+			'baz'       => '5678',
 		]);
 
-		$object = new SimpleClass('1234', 'abcd');
+		$object = new SimpleClass('1234', 'abcd', '5678');
 
 		$json = Serializer::get()->serialize($object);
 		$this->assertEquals($expectedJson, $json);
@@ -50,8 +78,8 @@ class BasicFunctionalityTest extends AbstractTest
 	public function testPrivatePropertiesObject()
 	{
 		$expectedJson = json_encode([
-			'@class' => PrivatePropertiesClass::class,
-			'foo' => '1234'
+			'@type'    => PrivatePropertiesClass::class,
+			'foo'       => '1234'
 		]);
 
 		$object = new PrivatePropertiesClass('1234', 'abcd');
@@ -82,13 +110,14 @@ class BasicFunctionalityTest extends AbstractTest
 	public function testObjectArray()
 	{
 		$expectedObject = [
-			'@class' => SimpleClass::class,
-			'foo' => '1234',
-			'bar' => 'abcd'
+			'@type'    => SimpleClass::class,
+			'foo'       => '1234',
+			'bar'       => 'abcd',
+			'baz'       => '5678',
 		];
 		$expectedJson = json_encode([$expectedObject, $expectedObject]);
 
-		$object = new SimpleClass('1234', 'abcd');
+		$object = new SimpleClass('1234', 'abcd', '5678');
 		$array = [$object, $object];
 
 		$json = Serializer::get()->serialize($array);
@@ -100,10 +129,10 @@ class BasicFunctionalityTest extends AbstractTest
 
 	public function testCast()
 	{
-		$object = new SimpleClassExtender('1234', 'abcd', '1337');
-		$expected = new SimpleClass('1234', 'abcd');
+		$object = new SimpleClassExtender('1234', 'abcd', '5678', '1337');
+		$expected = new SimpleClass('1234', 'abcd', '5678');
 
-		$cast = JsonConvert::cast($object, SimpleClass::class);
+		$cast = Convert::cast($object, SimpleClass::class);
 		$this->assertObjectEquals($expected, $cast);
 		$this->assertEquals(SimpleClass::class, get_class($cast));
 	}

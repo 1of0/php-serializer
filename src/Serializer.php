@@ -1,7 +1,6 @@
 <?php
-
 /**
- * Copyright (c) 2015 Bernardo van der Wal
+ * Copyright (c) 2016 Bernardo van der Wal
  * MIT License
  *
  * Refer to the LICENSE file for the full copyright notice.
@@ -9,78 +8,127 @@
 
 namespace OneOfZero\Json;
 
-use OneOfZero\Json\DependencyInjection\ContainerAdapterInterface;
-use OneOfZero\Json\Internals\MemberWalker;
-use OneOfZero\Json\Internals\ProxyHelper;
-use OneOfZero\Json\Internals\SerializerContext;
+use Doctrine\Common\Cache\CacheProvider;
+use Interop\Container\ContainerInterface;
+use OneOfZero\Json\Helpers\Environment;
+use OneOfZero\Json\Mappers\Annotation\AnnotationFactory;
+use OneOfZero\Json\Mappers\Annotation\AnnotationSource;
+use OneOfZero\Json\Mappers\FactoryChain;
+use OneOfZero\Json\Mappers\FactoryChainFactory;
+use OneOfZero\Json\Mappers\Reflection\ReflectionFactory;
+use OneOfZero\Json\Visitors\DeserializingVisitor;
+use OneOfZero\Json\Visitors\SerializingVisitor;
 
-class Serializer
+/**
+ * The serializer class provides methods to serialize and deserialize JSON data.
+ */
+class Serializer implements SerializerInterface
 {
+	const CACHE_NAMESPACE = '1of0_json_mapper';
+
 	/**
-	 * @var Serializer $instance
+	 * @var self $instance
 	 */
 	private static $instance;
 
 	/**
-	 * @return Serializer
+	 * Returns a singleton instance for the Serializer class.
+	 * 
+	 * @return self
 	 */
 	public static function get()
 	{
 		if (!self::$instance)
 		{
-			self::$instance = new Serializer();
+			self::$instance = new self();
 		}
 		return self::$instance;
 	}
 
 	/**
-	 * @var SerializerContext $context
+	 * @var Configuration $configuration
 	 */
-	private $context;
+	private $configuration;
 
 	/**
-	 * @param ContainerAdapterInterface $containerAdapter
-	 * @param Configuration|null $configuration
+	 * @var ContainerInterface $container
 	 */
-	public function __construct(ContainerAdapterInterface $containerAdapter = null, Configuration $configuration = null)
-	{
-		$this->context = new SerializerContext();
-		$this->context->setSerializer($this);
-		$this->context->setConfiguration($configuration ? $configuration : new Configuration());
-		$this->context->setContainer($containerAdapter);
-		$this->context->setMemberWalker(new MemberWalker($this->context));
-		$this->context->setProxyHelper(new ProxyHelper($this->context->getReferenceResolver()));
+	private $container;
+
+	/**
+	 * @var FactoryChainFactory $chainFactory
+	 */
+	private $chainFactory;
+
+	/**
+	 * @var ReferenceResolverInterface $referenceResolver
+	 */
+	private $referenceResolver;
+
+	/**
+	 * @var CacheProvider $cacheProvider
+	 */
+	private $cacheProvider;
+
+	/**
+	 * Initializes the Serializer class, optionally providing any of the constructor arguments as resources.
+	 *
+	 * @param Configuration|null $configuration
+	 * @param ContainerInterface|null $container
+	 * @param FactoryChainFactory|null $chainFactory
+	 * @param ReferenceResolverInterface|null $referenceResolver
+	 * @param CacheProvider $cacheProvider
+	 */
+	public function __construct(
+		Configuration $configuration = null,
+		ContainerInterface $container = null,
+		FactoryChainFactory $chainFactory = null,
+		ReferenceResolverInterface $referenceResolver = null,
+		CacheProvider $cacheProvider = null
+	) {
+		$this->configuration = $configuration ?: new Configuration($container);
+		$this->container = $container;
+		$this->chainFactory = $chainFactory ?: $this->createDefaultChainFactory();
+		$this->referenceResolver = $referenceResolver;
+		$this->setCacheProvider($cacheProvider);
 	}
 
 	/**
-	 * @param mixed $data
-	 * @return string
+	 * {@inheritdoc}
 	 */
 	public function serialize($data)
 	{
-		return $this->jsonEncode($this->context->getMemberWalker()->serialize($data));
+		$visitor = new SerializingVisitor(
+			clone $this->configuration,
+			$this->buildChain(),
+			$this->container
+		);
+
+		return $this->jsonEncode($visitor->visit($data));
 	}
 
 	/**
-	 * @param string $json
-	 * @param string|null $typeHint
-	 * @return mixed
+	 * {@inheritdoc}
 	 */
 	public function deserialize($json, $typeHint = null)
 	{
-		$deserializedData = $this->jsonDecode($json);
+		$visitor = new DeserializingVisitor(
+			clone $this->configuration,
+			$this->buildChain(),
+			$this->container,
+			$this->referenceResolver
+		);
 
-		if (is_object($deserializedData) || is_array($deserializedData))
-		{
-			return $this->context->getMemberWalker()->deserialize($deserializedData, $typeHint);
-		}
-
-		return $deserializedData;
+		return $visitor->visit($this->jsonDecode($json), null, $typeHint);
 	}
 
 	/**
+	 * Casts the provided $instance into the specified $type by serializing the $instance and deserializing it into the
+	 * specified $type.
+	 * 
 	 * @param object $instance
 	 * @param string $type
+	 *
 	 * @return object
 	 */
 	public function cast($instance, $type)
@@ -89,11 +137,88 @@ class Serializer
 	}
 
 	/**
+	 * @param CacheProvider $cacheProvider
+	 */
+	public function setCacheProvider(CacheProvider $cacheProvider = null)
+	{
+		if ($cacheProvider === null)
+		{
+			$this->cacheProvider = null;
+			return;
+		}
+		
+		$this->cacheProvider = clone $cacheProvider;
+
+		if ($this->cacheProvider->getNamespace() !== self::CACHE_NAMESPACE)
+		{
+			$this->cacheProvider->setNamespace(self::CACHE_NAMESPACE);
+		}
+	}
+
+	/**
+	 * @param mixed $data
+	 *
+	 * @return string
+	 */
+	private function jsonEncode($data)
+	{
+		$options = $this->configuration->jsonEncodeOptions;
+		
+		if ($this->configuration->prettyPrint)
+		{
+			$options |= JSON_PRETTY_PRINT;
+		}
+		
+		return json_encode($data, $options, $this->configuration->maxDepth);
+	}
+
+	/**
+	 * @param string $json
+	 *
+	 * @return mixed
+	 */
+	private function jsonDecode($json)
+	{
+		$options = $this->configuration->jsonEncodeOptions;
+		
+		return json_decode($json, false, $this->configuration->maxDepth, $options);
+	}
+
+	/**
+	 * @return FactoryChainFactory
+	 */
+	private function createDefaultChainFactory()
+	{
+		return (new FactoryChainFactory)
+			->withAddedFactory(new AnnotationFactory(new AnnotationSource(Environment::getAnnotationReader($this->container))))
+			->withAddedFactory(new ReflectionFactory())
+		;
+	}
+
+	/**
+	 * @return FactoryChain
+	 */
+	private function buildChain()
+	{
+		$chain = $this->chainFactory;
+		
+		if ($this->cacheProvider !== null)
+		{
+			$chain = $chain->withCache($this->cacheProvider);
+		}
+		
+		return $chain->build(clone $this->configuration);
+	}
+
+	#region // Generic getters and setters
+	// @codeCoverageIgnoreStart
+
+	/**
 	 * @return Configuration
 	 */
 	public function getConfiguration()
 	{
-		return $this->context->getConfiguration();
+		return $this->configuration;
 	}
 
 	/**
@@ -101,30 +226,65 @@ class Serializer
 	 */
 	public function setConfiguration(Configuration $configuration)
 	{
-		$this->context->setConfiguration($configuration);
+		$this->configuration = $configuration;
 	}
 
 	/**
-	 * @param mixed $data
-	 * @return string
+	 * @return ContainerInterface
 	 */
-	private function jsonEncode($data)
+	public function getContainer()
 	{
-		$options = $this->context->getConfiguration()->jsonEncodeOptions;
-		if ($this->context->getConfiguration()->prettyPrint)
-		{
-			$options |= JSON_PRETTY_PRINT;
-		}
-		return json_encode($data, $options, $this->context->getConfiguration()->maxDepth);
+		return $this->container;
 	}
 
 	/**
-	 * @param string $json
-	 * @return mixed
+	 * @param ContainerInterface $container
 	 */
-	private function jsonDecode($json)
+	public function setContainer(ContainerInterface $container = null)
 	{
-		$options = $this->context->getConfiguration()->jsonEncodeOptions;
-		return json_decode($json, false, $this->context->getConfiguration()->maxDepth, $options);
+		$this->container = $container;
 	}
+
+	/**
+	 * @return FactoryChainFactory
+	 */
+	public function getChainFactory()
+	{
+		return $this->chainFactory;
+	}
+
+	/**
+	 * @param FactoryChainFactory $chainFactory
+	 */
+	public function setChainFactory(FactoryChainFactory $chainFactory)
+	{
+		$this->chainFactory = $chainFactory;
+	}
+	
+	/**
+	 * @return ReferenceResolverInterface
+	 */
+	public function getReferenceResolver()
+	{
+		return $this->referenceResolver;
+	}
+
+	/**
+	 * @param ReferenceResolverInterface $referenceResolver
+	 */
+	public function setReferenceResolver(ReferenceResolverInterface $referenceResolver = null)
+	{
+		$this->referenceResolver = $referenceResolver;
+	}
+
+	/**
+	 * @return CacheProvider
+	 */
+	public function getCacheProvider()
+	{
+		return $this->cacheProvider;
+	}
+
+	// @codeCoverageIgnoreEnd
+	#endregion
 }

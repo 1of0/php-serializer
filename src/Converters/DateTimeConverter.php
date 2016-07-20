@@ -1,7 +1,6 @@
 <?php
-
 /**
- * Copyright (c) 2015 Bernardo van der Wal
+ * Copyright (c) 2016 Bernardo van der Wal
  * MIT License
  *
  * Refer to the LICENSE file for the full copyright notice.
@@ -9,56 +8,51 @@
 
 namespace OneOfZero\Json\Converters;
 
+use Carbon\Carbon;
 use DateTime;
-use OneOfZero\Json\CustomMemberConverterInterface;
-use OneOfZero\Json\Internals\DeserializationState;
-use OneOfZero\Json\Internals\SerializationState;
+use OneOfZero\Json\Exceptions\ResumeSerializationException;
+use OneOfZero\Json\Nodes\MemberNode;
 
-class DateTimeConverter implements CustomMemberConverterInterface
+class DateTimeConverter extends AbstractMemberConverter
 {
 	/**
-	 * @param string $class
-	 * @return bool
+	 * {@inheritdoc}
 	 */
-	public function canConvert($class)
+	public function serialize(MemberNode $node, $typeHint = null)
 	{
-		return $class !== null && ($class === DateTime::class || in_array(DateTime::class, class_parents($class)));
+		$value = $node->getValue();
+		
+		if ($value === null || !($value instanceof DateTime))
+		{
+			throw new ResumeSerializationException();
+		}
+		
+		return $value->getTimestamp();
 	}
 
 	/**
-	 * @param mixed $object
-	 * @param string $memberName
-	 * @param string $memberClass
-	 * @param SerializationState $parent
-	 * @return mixed
+	 * {@inheritdoc}
 	 */
-	public function serialize($object, $memberName, $memberClass, SerializationState $parent)
+	public function deserialize(MemberNode $node, $typeHint = null)
 	{
-		if ($object === null)
+		if ($typeHint === null || !ctype_digit($node->getSerializedValue()))
 		{
-			return null;
+			throw new ResumeSerializationException();	
 		}
-
-		/** @var DateTime $object */
-		return $object->getTimestamp();
-	}
-
-	/**
-	 * @param string $data
-	 * @param string $memberName
-	 * @param string $memberClass
-	 * @param DeserializationState $parent
-	 * @return mixed
-	 */
-	public function deserialize($data, $memberName, $memberClass, DeserializationState $parent)
-	{
-		if ($data === null)
+		
+		if ($typeHint !== DateTime::class && !is_subclass_of($typeHint, DateTime::class))
 		{
-			return null;
+			throw new ResumeSerializationException();
 		}
-
+		
+		if (class_exists(Carbon::class) && $typeHint === Carbon::class)
+		{
+			return Carbon::createFromTimestamp($node->getSerializedValue());
+		}
+		
 		$date = new DateTime();
-		$date->setTimestamp($data);
+		$date->setTimestamp($node->getSerializedValue());
+		
 		return $date;
 	}
 }

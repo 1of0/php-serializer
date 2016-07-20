@@ -1,7 +1,6 @@
 <?php
-
 /**
- * Copyright (c) 2015 Bernardo van der Wal
+ * Copyright (c) 2016 Bernardo van der Wal
  * MIT License
  *
  * Refer to the LICENSE file for the full copyright notice.
@@ -16,7 +15,7 @@ class ReferableClass implements ReferableInterface
 	/**
 	 * @var int $id
 	 */
-	private $id;
+	public $id;
 
 	/**
 	 * ReferableClass constructor.
