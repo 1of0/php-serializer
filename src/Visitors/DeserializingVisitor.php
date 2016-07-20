@@ -24,7 +24,6 @@ use OneOfZero\Json\Exceptions\SerializationException;
 use OneOfZero\Json\Helpers\Metadata;
 use OneOfZero\Json\ReferableInterface;
 use ReflectionClass;
-use stdClass;
 
 class DeserializingVisitor extends AbstractVisitor
 {
@@ -346,7 +345,7 @@ class DeserializingVisitor extends AbstractVisitor
 	 * @throws MissingTypeException
 	 */
 	protected function getType($serializedValue, $node = null, $typeHint = null)
-	{		
+	{
 		if ($typeHint === null && Metadata::contains($serializedValue, Metadata::TYPE))
 		{
 			// Type hint is not explicitly provided, try to retrieve it from the serialized value's metadata

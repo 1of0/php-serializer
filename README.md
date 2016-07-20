@@ -32,7 +32,7 @@ $object = Convert::fromJson($json);
 // Type hint example
 $object = Convert::fromJson($json, \MyNamespace\MyClass::class);
 
-// The same as Convert::toJson($myObject)
+// This is a more verbose form of Convert::toJson($myObject)
 $json = Serializer::get()->serialize($myObject);
 ```
 
@@ -101,7 +101,12 @@ class for details.
 Much like [Json.NET's custom converters](http://www.newtonsoft.com/json/help/html/CustomJsonConverter.htm), this library
 also allows you to build and specify custom converters for specified properties.
 
-### Contract resolver(s)
+### Contract resolver
+
+Another feature that was loosely ported from Json.NET is the 
+[contract resolver](http://www.newtonsoft.com/json/help/html/CustomContractResolver.htm). A contract resolver allows you
+to dynamically manipulate the serialization mapping for every node in the (de)serialization tree. An example use-case 
+for a contract resolver is conversion of property names.
 
 ### Serialization groups
 
@@ -121,6 +126,8 @@ serialize and deserialize references like that. To achieve this:
 
 Please post any bugs and feature requests to the issue tracker on
 [Bitbucket](https://bitbucket.org/1of0/json/issues?status=new&status=open).
+
+Also don't hesitate to file an issue if the documentation is lacking.
 
 ## License
 
