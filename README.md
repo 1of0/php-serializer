@@ -42,6 +42,17 @@ The serializer takes annotated or XML/YAML/JSON/PHP mapped objects, and pre-proc
 `json_encode()` function. Inversely, the deserializer feeds the JSON to the `json_decode()` function, and 
 post-processes the result to get as close a match to the original object (assuming it's properly mapped/annotated).
 
+## Documentation
+
+There is [ApiGen](http://www.apigen.org/) generated documentation available:
+
+- The [minimal documentation](https://1of0.github.io/json-minimal/) excludes documentation for internal classes.
+- The [full documentation](https://1of0.github.io/json-full/) includes internal classes, and can be useful when
+  extending the serializer.
+
+Other documentation and a set of examples is being worked on. If you need help getting something to work, or if 
+something is not clear, don't hesitate to [file an issue](https://bitbucket.org/1of0/json/issues/new).  
+
 ## Features
 
 ### Mappers and mapper chaining

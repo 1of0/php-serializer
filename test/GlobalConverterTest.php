@@ -34,7 +34,6 @@ class GlobalConverterTest extends AbstractTest
 		
 		$this->serializer = new Serializer($this->configuration);
 		$this->serializer->setChainFactory((new FactoryChainFactory)->withAddedFactory(new ReflectionFactory()));
-		
 	}
 
 	public function testObjectTypeConverter()

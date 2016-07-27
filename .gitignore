@@ -1,3 +1,4 @@
 .idea/
 vendor/
-apigen-out/
+docs/api-minimal/
+docs/api-full/
