@@ -9,9 +9,7 @@
 namespace OneOfZero\Json\Test\FixtureClasses;
 
 use OneOfZero\Json\Annotations\Converter;
-
-use /** @noinspection PhpUnusedAliasInspection */
-	OneOfZero\Json\Test\FixtureClasses\Converters\NullMemberConverter;
+use OneOfZero\Json\Test\FixtureClasses\Converters\NullMemberConverter;
 
 class ClassUsingNullMemberConverter
 {

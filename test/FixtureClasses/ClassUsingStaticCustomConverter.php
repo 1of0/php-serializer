@@ -10,7 +10,6 @@
 namespace OneOfZero\Json\Test\FixtureClasses;
 
 use OneOfZero\Json\Annotations\Converter;
-use /** @noinspection PhpUnusedAliasInspection */OneOfZero\Json\Test\FixtureClasses\StaticCustomConverter;
 
 class ClassUsingStaticCustomConverter
 {

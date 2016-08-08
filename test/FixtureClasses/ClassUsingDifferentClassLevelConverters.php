@@ -9,11 +9,8 @@
 namespace OneOfZero\Json\Test\FixtureClasses;
 
 use OneOfZero\Json\Annotations\Converter;
-
-use /** @noinspection PhpUnusedAliasInspection */
-	OneOfZero\Json\Test\FixtureClasses\Converters\DeserializingObjectConverter;
-use /** @noinspection PhpUnusedAliasInspection */
-	OneOfZero\Json\Test\FixtureClasses\Converters\SerializingObjectConverter;
+use OneOfZero\Json\Test\FixtureClasses\Converters\DeserializingObjectConverter;
+use OneOfZero\Json\Test\FixtureClasses\Converters\SerializingObjectConverter;
 
 /**
  * @Converter(
