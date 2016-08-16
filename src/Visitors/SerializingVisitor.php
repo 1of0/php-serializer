@@ -136,7 +136,6 @@ class SerializingVisitor extends AbstractVisitor
 		{
 			if ($this->configuration->embedTypeMetadata && !$mapper->isMetadataDisabled())
 			{
-				/** @var ObjectNode $node */
 				$node = $node->withMetadata(Metadata::TYPE, $objectType);
 			}
 		}
@@ -175,7 +174,6 @@ class SerializingVisitor extends AbstractVisitor
 
 		foreach ($node->getMapper()->mapMembers() as $memberMapperChain)
 		{
-			/** @var MemberMapperInterface $topMapper */
 			$topMapper = $memberMapperChain->getTop(false);
 			
 			$memberNode = (new MemberNode)
@@ -342,7 +340,7 @@ class SerializingVisitor extends AbstractVisitor
 	/**
 	 * @param AbstractObjectNode $node
 	 * 
-	 * @return ObjectNode
+	 * @return AbstractObjectNode
 	 * 
 	 * @throws NotSupportedException
 	 * @throws RecursionException

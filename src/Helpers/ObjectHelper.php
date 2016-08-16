@@ -29,6 +29,7 @@ class ObjectHelper
 		
 		if (is_object($type))
 		{
+			/** @var object $type */
 			return $type;
 		}
 		

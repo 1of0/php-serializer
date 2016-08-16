@@ -64,8 +64,6 @@ class ArrayNode extends AbstractNode
 		return $new;
 	}
 
-	#region // Generic immutability helpers
-
 	/**
 	 * @param array $array
 	 *
@@ -90,10 +88,6 @@ class ArrayNode extends AbstractNode
 		return $new;
 	}
 
-	#endregion
-
-	#region // Generic getters and setters
-
 	/**
 	 * @return array
 	 */
@@ -109,6 +103,4 @@ class ArrayNode extends AbstractNode
 	{
 		return $this->serializedArray;
 	}
-
-	#endregion
 }

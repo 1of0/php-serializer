@@ -37,7 +37,7 @@ class MemberNode extends AbstractNode
 	private $mapper;
 
 	/**
-	 * @return ObjectNode
+	 * @return ObjectNode|AbstractNode
 	 */
 	public function getParent()
 	{
@@ -99,8 +99,6 @@ class MemberNode extends AbstractNode
 		}
 	}
 	
-	#region // Generic immutability helpers
-
 	/**
 	 * @param mixed $value
 	 *
@@ -149,10 +147,6 @@ class MemberNode extends AbstractNode
 		return $new;
 	}
 
-	#endregion
-
-	#region // Generic getters and setters
-
 	/**
 	 * @return mixed
 	 */
@@ -192,6 +186,4 @@ class MemberNode extends AbstractNode
 	{
 		return $this->mapper;
 	}
-
-	#endregion
 }

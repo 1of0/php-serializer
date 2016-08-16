@@ -135,8 +135,6 @@ class DeserializingVisitor extends AbstractVisitor
 	 */
 	protected function visitObject(AbstractObjectNode $node)
 	{
-		/** @var AbstractObjectNode $node */
-		
 		if ($this->hasContractResolver)
 		{
 			$contractMapper = $this->createContractObjectMapper($node);

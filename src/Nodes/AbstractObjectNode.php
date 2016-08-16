@@ -12,7 +12,7 @@ use OneOfZero\Json\Mappers\ObjectMapperInterface;
 use RuntimeException;
 use stdClass;
 
-class AbstractObjectNode extends AbstractNode
+abstract class AbstractObjectNode extends AbstractNode
 {
 	/**
 	 * @var mixed $instance
@@ -191,8 +191,6 @@ class AbstractObjectNode extends AbstractNode
 		return $count;
 	}
 
-	#region // Generic immutability helpers
-	
 	/**
 	 * @param object $instance
 	 *
@@ -217,10 +215,6 @@ class AbstractObjectNode extends AbstractNode
 		return $new;
 	}
 	
-	#endregion
-
-	#region // Generic getters and setters
-	
 	/**
 	 * @return mixed
 	 */
@@ -244,6 +238,4 @@ class AbstractObjectNode extends AbstractNode
 	{
 		return $this->metadata;
 	}
-	
-	#endregion
 }

@@ -8,7 +8,6 @@
 
 namespace OneOfZero\Json\Mappers\Annotation;
 
-use Doctrine\Common\Annotations\Annotation;
 use OneOfZero\Json\Annotations\AbstractName;
 use OneOfZero\Json\Annotations\Getter;
 use OneOfZero\Json\Annotations\Ignore;

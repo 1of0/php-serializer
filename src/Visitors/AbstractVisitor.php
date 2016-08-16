@@ -147,6 +147,7 @@ abstract class AbstractVisitor
 	{
 		try
 		{
+			/** @var MemberConverterInterface|ObjectConverterInterface $converter */
 			$converter = ObjectHelper::getInstance($converterClass, $this->container);
 			
 			if (!is_subclass_of($converter, $typeConstraint))

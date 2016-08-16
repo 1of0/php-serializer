@@ -210,7 +210,6 @@ class Serializer implements SerializerInterface
 		return $chain->build(clone $this->configuration);
 	}
 
-	#region // Generic getters and setters
 	// @codeCoverageIgnoreStart
 
 	/**
@@ -286,5 +285,4 @@ class Serializer implements SerializerInterface
 	}
 
 	// @codeCoverageIgnoreEnd
-	#endregion
 }
