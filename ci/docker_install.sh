@@ -18,4 +18,5 @@ chmod +x /usr/local/bin/composer
 
 echo "date.timezone = UTC" >> /usr/local/etc/php/conf.d/test.ini
 
-docker-php-pecl-install xdebug
+pecl install xdebug
+docker-php-ext-enable xdebug
