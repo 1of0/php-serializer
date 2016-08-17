@@ -1,4 +1,7 @@
-# 1of0/json
+[![build status](https://gitlab.com/1of0/php-serializer/badges/develop/build.svg)](https://gitlab.com/1of0/php-serializer/commits/develop)
+[![coverage report](https://gitlab.com/1of0/php-serializer/badges/develop/coverage.svg)](https://gitlab.com/1of0/php-serializer/commits/develop)
+
+# 1of0/php-serializer
 
 This library provides advanced serialization features built over the PHP `json_encode()` and `json_decode()` functions. 
 Most of the features are inspired by the popular .NET library [Json.NET](http://www.newtonsoft.com/json).
