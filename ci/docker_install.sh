@@ -17,3 +17,5 @@ curl --location --output /usr/local/bin/composer https://getcomposer.org/compose
 chmod +x /usr/local/bin/composer
 
 echo "date.timezone = UTC" >> /usr/local/etc/php/conf.d/test.ini
+
+docker-php-pecl-install xdebug
