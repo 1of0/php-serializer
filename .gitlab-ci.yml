@@ -1,5 +1,6 @@
 before_script:
-- bash ci/docker_install.sh &> /dev/null
+- apk add --no-cache bash
+- bash ci/docker_install.sh
 
 test:5.6:
   image: php:5.6-alpine
