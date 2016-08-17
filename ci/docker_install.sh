@@ -4,7 +4,7 @@
 
 set -xe
 
-apk add --no-cache git unzip curl
+apk add --no-cache git unzip curl $PHPIZE_DEPS
 
 curl --location --output /usr/local/bin/phpunit https://phar.phpunit.de/phpunit.phar
 chmod +x /usr/local/bin/phpunit
@@ -14,6 +14,5 @@ chmod +x /usr/local/bin/composer
 
 echo "date.timezone = UTC" >> /usr/local/etc/php/conf.d/test.ini
 
-export PHP_AUTOCONF=/usr/bin/autoconf
 pecl install xdebug
 docker-php-ext-enable xdebug
