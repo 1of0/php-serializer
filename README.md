@@ -49,12 +49,12 @@ post-processes the result to get as close a match to the original object (assumi
 
 There is [ApiGen](http://www.apigen.org/) generated documentation available:
 
-- The [minimal documentation](https://1of0.github.io/json-minimal/) excludes documentation for internal classes.
-- The [full documentation](https://1of0.github.io/json-full/) includes internal classes, and can be useful when
+- The [minimal documentation](https://1of0.gitlab.io/php-serializer/api-minimal/) excludes documentation for internal classes.
+- The [full documentation](https://1of0.gitlab.io/php-serializer/api-full/) includes internal classes, and can be useful when
   extending the serializer.
 
 Other documentation and a set of examples is being worked on. If you need help getting something to work, or if 
-something is not clear, don't hesitate to [file an issue](https://bitbucket.org/1of0/json/issues/new).  
+something is not clear, don't hesitate to [file an issue](https://gitlab.com/1of0/php-serializer/issues/new).  
 
 ## Features
 
@@ -139,7 +139,7 @@ serialize and deserialize references like that. To achieve this:
 ## Bugs and feature requests
 
 Please post any bugs and feature requests to the issue tracker on
-[Bitbucket](https://bitbucket.org/1of0/json/issues?status=new&status=open).
+[GitLab](https://gitlab.com/1of0/php-serializer/issues).
 
 Also don't hesitate to file an issue if the documentation is lacking.
 
