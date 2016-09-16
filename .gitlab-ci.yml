@@ -19,3 +19,13 @@ coverage:
   script:
   - composer install &> /dev/null
   - phpunit --coverage-text --colors=never --configuration phpunit.xml
+
+pages:
+  image: php:7.0-alpine
+  script:
+  - bin/generate-docs
+  artifacts:
+    paths:
+    - docs
+  only:
+  - develop
