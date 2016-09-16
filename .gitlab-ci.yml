@@ -23,6 +23,7 @@ coverage:
 pages:
   image: php:7.0-alpine
   script:
+  - composer install &> /dev/null
   - bin/generate-docs
   artifacts:
     paths:
