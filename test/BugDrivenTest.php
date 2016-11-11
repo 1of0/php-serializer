@@ -103,6 +103,6 @@ class BugDrivenTest extends AbstractTest
 		$object = Serializer::get()->deserialize($json, ClassContainingAnnotatedStdClass::class);
 		$this->assertInstanceOf(ClassContainingAnnotatedStdClass::class, $object);
 		$this->assertInstanceOf(stdClass::class, $object->foo);
-		$this->assertEquals('bar', $object->foo->bar);
+		$this->assertEquals('baz', $object->foo->bar);
 	}
 }
