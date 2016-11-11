@@ -1,13 +1,12 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: bvanderwal
- * Date: 11-11-2016
- * Time: 10:21
+ * Copyright (c) 2016 Bernardo van der Wal
+ * MIT License
+ *
+ * Refer to the LICENSE file for the full copyright notice.
  */
 
 namespace OneOfZero\Json\Test\FixtureClasses;
-
 
 use OneOfZero\Json\Annotations\IsArray;
 use OneOfZero\Json\Annotations\Type;

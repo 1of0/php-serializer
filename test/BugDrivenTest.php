@@ -10,9 +10,11 @@
 namespace OneOfZero\Json\Test;
 
 use OneOfZero\Json\Serializer;
+use OneOfZero\Json\Test\FixtureClasses\ClassContainingAnnotatedStdClass;
 use OneOfZero\Json\Test\FixtureClasses\ClassContainingList;
 use OneOfZero\Json\Test\FixtureClasses\ClassUsingStaticCustomConverter;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
+use stdClass;
 
 class BugDrivenTest extends AbstractTest
 {
@@ -74,5 +76,33 @@ class BugDrivenTest extends AbstractTest
 		$this->assertEquals(2, count($object->items));
 		$this->assertInstanceOf(SimpleClass::class, $object->items[0]);
 		$this->assertInstanceOf(SimpleClass::class, $object->items[1]);
+	}
+
+	/**
+	 * Test for issue #17
+	 * @see https://gitlab.com/1of0/php-serializer/issues/17
+	 */
+	public function testIssue017()
+	{
+		$expectedJson = json_encode([
+			'@type' => ClassContainingAnnotatedStdClass::class,
+			'foo' => [
+				'bar' => 'baz'
+			],
+		]);
+
+
+		$object = new ClassContainingAnnotatedStdClass();
+		$object->foo = new stdClass();
+		$object->foo->bar = 'baz';
+
+		$json = Serializer::get()->serialize($object);
+
+		$this->assertEquals($expectedJson, $json);
+
+		$object = Serializer::get()->deserialize($json, ClassContainingAnnotatedStdClass::class);
+		$this->assertInstanceOf(ClassContainingAnnotatedStdClass::class, $object);
+		$this->assertInstanceOf(stdClass::class, $object->foo);
+		$this->assertEquals('bar', $object->foo->bar);
 	}
 }
