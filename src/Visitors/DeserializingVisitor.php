@@ -68,7 +68,9 @@ class DeserializingVisitor extends AbstractVisitor
 			return $this->visitObject($objectNode)->getInstance();
 		}
 
-		if (is_array($serializedValue))
+		$isArray = is_array($serializedValue) || ($parent instanceof MemberNode && $parent->getMapper()->isArray());
+
+		if ($isArray)
 		{
 			$valueNode = (new ArrayNode)
 				->withArray([])
@@ -76,7 +78,7 @@ class DeserializingVisitor extends AbstractVisitor
 				->withParent($parent)
 			;
 
-			return $this->visitArray($valueNode)->getArray();
+			return $this->visitArray($valueNode, $typeHint)->getArray();
 		}
 		
 		if ($typeHint !== null)
@@ -106,12 +108,13 @@ class DeserializingVisitor extends AbstractVisitor
 
 	/**
 	 * @param ArrayNode $node
+	 * @param string $itemTypeHint
 	 *
 	 * @return ArrayNode
 	 *
 	 * @throws SerializationException
 	 */
-	protected function visitArray(ArrayNode $node)
+	protected function visitArray(ArrayNode $node, $itemTypeHint = null)
 	{
 		foreach ($node->getSerializedArray() as $key => $value)
 		{
@@ -120,7 +123,7 @@ class DeserializingVisitor extends AbstractVisitor
 				$node = $node->withArrayValue(null, $key);
 			}
 			
-			$node = $node->withArrayValue($this->visit($value), $key);
+			$node = $node->withArrayValue($this->visit($value, null, $itemTypeHint), $key);
 		}
 
 		return $node;
