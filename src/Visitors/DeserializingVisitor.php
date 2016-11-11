@@ -24,6 +24,7 @@ use OneOfZero\Json\Exceptions\SerializationException;
 use OneOfZero\Json\Helpers\Metadata;
 use OneOfZero\Json\ReferableInterface;
 use ReflectionClass;
+use stdClass;
 
 class DeserializingVisitor extends AbstractVisitor
 {
@@ -42,7 +43,7 @@ class DeserializingVisitor extends AbstractVisitor
 		{
 			$type = $this->getType($serializedValue, $parent, $typeHint);
 
-			if ($type === null)
+			if ($type === null || $typeHint === stdClass::class)
 			{
 				// Type not resolved, deserialize as anonymous object
 				$objectNode = AnonymousObjectNode
