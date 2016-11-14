@@ -105,4 +105,22 @@ class BugDrivenTest extends AbstractTest
 		$this->assertInstanceOf(stdClass::class, $object->foo);
 		$this->assertEquals('baz', $object->foo->bar);
 	}
+
+	/**
+	 * Test for issue #18
+	 * @see https://gitlab.com/1of0/php-serializer/issues/18
+	 */
+	public function testIssue018()
+	{
+		$json = json_encode([
+			'@type' => ClassContainingList::class,
+			'items' => null,
+		]);
+
+		$object = Serializer::get()->deserialize($json, ClassContainingList::class);
+		$this->assertInstanceOf(ClassContainingList::class, $object);
+		$this->assertNotNull($object->items);
+		$this->assertTrue(is_array($object->items));
+		$this->assertEquals(0, count($object->items));
+	}
 }
