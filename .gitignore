@@ -2,3 +2,4 @@
 vendor/
 docs/api-minimal/
 docs/api-full/
+Dockerfile

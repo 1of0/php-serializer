@@ -73,6 +73,11 @@ class DeserializingVisitor extends AbstractVisitor
 
 		if ($isArray)
 		{
+			if ($serializedValue === null)
+			{
+				$serializedValue = [];
+			}
+
 			$valueNode = (new ArrayNode)
 				->withArray([])
 				->withSerializedArray($serializedValue)
