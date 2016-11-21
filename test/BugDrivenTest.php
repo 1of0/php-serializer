@@ -13,6 +13,7 @@ use OneOfZero\Json\Serializer;
 use OneOfZero\Json\Test\FixtureClasses\ClassContainingAnnotatedStdClass;
 use OneOfZero\Json\Test\FixtureClasses\ClassContainingList;
 use OneOfZero\Json\Test\FixtureClasses\ClassUsingStaticCustomConverter;
+use OneOfZero\Json\Test\FixtureClasses\PropertiesWithMultiTypeTags;
 use OneOfZero\Json\Test\FixtureClasses\SimpleClass;
 use stdClass;
 
@@ -122,5 +123,24 @@ class BugDrivenTest extends AbstractTest
 		$this->assertNotNull($object->items);
 		$this->assertTrue(is_array($object->items));
 		$this->assertEquals(0, count($object->items));
+	}
+
+	/**
+	 * Test for issue #19
+	 * @see https://gitlab.com/1of0/php-serializer/issues/19
+	 */
+	public function testIssue019()
+	{
+		$json = json_encode([
+			'nullable' =>           [ 'foo' => 'a', 'bar' => 'a', 'baz' => 'a' ],
+			'nullBeforeClass' =>    [ 'foo' => 'b', 'bar' => 'b', 'baz' => 'b' ],
+			'threeTypes' =>         [ 'foo' => 'c', 'bar' => 'c', 'baz' => 'c' ],
+		]);
+
+		$object = Serializer::get()->deserialize($json, PropertiesWithMultiTypeTags::class);
+		$this->assertInstanceOf(PropertiesWithMultiTypeTags::class, $object);
+		$this->assertInstanceOf(SimpleClass::class, $object->nullable);
+		$this->assertInstanceOf(SimpleClass::class, $object->nullBeforeClass);
+		$this->assertInstanceOf(SimpleClass::class, $object->threeTypes);
 	}
 }
