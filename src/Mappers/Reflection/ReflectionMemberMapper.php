@@ -73,7 +73,7 @@ class ReflectionMemberMapper extends AbstractMemberMapper
 		
 		if ($this->isClassProperty())
 		{
-			$type = $this->docReader->getPropertyClass($this->getTarget());
+			$type = $this->findFirstExistingType($this->docReader->getPropertyClasses($this->getTarget()));
 			if ($type !== null)
 			{
 				return $type;
@@ -82,7 +82,7 @@ class ReflectionMemberMapper extends AbstractMemberMapper
 
 		if ($this->getChain()->getTop()->isGetter())
 		{
-			$type = $this->docReader->getMethodReturnClass($this->getTarget());
+			$type = $this->findFirstExistingType($this->docReader->getMethodReturnClasses($this->getTarget()));
 			if ($type !== null)
 			{
 				return $type;
@@ -94,7 +94,7 @@ class ReflectionMemberMapper extends AbstractMemberMapper
 			/** @var ReflectionParameter $setter */
 			list($setter) = $this->getTarget()->getParameters();
 
-			$type = $this->docReader->getParameterClass($setter);
+			$type = $this->findFirstExistingType($this->docReader->getParameterClasses($setter));
 			if ($type !== null)
 			{
 				return $type;
@@ -137,6 +137,25 @@ class ReflectionMemberMapper extends AbstractMemberMapper
 		}
 
 		return parent::getType();
+	}
+
+	/**
+	 * For an array returns the first item that exists as a class
+	 *
+	 * @param string[] $types
+	 * @return string|null
+	 */
+	private function findFirstExistingType($types)
+	{
+		foreach ($types as $type)
+		{
+			if (class_exists($type))
+			{
+				return $type;
+			}
+		}
+
+		return null;
 	}
 
 	/**
