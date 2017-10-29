@@ -8,6 +8,7 @@
 
 namespace OneOfZero\Json\Test;
 
+use DateTime;
 use Exception;
 use OneOfZero\Json\Configuration;
 use OneOfZero\Json\Helpers\Environment;
@@ -110,9 +111,19 @@ abstract class AbstractTest extends PHPUnit_Framework_TestCase
 
 		$this->assertInstanceOf(get_class($expected), $actual);
 
-		foreach ($expected as $property => $value)
+		foreach ($expected as $property => $expectedValue)
 		{
-			$this->assertEquals($value, $actual->{$property});
+			$actualValue = $actual->{$property};
+
+			if ($expectedValue instanceof DateTime && $actualValue instanceof DateTime)
+			{
+				$this->assertEquals($expectedValue->getTimestamp(), $actualValue->getTimestamp());
+				$this->assertEquals($expectedValue->getTimezone(), $actualValue->getTimezone());
+			}
+			else
+			{
+				$this->assertEquals($expectedValue, $actual->{$property});
+			}
 		}
 	}
 }
