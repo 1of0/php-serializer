@@ -152,20 +152,14 @@ abstract class AbstractMapperTest extends AbstractTest
 		
 		$this->createDeserializingVisitor()->visit($input);
 	}
-	
-	public function testGetterOnProperty()
-	{
-		$this->setExpectedException(SerializationException::class);
-		$this->createSerializingVisitor()->visit(new ClassWithGetterAndSetterOnProperty('bar'));
-	}
-	
+
 	public function testSetterOnProperty()
 	{
 		$this->setExpectedException(SerializationException::class);
 		
 		$input = (object)[
 			'@type'    => ClassWithInvalidGetterAndSetter::class,
-			'foo'       => 'bar',
+			'foo'      => 'bar',
 		];
 		
 		$this->createDeserializingVisitor()->visit($input);
