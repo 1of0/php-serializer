@@ -14,9 +14,7 @@
 	{
 		"php": ">=5.5.0",
 		"ext-json": "*",
-		"1of0/better-annotations": "^0.1.0",
 		"1of0/phpdoc-reader": "^3.0.0",
-		"doctrine/annotations": "^1.2.0",
 		"container-interop/container-interop": "^1.0.0"
 	},
 	"require-dev":
@@ -28,7 +26,9 @@
 		"doctrine/cache": "^1.3.0",
 		"ocramius/proxy-manager": "^1.0.0",
 		"symfony/yaml": "^2.7.0 || ^3.0.0",
-		"danielstjules/stringy": "^2.0.0"
+		"danielstjules/stringy": "^2.0.0",
+		"1of0/better-annotations": "^0.1.0",
+		"doctrine/annotations": "^1.2.0"
 	},
 	"suggest":
 	{
@@ -36,7 +36,9 @@
 		"symfony/yaml": "Required for YAML mapper support",
 		"danielstjules/stringy": "Required for PascalCaseContractResolver",
 		"doctrine/cache": "Required for mapper caching",
-		"ocramius/proxy-manager": "Useful for making lazy proxies"
+		"ocramius/proxy-manager": "Useful for making lazy proxies",
+		"1of0/better-annotations": "Used by the annotation mapper (which is enabled by default)",
+		"doctrine/annotations": "Used by the annotation mapper (which is enabled by default)"
 	},
 	"autoload":
 	{
